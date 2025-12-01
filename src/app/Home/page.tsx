@@ -12,6 +12,9 @@ export default function Home() {
       <Hero />
       <HeroSection />
       <LatestArrivals />
+      <WhatWeProvide />
+      <PhotoWall />
+      <Footer />
      
     </main>
   );
