@@ -73,7 +73,7 @@ const LatestArrivals = () => {
             </div>
             
             <Link 
-              href="/products"
+              href="/Products"
               className="inline-flex items-center gap-2 transition-all duration-300 font-medium group font-geologica"
               style={{ color: '#FCC900', letterSpacing: '0.07em' }}
             >
