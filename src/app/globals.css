@@ -14,3 +14,32 @@
 .font-geologica {
 	font-family: var(--font-geologica);
 }
+
+@layer components {
+	/* Compact hero utility to make hero + banners fit on small viewports */
+	.compact-hero {
+		
+		@apply py-6 sm:py-12;
+	}
+
+	.compact-top-spacer {
+		height: 5rem; 
+	}
+
+	.compact-hero .hero-heading {
+		@apply text-3xl sm:text-6xl md:text-7xl lg:text-8xl;
+	}
+
+	.compact-hero .hero-subtext {
+		@apply text-sm sm:text-base;
+	}
+
+	
+	.compact-hero .hoodie-img {
+		max-height: 36vh;
+	}
+
+	.compact-hero .watch-img {
+		max-height: 26vh;
+	}
+}
