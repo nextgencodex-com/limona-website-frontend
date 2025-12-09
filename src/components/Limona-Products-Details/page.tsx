@@ -1,0 +1,676 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Header from '../Limona-Header/page';
+import LatestArrivals from '../Limona-Home/Latest-Arrivals/page';
+import Footer from '../Limona-Footer/page';
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  description: string;
+  colors: string[];
+  dateAdded?: string;
+  fit?: string;
+  fabric?: string;
+  fitType?: string;
+  neckline?: string;
+  sizes?: string;
+  colorNames?: string;
+  care?: string;
+  additionalImages?: string[];
+}
+
+const ProductDetails = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const productId = searchParams.get('id');
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>('S');
+  const [quantity, setQuantity] = useState(1);
+  const [showDetails, setShowDetails] = useState(false);
+  const [mobileSlide, setMobileSlide] = useState(0);
+
+
+  // Sample products data 
+  const allProducts: Product[] = [
+    {
+      id: 1,
+      name: 'Classic Cotton Tee',
+      category: 'All Products',
+      price: 1500,
+      image: '/images/Products/Subtract (5).png',
+      description: 'Our Essential Unisex T-Shirt is designed to be the foundation of your wardrobe. Made from 100% soft cotton, it\'s lightweight, breathable, and comfortable for everyday wear. The regular fit makes it versatile for both men and women, pairing effortlessly with jeans, shorts, or layers.\n\nWhether you\'re at work, out with friends, or relaxing at home, this T-shirt delivers comfort without compromising on style',
+      colors: ['#8A38F5', '#FACC15', '#010111', '#FF0000'],
+      dateAdded: '2024-01-15',
+      fit: 'Regular Fit',
+      fabric: '100% Cotton (180 GSM, pre-shrunk for durability)',
+      fitType: 'Regular / Unisex',
+      neckline: 'Classic crew neck',
+      sizes: 'XS, S, M, L, XL, XXL',
+      colorNames: 'Black, White, Navy, Olive, Maroon',
+      care: 'Machine wash cold, tumble dry low',
+      additionalImages: [
+        '/images/Products/Subtract (5).png',
+        '/images/Products/portrait 1.png'
+      ]
+    },
+
+    {
+      id: 2,
+      name: 'Urban Hoodie',
+      category: 'Men',
+      price: 3500,
+      image: '/images/Products/Subtract (6).png',
+      description: 'Comfortable pullover hoodie with adjustable drawstring. Perfect for casual outings.',
+      colors: ['#FFFFFF', '#024023', '#F79EFF', '#FBFF00'],
+      dateAdded: '2024-02-10'
+    },
+    {
+      id: 3,
+      name: 'Vintage Denim Jacket',
+      category: 'Men',
+      price: 4500,
+      image: '/images/Products/Subtract (7).png',
+      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
+      colors: ['#597585', '#1E1E1E'],
+      dateAdded: '2024-01-20'
+    },
+    {
+      id: 4,
+      name: 'Slim Fit Joggers',
+      category: 'Men',
+      price: 2200,
+      image: '/images/Products/Subtract (8).png',
+      description: 'Comfortable joggers with elastic waistband. Perfect for casual outings',
+      colors: ['#9D8E8A', '#024023', '#7A5300', '#FBFF00'],
+      dateAdded: '2024-03-05'
+    },
+    {
+      id: 5,
+      name: 'Cotton Socks Pack',
+      category: 'Accessories',
+      price: 1200,
+      image: '/images/Products/Subtract (9).png',
+      description: 'High-quality cotton socks pack. Comfortable and durable for everyday wear.',
+      colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
+      dateAdded: '2024-02-28'
+    },
+    {
+      id: 6,
+      name: 'Oversized Sweater',
+      category: 'Women',
+      price: 3500,
+      image: '/images/Products/Subtract (10).png',
+      description: 'Cozy oversized sweater for maximum comfort. Perfect for chilly days.',
+      colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
+      dateAdded: '2024-03-01'
+    },
+    {
+      id: 7,
+      name: 'Graphic Print Tee',
+      category: 'All Products',
+      price: 2500,
+      image: '/images/Products/Subtract (11).png',
+      description: 'Bold graphic print on premium cotton. Make a statement.',
+      colors: ['#C00F0C', '#024023', '#252024', '#FBFF00'],
+      dateAdded: '2024-01-25'
+    },
+    {
+      id: 8,
+      name: 'Classic Baseball Cap',
+      category: 'Accessories',
+      price: 1700,
+      image: '/images/Products/Subtract (12).png',
+      description: 'Adjustable cotton cap with embroidered logo. One size fits all.',
+      colors: ['#C00F0C', '#887B7C', '#110ED7', '#FBFF00'],
+      dateAdded: '2024-02-15'
+    }
+  ];
+
+  useEffect(() => {
+    if (productId) {
+      const foundProduct = allProducts.find(p => p.id === parseInt(productId));
+      if (foundProduct) {
+        setProduct(foundProduct);
+        setSelectedColor(foundProduct.colors[2]); 
+      }
+    }
+  }, [productId]);
+
+  const handleBuyWhatsApp = () => {
+    const message = `Hi! I'm interested in:\n${product?.name}\nSize: ${selectedSize}\nColor: ${selectedColor}\nQuantity: ${quantity}\nPrice: LKR ${product?.price.toLocaleString()}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  if (!product) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500">Product not found</div>
+      </div>
+    );
+  }
+
+  const sizes = ['S', 'M', 'L', 'XL'];
+
+  //selected color name
+  const colorNamesArray = product.colorNames?.split(', ') || [];
+  const selectedColorIndex = product.colors.indexOf(selectedColor);
+  const selectedColorName = selectedColorIndex >= 0 && colorNamesArray[selectedColorIndex] ? colorNamesArray[selectedColorIndex] : 'Black';
+  const mobileCarouselImages = (product.additionalImages || [])
+    .slice(1)
+    .filter(Boolean);
+  if (mobileCarouselImages.length === 1) {
+    mobileCarouselImages.push(product.image);
+  }
+
+  const clampSlide = (idx: number) => {
+    if (!mobileCarouselImages.length) return 0;
+    if (idx < 0) return mobileCarouselImages.length - 1;
+    if (idx >= mobileCarouselImages.length) return 0;
+    return idx;
+  };
+
+  const goToSlide = (direction: 'next' | 'prev') => {
+    setMobileSlide((prev) => clampSlide(direction === 'next' ? prev + 1 : prev - 1));
+  };
+
+  return (
+    <div className="bg-white">
+      <Header />
+
+      {/* Product Details Section */}
+      <div className="min-h-screen pt-8 pb-8 font-geologica">
+        <div className="max-w-7xl mx-auto px-4 sm:px-4 lg:px-4">
+          
+          {/* MOBILE LAYOUT */}
+          <div className="lg:hidden">
+            <div className="text-sm text-gray-600 mb-4">
+              Home / All Products / {product.name}
+            </div>
+
+            {/* Product Title and Fit Badge */}
+            <div className="mb-4 flex items-center gap-2">
+              <h1 className="text-3xl font-bold text-black">{product.name}</h1>
+              {(product.fitType || product.fit) && (
+                <div className="bg-yellow-100 text-black px-2 py-1 rounded-md text-xs whitespace-nowrap">
+                  <div className="font-semibold text-black">{product.fitType || product.fit}</div>
+                </div>
+              )}
+            </div>
+
+            {/* Main Image */}
+            <div className="relative w-full rounded-2xl overflow-hidden bg-[#f8f8f8] mb-4" style={{ height: '400px' }}>
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+
+            {/* Swipeable Additional Images  */}
+            {mobileCarouselImages.length > 0 && (
+              <div
+                className="relative mb-6"
+                onTouchStart={(e) => {
+                  const startX = e.touches[0].clientX;
+                  const handleMove = (moveEvent: TouchEvent) => {
+                    const deltaX = moveEvent.touches[0].clientX - startX;
+                    if (Math.abs(deltaX) > 40) {
+                      goToSlide(deltaX < 0 ? 'next' : 'prev');
+                      document.removeEventListener('touchmove', handleMove as any);
+                    }
+                  };
+                  const handleEnd = () => {
+                    document.removeEventListener('touchmove', handleMove as any);
+                    document.removeEventListener('touchend', handleEnd);
+                  };
+                  document.addEventListener('touchmove', handleMove as any, { passive: true });
+                  document.addEventListener('touchend', handleEnd, { once: true });
+                }}
+              >
+                <div className="overflow-hidden rounded-xl">
+                  <div
+                    className="flex transition-transform duration-300"
+                    style={{ transform: `translateX(-${mobileSlide * 100}%)` }}
+                  >
+                    {mobileCarouselImages.slice(0, 2).map((img, index) => (
+                      <div
+                        key={index}
+                        className="relative flex-shrink-0 w-full bg-[#f8f8f8]"
+                        style={{ height: '160px' }}
+                      >
+                        <Image
+                          src={img}
+                          alt={`Product view ${index + 2}`}
+                          fill
+                          sizes="100vw"
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {mobileCarouselImages.length > 1 && (
+                  <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 text-white">
+                    <button
+                      aria-label="Previous image"
+                      className="bg-black/40 hover:bg-black/60 transition rounded-full p-2"
+                      onClick={() => goToSlide('prev')}
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      aria-label="Next image"
+                      className="bg-black/40 hover:bg-black/60 transition rounded-full p-2"
+                      onClick={() => goToSlide('next')}
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+
+                {mobileCarouselImages.length > 1 && (
+                  <div className="flex justify-center gap-2 mt-3">
+                    {mobileCarouselImages.slice(0, 2).map((_, idx) => (
+                      <button
+                        key={idx}
+                        aria-label={`Go to image ${idx + 1}`}
+                        onClick={() => setMobileSlide(idx)}
+                        className={`h-2 w-2 rounded-full ${idx === mobileSlide ? 'bg-black' : 'bg-gray-300'}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Price */}
+            <div className="mb-4">
+              <div className="text-2xl font-bold text-black">LKR {product.price.toFixed(2)}</div>
+              <div className="text-sm text-gray-600 mt-1">or with 3 installments of LKR {(product.price / 3).toFixed(2)}</div>
+              <div className="mt-2">
+                <Image
+                  src="/images/Products-Details/koko.png"
+                  alt="koko"
+                  width={60}
+                  height={24}
+                  className="rounded-full"
+                />
+              </div>
+            </div>
+
+            {/* Available Color */}
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-black mb-2">Available Color : {selectedColorName}</h3>
+              <div className="flex gap-2">
+                {product.colors.map((color, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedColor(color)}
+                    className={`w-8 h-8 rounded-full transition-all duration-200 ${
+                      selectedColor === color 
+                        ? 'ring-2 ring-offset-2 ring-black scale-110' 
+                        : 'hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Available Size */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-sm font-semibold text-black">Available Size : {selectedSize}</h3>
+                <button className="text-sm underline">Size Guide</button>
+              </div>
+              <div className="flex gap-2">
+                {sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`w-10 h-10 rounded-full border font-medium transition-all duration-200 ${
+                      selectedSize === size
+                        ? 'bg-black text-white border-black'
+                        : 'bg-transparent text-black border-gray-300 hover:border-black'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Buy via WhatsApp Button */}
+            <button
+              onClick={handleBuyWhatsApp}
+              className="w-full bg-black text-white py-3 rounded-lg font-semibold text-base hover:bg-gray-900 transition-colors duration-200 mb-4 flex items-center justify-center gap-2"
+            >
+              Buy via WhatsApp
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M13.5 2C13.5 2 13.5 2 13.5 2L18.5 7L13.5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+            </button>
+
+            {/* Shipping Info */}
+            <div className="text-sm text-gray-600 mb-1">
+              Free shipping on orders over Rs.10,000
+            </div>
+            <div className="text-sm text-gray-600 mb-6">
+              Free Exchange & Returns
+            </div>
+
+            {/* Product Details Section for Mobile */}
+            <div className="border-t border-gray-300 pt-6">
+              <button
+                onClick={() => setShowDetails(!showDetails)}
+                className="w-full flex items-center justify-between text-left mb-4"
+              >
+                <h2 className="text-2xl font-bold text-black">Product Details</h2>
+                {showDetails ? (
+                  <ChevronUp className="w-6 h-6" />
+                ) : (
+                  <ChevronDown className="w-6 h-6" />
+                )}
+              </button>
+
+              {showDetails && (
+                <div className="space-y-6">
+                  {/* Description */}
+                  <div>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-line text-sm">
+                      {product.description}
+                    </p>
+                  </div>
+
+                  {/* Specifications */}
+                  <div>
+                    <ul className="space-y-2 text-gray-700 text-sm">
+                      {product.fabric && (
+                        <li className="flex">
+                          <span className="font-semibold w-20">Fabric:</span>
+                          <span>{product.fabric}</span>
+                        </li>
+                      )}
+                      {product.fitType && (
+                        <li className="flex">
+                          <span className="font-semibold w-20">Fit:</span>
+                          <span>{product.fitType}</span>
+                        </li>
+                      )}
+                      {product.neckline && (
+                        <li className="flex">
+                          <span className="font-semibold w-20">Neckline:</span>
+                          <span>{product.neckline}</span>
+                        </li>
+                      )}
+                      {product.sizes && (
+                        <li className="flex">
+                          <span className="font-semibold w-20">Sizes:</span>
+                          <span>{product.sizes}</span>
+                        </li>
+                      )}
+                      {product.colorNames && (
+                        <li className="flex">
+                          <span className="font-semibold w-20">Colors:</span>
+                          <span>{product.colorNames}</span>
+                        </li>
+                      )}
+                      {product.care && (
+                        <li className="flex">
+                          <span className="font-semibold w-20">Care:</span>
+                          <span>{product.care}</span>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* DESKTOP LAYOUT */}
+          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {/* Left Side  */}
+            <div className="lg:col-span-5 flex flex-col">
+              {/* Product Title */}
+              <div className="mb-6 flex items-center gap-3">
+                <h1 className="text-5xl font-bold text-black mb-0">{product.name}</h1>
+                <div className="bg-yellow-100 text-black px-2 py-2 rounded-md text-sm">
+                  <div className="text-xs text-gray-600"></div>
+                  <div className="font-semibold text-black">{product.fitType || product.fit}</div>
+                </div>
+              </div>
+
+              {/* Price */}
+              <div className="mb-6">
+                <div className="text-4xl font-bold text-black">LKR {product.price.toFixed(2)}</div>
+                <div className="text-sm text-gray-600 mt-1">or with 3 installments of LKR {(product.price / 3).toFixed(2)}</div>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Image
+                      src="/images/Products-Details/koko.png"
+                      alt="koko"
+                      width={80}
+                      height={32}
+                      className="rounded-full"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Available Color */}
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-black mb-3">Available Color : {selectedColorName}</h3>
+                <div className="flex gap-3">
+                  {product.colors.map((color, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedColor(color)}
+                      className={`w-10 h-10 rounded-full transition-all duration-200 ${
+                        selectedColor === color 
+                          ? 'ring-2 ring-offset-2 ring-black scale-110' 
+                          : 'hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Available Size */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-semibold text-black">Available Size : {selectedSize}</h3>
+                  <button className="text-sm underline">Size Guide</button>
+                </div>
+                <div className="flex gap-3">
+                  {sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`w-12 h-12 rounded-full border font-medium transition-all duration-200 ${
+                        selectedSize === size
+                          ? 'bg-black text-white border-black'
+                          : 'bg-transparent text-black border-gray-300 hover:border-black'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Buy via WhatsApp Button */}
+              <button
+                onClick={handleBuyWhatsApp}
+                className="w-full bg-black text-white py-4 rounded-lg font-semibold text-lg hover:bg-gray-900 transition-colors duration-200 mb-6 flex items-center justify-center gap-2"
+              >
+                Buy via WhatsApp
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.5 2C13.5 2 13.5 2 13.5 2L18.5 7L13.5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+              </button>
+
+              {/* Shipping Info */}
+              <div className="text-sm text-gray-600 mb-2">
+                Free shipping on orders over Rs.10,000
+              </div>
+              <div className="text-sm text-gray-600 mb-6">
+                Free Exchange & Returns
+              </div>
+
+
+            </div>
+
+            {/* Right Side - Image Grid  */}
+            <div className="lg:col-span-7">
+              <div className="w-full h-full">
+                <div className="grid grid-cols-3 gap-6 items-stretch">    
+
+                  {/*MAIN IMAGE*/}
+                  <div
+                    className="col-span-2 relative rounded-[28px] overflow-hidden bg-[#f8f8f8] shadow-lg"
+                    style={{ minHeight: 640 }}
+                  >
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 66vw"
+                      className="object-cover"
+                      style={{
+                        clipPath: 'polygon(25% 0, 100% 0, 100% 6%, 100% 75%, 75% 100%, 0% 100%, 0 94%, 0 20%)'
+                      }}
+                      priority
+                    />
+                  </div>
+
+                  {/* RIGHT COLUMN  */}
+                  <div className="col-span-1 flex flex-col gap-6">
+                    <div
+                      className="relative rounded-[20px] overflow-hidden bg-[#f8f8f8] shadow-lg"
+                      style={{
+                        height: 310,
+                        clipPath: 'polygon(25% 0, 100% 0, 100% 6%, 100% 75%, 75% 100%, 0% 100%, 0 94%, 0 20%)'
+                      }}
+                    >
+                      <Image
+                        src={product.additionalImages?.[0] || product.image}
+                        alt="Product view 1"
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        className="object-cover"
+                        style={{
+                          transform: 'scale(1.7)',
+                          objectPosition: 'center 20%'
+                        }}
+                        priority
+                      />
+                    </div>
+                    <div
+                      className="relative rounded-[20px] overflow-hidden bg-[#f8f8f8] shadow-lg"
+                      style={{
+                        height: 310,
+                        clipPath: 'polygon(25% 0, 100% 0, 100% 6%, 100% 75%, 75% 100%, 0% 100%, 0 94%, 0 20%)'
+                      }}
+                    >
+                      <Image
+                        src={product.additionalImages?.[1] || product.image}
+                        alt="Product view 2"
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        className="object-cover"
+                        style={{
+                          transform: 'scale(1.7)',
+                          objectPosition: 'center 70%'
+                        }}
+                        priority
+                      />
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Product Details Section  */}
+          <div className="mt-16 border-t border-gray-300 pt-8 hidden lg:block">
+            <button
+              onClick={() => setShowDetails(!showDetails)}
+              className="w-full flex items-center justify-between text-left mb-8"
+            >
+              <h2 className="text-3xl font-bold text-black">Product Details</h2>
+              {showDetails ? (
+                <ChevronUp className="w-6 h-6" />
+              ) : (
+                <ChevronDown className="w-6 h-6" />
+              )}
+            </button>
+
+            {showDetails && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {/* Description */}
+                <div>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                    {product.description}
+                  </p>
+                </div>
+
+                {/*Specifications */}
+                <div>
+                  <ul className="space-y-3 text-gray-700">
+                    <li className="flex">
+                      <span className="font-semibold w-24">Fabric:</span>
+                      <span>{product.fabric}</span>
+                    </li>
+                    <li className="flex">
+                      <span className="font-semibold w-24">Fit:</span>
+                      <span>{product.fitType}</span>
+                    </li>
+                    <li className="flex">
+                      <span className="font-semibold w-24">Neckline:</span>
+                      <span>{product.neckline}</span>
+                    </li>
+                    <li className="flex">
+                      <span className="font-semibold w-24">Sizes:</span>
+                      <span>{product.sizes}</span>
+                    </li>
+                    <li className="flex">
+                      <span className="font-semibold w-24">Colors:</span>
+                      <span>{product.colorNames}</span>
+                    </li>
+                    <li className="flex">
+                      <span className="font-semibold w-24">Care:</span>
+                      <span>{product.care}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+        <LatestArrivals />
+      {/* Footer */}
+      <Footer />
+    </div>
+  );
+};
+
+export default ProductDetails;
