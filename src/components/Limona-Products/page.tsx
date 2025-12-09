@@ -696,11 +696,14 @@ const LimonaProducts = () => {
                       className="group bg-white rounded-[15px] overflow-hidden transition-all duration-300 hover:shadow-md font-geologica"
                     >
                       {/* Image Container */}
-                      <div className="relative overflow-hidden mb-2 rounded-[15px] aspect-[3/4]">
+                      <div className="relative overflow-hidden mb-2 rounded-[40px] aspect-[3/4]">
                         <img
                           src={product.image}
                           alt={product.name}
                           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
+                          style={{
+                            clipPath: 'polygon(75% 0, 0% 0, 0% 6%, 0% 75%, 25% 100%, 100% 100%, 100% 94%, 100% 25%)'
+                          }}
                           onError={(e) => {
                             e.currentTarget.src = `https://placehold.co/400x600/EEE/31343C?text=${encodeURIComponent(product.name)}`;
                             e.currentTarget.className = "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500";
@@ -789,6 +792,9 @@ const LimonaProducts = () => {
                           src={product.image}
                           alt={product.name}
                           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
+                          style={{
+                            clipPath: 'polygon(75% 0, 0% 0, 0% 6%, 0% 75%, 25% 100%, 100% 100%, 100% 94%, 100% 20%)'
+                          }}
                           onError={(e) => {
                             e.currentTarget.src = `https://placehold.co/600x800/EEE/31343C?text=${encodeURIComponent(product.name)}`;
                             e.currentTarget.className = "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500";
