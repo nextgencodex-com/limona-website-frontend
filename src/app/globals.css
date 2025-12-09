@@ -42,4 +42,14 @@
 	.compact-hero .watch-img {
 		max-height: 26vh;
 	}
+
+	/* Hide scrollbar for swipeable images */
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
 }

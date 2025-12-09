@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Filter, X, Search, Grid3x3, Grid2x2, Grid, ChevronUp, ChevronDown, Clock, ChevronRight } from 'lucide-react';
 
 interface Product {
@@ -15,6 +16,12 @@ interface Product {
 }
 
 const LimonaProducts = () => {
+  const router = useRouter();
+
+  const handleSeeDetails = (productId: number) => {
+    router.push(`/Products-Details?id=${productId}`);
+  };
+
   // Sample product data with colors
   const initialProducts: Product[] = [
     {
@@ -755,7 +762,10 @@ const LimonaProducts = () => {
                           </span>
                         </div>
                         
-                        <button className="w-full bg-black text-white px-2 py-1.5 rounded-md hover:bg-gray-900 transition-colors duration-200 font-bold tracking-[0.07em] text-[10px] flex items-center justify-center gap-1 font-geologica">
+                        <button 
+                          onClick={() => handleSeeDetails(product.id)}
+                          className="w-full bg-black text-white px-2 py-1.5 rounded-md hover:bg-gray-900 transition-colors duration-200 font-bold tracking-[0.07em] text-[10px] flex items-center justify-center gap-1 font-geologica"
+                        >
                           See Details
                           <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -837,7 +847,10 @@ const LimonaProducts = () => {
                           </span>
                         </div>
                         
-                        <button className="w-full bg-black text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-gray-900 transition-colors duration-200 font-bold tracking-[0.07em] text-xs sm:text-sm flex items-center justify-center gap-2 font-geologica">
+                        <button 
+                          onClick={() => handleSeeDetails(product.id)}
+                          className="w-full bg-black text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-gray-900 transition-colors duration-200 font-bold tracking-[0.07em] text-xs sm:text-sm flex items-center justify-center gap-2 font-geologica"
+                        >
                           See Details
                           <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
