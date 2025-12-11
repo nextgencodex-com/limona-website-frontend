@@ -59,7 +59,7 @@ const ProductDetails = () => {
       care: 'Machine wash cold, tumble dry low',
       additionalImages: [
         '/images/Products/Subtract (5).png',
-        '/images/Products/portrait 1.png'
+        '/images/Products/Subtract (5).png'
       ]
     },
 
@@ -71,7 +71,11 @@ const ProductDetails = () => {
       image: '/images/Products/Subtract (6).png',
       description: 'Comfortable pullover hoodie with adjustable drawstring. Perfect for casual outings.',
       colors: ['#FFFFFF', '#024023', '#F79EFF', '#FBFF00'],
-      dateAdded: '2024-02-10'
+      dateAdded: '2024-02-10',
+      additionalImages: [
+        '/images/Products/Subtract (6).png',
+        '/images/Products/Subtract (6).png'
+      ]
     },
     {
       id: 3,
@@ -81,7 +85,11 @@ const ProductDetails = () => {
       image: '/images/Products/Subtract (7).png',
       description: 'Classic denim jacket with a modern twist. Durable and stylish.',
       colors: ['#597585', '#1E1E1E'],
-      dateAdded: '2024-01-20'
+      dateAdded: '2024-01-20',
+        additionalImages: [
+        '/images/Products/Subtract (7).png',
+        '/images/Products/Subtract (7).png'
+      ]
     },
     {
       id: 4,
@@ -91,7 +99,11 @@ const ProductDetails = () => {
       image: '/images/Products/Subtract (8).png',
       description: 'Comfortable joggers with elastic waistband. Perfect for casual outings',
       colors: ['#9D8E8A', '#024023', '#7A5300', '#FBFF00'],
-      dateAdded: '2024-03-05'
+      dateAdded: '2024-03-05',
+        additionalImages: [
+        '/images/Products/Subtract (8).png',
+        '/images/Products/Subtract (8).png'
+      ]
     },
     {
       id: 5,
@@ -101,7 +113,11 @@ const ProductDetails = () => {
       image: '/images/Products/Subtract (9).png',
       description: 'High-quality cotton socks pack. Comfortable and durable for everyday wear.',
       colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
-      dateAdded: '2024-02-28'
+      dateAdded: '2024-02-28',
+        additionalImages: [
+        '/images/Products/Subtract (9).png',
+        '/images/Products/Subtract (9).png'
+      ]
     },
     {
       id: 6,
@@ -111,7 +127,11 @@ const ProductDetails = () => {
       image: '/images/Products/Subtract (10).png',
       description: 'Cozy oversized sweater for maximum comfort. Perfect for chilly days.',
       colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
-      dateAdded: '2024-03-01'
+      dateAdded: '2024-03-01',
+        additionalImages: [
+        '/images/Products/Subtract (10).png',
+        '/images/Products/Subtract (10).png'
+      ]
     },
     {
       id: 7,
@@ -121,7 +141,11 @@ const ProductDetails = () => {
       image: '/images/Products/Subtract (11).png',
       description: 'Bold graphic print on premium cotton. Make a statement.',
       colors: ['#C00F0C', '#024023', '#252024', '#FBFF00'],
-      dateAdded: '2024-01-25'
+      dateAdded: '2024-01-25',
+        additionalImages: [
+        '/images/Products/Subtract (11).png',
+        '/images/Products/Subtract (11).png'
+      ]
     },
     {
       id: 8,
@@ -131,7 +155,83 @@ const ProductDetails = () => {
       image: '/images/Products/Subtract (12).png',
       description: 'Adjustable cotton cap with embroidered logo. One size fits all.',
       colors: ['#C00F0C', '#887B7C', '#110ED7', '#FBFF00'],
-      dateAdded: '2024-02-15'
+      dateAdded: '2024-02-15',
+        additionalImages: [
+        '/images/Products/Subtract (12).png',
+        '/images/Products/Subtract (12).png'
+      ]
+    },
+    {
+      id: 9,
+      name: 'Vintage Denim Jacket',
+      category: 'Jackets',
+      price: 3500.00,
+      image: '/images/Vintage-Jacket/Subtract.png',
+      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
+      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
+      dateAdded: '2024-12-09',
+      fit: 'Regular Fit',
+      fabric: '100% Cotton Denim',
+      fitType: 'Regular',
+      neckline: 'Classic collar',
+      sizes: 'XS, S, M, L, XL',
+      colorNames: 'Blue, Black, Purple, Yellow',
+      care: 'Machine wash cold, tumble dry low',
+      additionalImages: ['/images/Vintage-Jacket/Subtract.png']
+    },
+    {
+      id: 10,
+      name: 'Vintage Denim Jacket',
+      category: 'Dresses',
+      price: 3500.00,
+      image: '/images/Vintage-Jacket/Subtract (1).png',
+      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
+      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
+      dateAdded: '2024-12-09',
+      fit: 'Regular Fit',
+      fabric: '100% Cotton Denim',
+      fitType: 'Regular',
+      neckline: 'Classic collar',
+      sizes: 'XS, S, M, L, XL',
+      colorNames: 'Blue, Black, Purple, Yellow',
+      care: 'Machine wash cold, tumble dry low',
+      additionalImages: ['/images/Vintage-Jacket/Subtract (1).png']
+    },
+    {
+      id: 11,
+      name: 'Vintage Denim Jacket',
+      category: 'Tops',
+      price: 3500.00,
+      image: '/images/Vintage-Jacket/Subtract (2).png',
+      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
+      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
+      dateAdded: '2024-12-09',
+      fit: 'Regular Fit',
+      fabric: '100% Cotton Denim',
+      fitType: 'Regular',
+      neckline: 'Classic collar',
+      sizes: 'XS, S, M, L, XL',
+      colorNames: 'Blue, Black, Purple, Yellow',
+      care: 'Machine wash cold, tumble dry low',
+      additionalImages: ['/images/Vintage-Jacket/Subtract (2).png']
+    },
+    {
+      id: 12,
+      name: 'Vintage Denim Jacket',
+      category: 'Bottoms',
+      price: 3500.00,
+      image: '/images/Vintage-Jacket/Subtract (3).png',
+      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
+      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
+      dateAdded: '2024-12-09',
+      fit: 'Regular Fit',
+      fabric: '100% Cotton Denim',
+      fitType: 'Regular',
+      neckline: 'Classic collar',
+      sizes: 'XS, S, M, L, XL',
+      colorNames: 'Blue, Black, Purple, Yellow',
+      care: 'Machine wash cold, tumble dry low',
+      additionalImages: ['/images/Vintage-Jacket/Subtract (3).png']
     }
   ];
 
@@ -146,8 +246,8 @@ const ProductDetails = () => {
   }, [productId]);
 
   const handleBuyWhatsApp = () => {
-    const message = `Hi! I'm interested in:\n${product?.name}\nSize: ${selectedSize}\nColor: ${selectedColor}\nQuantity: ${quantity}\nPrice: LKR ${product?.price.toLocaleString()}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    const message = `Product Purchase Request:\n\n• Product: ${product!.name}\n• Size: ${selectedSize}\n• Color: ${selectedColorName}\n• Quantity: ${quantity}\n• Unit Price: LKR ${product!.price.toLocaleString()}\n• Total Price: LKR ${(product!.price * quantity).toLocaleString()}`;
+    const whatsappUrl = `https://wa.me/94759627589?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -193,8 +293,17 @@ const ProductDetails = () => {
           
           {/* MOBILE LAYOUT */}
           <div className="lg:hidden">
-            <div className="text-sm text-gray-600 mb-4">
-              Home / All Products / {product.name}
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => router.push('/Products')}
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                aria-label="Back to products"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-700" />
+              </button>
+              <div className="text-sm text-gray-600">
+                <a href="/" className="hover:text-black">Home</a> / <a href="/Products" className="hover:text-black">All Products</a> / {product.name}
+              </div>
             </div>
 
             {/* Product Title and Fit Badge */}
@@ -219,7 +328,7 @@ const ProductDetails = () => {
               />
             </div>
 
-            {/* Swipeable Additional Images  */}
+            {/* Swipeable Images  */}
             {mobileCarouselImages.length > 0 && (
               <div
                 className="relative mb-6"
@@ -443,7 +552,21 @@ const ProductDetails = () => {
           </div>
 
           {/* DESKTOP LAYOUT */}
-          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+            {/* Breadcrumb */}
+            <div className="lg:col-span-8 flex items-center gap-2 mb-0">
+              <button
+                onClick={() => router.push('/Products')}
+                className="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                aria-label="Back to products"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-700" />
+              </button>
+              <div className="text-sm text-gray-600">
+                <a href="/" className="hover:text-black">Home</a> / <a href="/Products" className="hover:text-black">All Products</a> / {product.name}
+              </div>
+            </div>
+
             {/* Left Side  */}
             <div className="lg:col-span-5 flex flex-col">
               {/* Product Title */}
@@ -543,7 +666,7 @@ const ProductDetails = () => {
 
                   {/*MAIN IMAGE*/}
                   <div
-                    className="col-span-2 relative rounded-[28px] overflow-hidden bg-[#f8f8f8] shadow-lg"
+                    className="col-span-2 relative rounded-[28px] overflow-hidden bg- shadow-"
                     style={{ minHeight: 640 }}
                   >
                     <Image
@@ -553,7 +676,7 @@ const ProductDetails = () => {
                       sizes="(max-width: 1024px) 100vw, 66vw"
                       className="object-cover"
                       style={{
-                        clipPath: 'polygon(25% 0, 100% 0, 100% 6%, 100% 75%, 75% 100%, 0% 100%, 0 94%, 0 20%)'
+                        clipPath: 'polygon(75% 0, 0% 0, 0% 6%, 0% 75%, 25% 100%, 100% 100%, 100% 94%, 100% 25%)'
                       }}
                       priority
                     />
@@ -565,7 +688,7 @@ const ProductDetails = () => {
                       className="relative rounded-[20px] overflow-hidden bg-[#f8f8f8] shadow-lg"
                       style={{
                         height: 310,
-                        clipPath: 'polygon(25% 0, 100% 0, 100% 6%, 100% 75%, 75% 100%, 0% 100%, 0 94%, 0 20%)'
+                        clipPath: 'polygon(75% 0, 0% 0, 0% 6%, 0% 75%, 25% 100%, 100% 100%, 100% 94%, 100% 25%)'
                       }}
                     >
                       <Image
@@ -575,7 +698,7 @@ const ProductDetails = () => {
                         sizes="(max-width: 1024px) 100vw, 33vw"
                         className="object-cover"
                         style={{
-                          transform: 'scale(1.7)',
+                          transform: 'scale(1.7s)',
                           objectPosition: 'center 20%'
                         }}
                         priority
@@ -585,17 +708,17 @@ const ProductDetails = () => {
                       className="relative rounded-[20px] overflow-hidden bg-[#f8f8f8] shadow-lg"
                       style={{
                         height: 310,
-                        clipPath: 'polygon(25% 0, 100% 0, 100% 6%, 100% 75%, 75% 100%, 0% 100%, 0 94%, 0 20%)'
+                        clipPath: 'polygon(75% 0, 0% 0, 0% 6%, 0% 75%, 25% 100%, 100% 100%, 100% 94%, 100% 25%)'
                       }}
                     >
                       <Image
                         src={product.additionalImages?.[1] || product.image}
                         alt="Product view 2"
                         fill
-                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        sizes="(max-width: 1024px) 100vw, 53vw"
                         className="object-cover"
                         style={{
-                          transform: 'scale(1.7)',
+                          transform: 'scale(1.9)',
                           objectPosition: 'center 70%'
                         }}
                         priority

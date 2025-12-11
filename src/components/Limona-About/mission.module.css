@@ -1,0 +1,74 @@
+/* Mission Section Styles */
+.missionSection {
+  background: linear-gradient(276.76deg, rgba(255, 255, 255, 0.6) 1.62%, rgba(253, 236, 168, 0.6) 72.89%, rgba(250, 204, 21, 0.6) 100%);
+  border-radius: 0;
+  margin: 0 0 2.5rem 0;
+  padding: 3rem 1.5rem 2.5rem 1.5rem;
+  box-shadow: 0 8px 32px rgba(250, 204, 21, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  font-family: 'Geologica', sans-serif;
+}
+.missionTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: #18181b;
+  font-family: 'Geologica', sans-serif;
+}
+.missionSubtitle {
+  font-size: 1.125rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #18181b;
+  font-family: 'Geologica', sans-serif;
+}
+.missionGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 1000px;
+}
+.missionItem {
+  flex: 1 1 220px;
+  min-width: 220px;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.missionIcon {
+  margin-bottom: 1rem;
+  height: 48px;
+  width: 48px;
+  color: #FACC15;
+}
+.missionHeading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #18181b;
+  font-family: 'Geologica', sans-serif;
+}
+.missionText {
+  font-size: 1rem;
+  color: #52525b;
+  font-family: 'Geologica', sans-serif;
+}
+@media (max-width: 900px) {
+  .missionGrid {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  .missionSection {
+    padding: 2rem 0.5rem 2rem 0.5rem;
+  }
+}

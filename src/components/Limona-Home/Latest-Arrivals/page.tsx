@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   price: number;
   image: string;
@@ -15,7 +15,7 @@ const LatestArrivals = () => {
   // Sample data - current price
   const latestProducts: Product[] = [
     {
-      id: '1',
+      id: 9,
       name: 'Vintage Denim Jacket',
       price: 3500.00,
       image: '/images/Vintage-Jacket/Subtract.png',
@@ -23,7 +23,7 @@ const LatestArrivals = () => {
       description: 'Classic denim jacket with a modern twist. Durable and stylish.'
     },
     {
-      id: '2',
+      id: 10,
       name: 'Vintage Denim Jacket',
       price: 3500.00,
       image: '/images/Vintage-Jacket/Subtract (1).png',
@@ -31,7 +31,7 @@ const LatestArrivals = () => {
       description: 'Classic denim jacket with a modern twist. Durable and stylish.'
     },
     {
-      id: '3',
+      id: 11,
       name: 'Vintage Denim Jacket',
       price: 3500.00,
       image: '/images/Vintage-Jacket/Subtract (2).png',
@@ -39,7 +39,7 @@ const LatestArrivals = () => {
       description: 'Classic denim jacket with a modern twist. Durable and stylish.'
     },
     {
-      id: '4',
+      id: 12,
       name: 'Vintage Denim Jacket',
       price: 3500.00,
       image: '/images/Vintage-Jacket/Subtract (3).png',
@@ -166,21 +166,23 @@ const LatestArrivals = () => {
                   </span>
                   
                   {/* Black Rounded Button with Yellow Arrow */}
-                  <button className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-200">
-                    <svg 
-                      className="w-4 h-4" 
-                      fill="none" 
-                      stroke="#FCC900" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M9 5l7 7-7 7" 
-                      />
-                    </svg>
-                  </button>
+                  <Link href={`/Products-Details?id=${product.id}`}>
+                    <button className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-200">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="#FCC900"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
