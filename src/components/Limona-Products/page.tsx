@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation'; // Add useSearchParams
 import { Filter, X, Search, Grid3x3, Grid2x2, Grid, ChevronUp, ChevronDown, Clock, ChevronRight } from 'lucide-react';
 
 interface Product {
   id: number;
   name: string;
-  category: 'All Products' | 'Men' | 'Women' | 'Accessories';
+  category: 'All Products' | 'Men' | 'Women' | 'Accessories' | 'Limited Edition';
   price: number;
   image: string;
   description: string;
@@ -17,6 +17,7 @@ interface Product {
 
 const LimonaProducts = () => {
   const router = useRouter();
+  const searchParams = useSearchParams(); // Add this
 
   const handleSeeDetails = (productId: number) => {
     router.push(`/Products-Details?id=${productId}`);
@@ -126,8 +127,54 @@ const LimonaProducts = () => {
   const [sortBy, setSortBy] = useState<string>('default'); // default, price-low, price-high, newest
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showAllMobile, setShowAllMobile] = useState(false); // New state for mobile view toggle
+  const [showComingSoonMessage, setShowComingSoonMessage] = useState(false);
 
-  const categories = ['All Products', 'Men', 'Women', 'Accessories'];
+  const categories = ['All Products', 'Men', 'Women', 'Accessories', 'Limited Edition'];
+
+  // Handle category selection
+  const handleCategorySelect = (category: string) => {
+    if (category === 'Limited Edition') {
+      // Show Coming Soon message
+      setShowComingSoonMessage(true);
+      
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => {
+        setShowComingSoonMessage(false);
+      }, 3000);
+      
+      // Update URL with category parameter
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      params.set('category', 'Limited Edition');
+      router.push(`?${params.toString()}`, { scroll: false });
+      
+      // Don't change the selected category state
+      return;
+    }
+    
+    // For other categories, proceed normally
+    setSelectedCategory(category);
+    setShowComingSoonMessage(false);
+    
+    // Update URL with category parameter
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('category', category);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle URL parameters on component mount
+  useEffect(() => {
+    const categoryFromUrl = searchParams?.get('category');
+    if (categoryFromUrl && categories.includes(categoryFromUrl)) {
+      if (categoryFromUrl === 'Limited Edition') {
+        setShowComingSoonMessage(true);
+        setTimeout(() => {
+          setShowComingSoonMessage(false);
+        }, 3000);
+      } else {
+        setSelectedCategory(categoryFromUrl);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     let filtered = products;
@@ -190,6 +237,9 @@ const LimonaProducts = () => {
     setSearchTerm('');
     setSortBy('default');
     setShowAllMobile(false); // Also reset the mobile view
+    
+    // Clear URL parameters
+    router.push('?', { scroll: false });
   };
 
   const toggleGridView = () => {
@@ -297,6 +347,29 @@ const LimonaProducts = () => {
         </div>
       </section>
 
+      {/* Coming Soon Notification - Shows for both mobile and desktop */}
+      {showComingSoonMessage && (
+        <div className="container mx-auto px-4 mb-4 animate-fade-in">
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center">
+                <div className="bg-yellow-100 p-2 rounded-lg mr-3">
+                  <Clock className="text-yellow-600" size={22} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-gray-800 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                    Coming Soon: Limited Edition Collection
+                  </h4>
+                  <p className="text-gray-600 text-sm mt-1 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                    We're working on something special! Our exclusive limited edition products will be available soon.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Mobile Search, Sort, and Filters - Three buttons in a row */}
@@ -396,7 +469,7 @@ const LimonaProducts = () => {
                         <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                       )}
                     </div>
-                    <ChevronDown size={16} className="text-gray-500" />
+                    <ChevronDown size={16} className="text-gray500" />
                     <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Price: High to Low</span>
                   </button>
                   
@@ -426,7 +499,7 @@ const LimonaProducts = () => {
                     {categories.map((category) => (
                       <button
                         key={category}
-                        onClick={() => setSelectedCategory(category)}
+                        onClick={() => handleCategorySelect(category)}
                         className={`px-3 py-2.5 rounded-md border text-xs tracking-[0.07em] font-geologica ${selectedCategory === category ? 'bg-[#FACC15] border-[#FACC15] text-gray-900' : 'border-gray-300 text-gray-700'}`}
                         style={{ letterSpacing: '0.07em' }}
                       >
@@ -486,7 +559,7 @@ const LimonaProducts = () => {
                   {categories.map((category) => (
                     <button
                       key={category}
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => handleCategorySelect(category)}
                       className={`
                         w-full text-left px-3 py-2 rounded-md transition-colors tracking-[0.07em] text-sm font-geologica
                         ${selectedCategory === category
