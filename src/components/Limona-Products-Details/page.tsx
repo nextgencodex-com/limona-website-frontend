@@ -37,6 +37,19 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [showDetails, setShowDetails] = useState(false);
   const [mobileSlide, setMobileSlide] = useState(0);
+  const [showSizeGuideDropdown, setShowSizeGuideDropdown] = useState(false);
+  const [selectedSizeGuide, setSelectedSizeGuide] = useState<string | null>(null);
+
+  // Size guide data
+  const sizeGuides = [
+    { name: 'Blouses', image: '/images/Size/blouse.jpg' },
+    { name: 'Crop-tops', image: '/images/Size/crop-top.jpg' },
+    { name: 'Frocks', image: '/images/Size/frock.jpg' },
+    { name: 'Kids Frocks', image: '/images/Size/kids-frock.jpg' },
+    { name: 'Kids Skirts', image: '/images/Size/kids-skirt.jpg' },
+    { name: 'Kids Tops', image: '/images/Size/kids-top.jpg' },
+    { name: 'Skirts', image: '/images/Size/skirt.jpg' },
+  ];
 
 
   // Sample products data 
@@ -444,7 +457,31 @@ const ProductDetails = () => {
             <div className="mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-sm font-semibold text-black">Available Size : {selectedSize}</h3>
-                <button className="text-sm underline">Size Guide</button>
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowSizeGuideDropdown(!showSizeGuideDropdown)}
+                    className="text-sm underline flex items-center gap-1"
+                  >
+                    Size Guide
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showSizeGuideDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showSizeGuideDropdown && (
+                    <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 p-2">
+                      {sizeGuides.map((guide) => (
+                        <button
+                          key={guide.name}
+                          onClick={() => {
+                            setSelectedSizeGuide(guide.image);
+                            setShowSizeGuideDropdown(false);
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-sm rounded-xl hover:bg-gray-100 transition-all duration-200 text-gray-700 hover:text-black"
+                        >
+                          {guide.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="flex gap-2">
                 {sizes.map((size) => (
@@ -618,7 +655,31 @@ const ProductDetails = () => {
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-sm font-semibold text-black">Available Size : {selectedSize}</h3>
-                  <button className="text-sm underline">Size Guide</button>
+                  <div className="relative">
+                    <button 
+                      onClick={() => setShowSizeGuideDropdown(!showSizeGuideDropdown)}
+                      className="text-sm underline flex items-center gap-1"
+                    >
+                      Size Guide
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showSizeGuideDropdown ? 'rotate-180' : ''}`} />
+                    </button>
+                    {showSizeGuideDropdown && (
+                      <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 p-2">
+                        {sizeGuides.map((guide) => (
+                          <button
+                            key={guide.name}
+                            onClick={() => {
+                              setSelectedSizeGuide(guide.image);
+                              setShowSizeGuideDropdown(false);
+                            }}
+                            className="w-full text-left px-4 py-2.5 text-sm rounded-xl hover:bg-gray-100 transition-all duration-200 text-gray-700 hover:text-black"
+                          >
+                            {guide.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="flex gap-3">
                   {sizes.map((size) => (
@@ -792,6 +853,43 @@ const ProductDetails = () => {
         <LatestArrivals />
       {/* Footer */}
       <Footer />
+
+      {/* Size Guide */}
+      {selectedSizeGuide && (
+        <div 
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4"
+          onClick={() => setSelectedSizeGuide(null)}
+        >
+          <div 
+            className="relative bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] lg:max-h-[90vh] overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center p-3 lg:p-4 border-b border-gray-200">
+              <h3 className="text-base lg:text-lg font-semibold text-black">Size Guide</h3>
+              <button
+                onClick={() => setSelectedSizeGuide(null)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-2 lg:p-4 overflow-auto max-h-[70vh] lg:max-h-[calc(90vh-80px)]">
+              <div className="relative w-full h-[65vh] lg:h-[600px]">
+                <Image
+                  src={selectedSizeGuide}
+                  alt="Size Guide"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 600px"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
