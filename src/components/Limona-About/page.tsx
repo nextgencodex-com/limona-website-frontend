@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Header from '../Limona-Header/page';
 import Footer from '../Limona-Footer/page';
 import MissionSection from './mission-section';
@@ -100,8 +101,8 @@ export default function About() {
           <Image
             src="/images/Hero/bgtxtur.png"
             alt="Background Grid"
-            width={500}
-            height={320}
+            width={400}
+            height={220}
             className="object-cover w-full h-full rounded-2xl md:rounded-none"
             priority
           />
@@ -159,6 +160,42 @@ export default function About() {
 </main>
 
 <MissionSection />
+
+{/* Join the LIMONA Family Section */}
+<section className="py-12 md:py-12 ">
+  <div className="container mx-auto px-4">
+    <div className="max-w-4xl mx-auto text-center">
+      <h2 className="text-3xl md:text-4xl font-bold mb-6">
+        Join the LIMONA Family
+      </h2>
+      
+      <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
+        Be part of a community that celebrates style, creativity, and authenticity. Follow us on social media and stay updated with our latest collections.
+      </p>
+      
+      <Link href="/Contact">
+        <button className="bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors inline-flex items-center gap-2">
+          Get in Touch
+          <svg 
+            width="20" 
+            height="20" 
+            viewBox="0 0 20 20" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path 
+              d="M4.16667 10H15.8333M15.8333 10L10 4.16667M15.8333 10L10 15.8333" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </Link>
+    </div>
+  </div>
+</section>
 
 <Footer />
     </div>

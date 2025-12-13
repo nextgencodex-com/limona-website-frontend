@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 // Left Section: Full text block
@@ -36,10 +37,12 @@ const LeftSection = () => (
 
     {/*  Buttons */}
     <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-      <button className="bg-yellow-400 text-black px-6 py-3 rounded-full text-sm font-bold inline-flex items-center gap-2 hover:bg-yellow-500 transition-colors duration-200">
-        Shop Now
-        <ArrowRight className="w-4 h-4" />
-      </button>
+      <Link href="/Products">
+        <button className="bg-yellow-400 text-black px-6 py-3 rounded-full text-sm font-bold inline-flex items-center gap-2 hover:bg-yellow-500 transition-colors duration-200">
+          Shop Now
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </Link>
       <button className="bg-white text-black border-2 border-black px-6 py-3 rounded-full text-sm font-bold hover:bg-gray-50 transition-colors duration-200">
         Customize Yours
       </button>
