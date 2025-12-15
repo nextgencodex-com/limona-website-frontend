@@ -153,9 +153,11 @@ const Footer = () => {
           </div>
 
           <div className="border-t border-black mt-8 pt-8 text-center text-sm">
-            © 2025 LIMONA. All rights reserved.
+          © 2025 LIMONA. All rights reserved.<br />
+            <span className="text-xs">
+              Design by NextGen CodeX (PVT) LTD
+            </span>
           </div>
-
         </div>
       </div>
 
@@ -298,10 +300,12 @@ const Footer = () => {
           </div>
 
           {/* Bottom */}
-          <div className="border-t pt-6 text-sm text-center">
-            © 2025 LIMONA. All rights reserved.
+          <div className="border-t border-black mt-8 pt-8 text-center text-sm">
+          © 2025 LIMONA. All rights reserved.<br />
+            <span className="text-xs">
+              Design by NextGen CodeX (PVT) LTD
+            </span>
           </div>
-
         </div>
       </div>
 
