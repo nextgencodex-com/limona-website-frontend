@@ -133,7 +133,7 @@ export default function Header() {
             </header>
             
             {/* Cart Popup */}
-            <CartPopup whatsappNumber="+94771234567" />
+            <CartPopup whatsappNumber="+94759627589" />
         </>
     );
 }
