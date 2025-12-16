@@ -6,7 +6,7 @@ import { useCart } from '../../contexts/CartContext';
 import styles from './cartPopup.module.css';
 
 interface CartPopupProps {
-  whatsappNumber?: string; // Optional prop for WhatsApp number
+  whatsappNumber?: string;
 }
 
 const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }) => {
@@ -20,6 +20,19 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }
     closeCart,
   } = useCart();
 
+  /* ✅ CLEAR CART ONLY WHEN PAGE IS REFRESHED */
+  useEffect(() => {
+    const handleRefresh = () => {
+      clearCart();
+    };
+
+    window.addEventListener('beforeunload', handleRefresh);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleRefresh);
+    };
+  }, [clearCart]);
+
   // Close cart when Escape key is pressed
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -30,7 +43,6 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      // Prevent body scroll when cart is open
       document.body.style.overflow = 'hidden';
     }
 
@@ -55,7 +67,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }
   const generateOrderMessage = () => {
     let message = `🛍️ *LIMONA ORDER REQUEST*\n\n`;
     message += `📝 *Order Details:*\n\n`;
-    
+
     items.forEach((item, index) => {
       message += `${index + 1}. *${item.name}*\n`;
       message += `   💰 Price: ${formatPrice(item.price)}\n`;
@@ -88,7 +100,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }
         {/* Header */}
         <div className={styles.cartHeader}>
           <h2 className={styles.cartTitle}>Cart</h2>
-          <button 
+          <button
             onClick={closeCart}
             className={styles.closeButton}
             aria-label="Close cart"
@@ -119,7 +131,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }
                       }}
                     />
                   </div>
-                  
+
                   <div className={styles.itemDetails}>
                     <h3 className={styles.itemName}>{item.name}</h3>
                     <p className={styles.itemCategory}>{item.category}</p>
@@ -177,17 +189,11 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }
             </div>
 
             <div className={styles.actionButtons}>
-              <button
-                onClick={clearCart}
-                className={styles.clearButton}
-              >
+              <button onClick={clearCart} className={styles.clearButton}>
                 Clear Cart
               </button>
-              
-              <button
-                onClick={handleWhatsAppOrder}
-                className={styles.whatsappButton}
-              >
+
+              <button onClick={handleWhatsAppOrder} className={styles.whatsappButton}>
                 <MessageCircle size={20} />
                 Order via WhatsApp
               </button>
