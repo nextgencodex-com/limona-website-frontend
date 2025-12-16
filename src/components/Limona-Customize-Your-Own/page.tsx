@@ -13,18 +13,67 @@ const LimonaCustomizeYourOwn = () => {
   });
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [phoneError, setPhoneError] = useState<string>('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    
+    if (name === 'phoneNumber') {
+      // Allow only numbers, plus sign, spaces, parentheses, and hyphens
+      const sanitizedValue = value.replace(/[^\d\s\+\-\(\)]/g, '');
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: sanitizedValue,
+      }));
+      
+      // Clear error when user starts typing
+      if (phoneError && sanitizedValue) {
+        setPhoneError('');
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Remove all non-digits for validation
+    const digitsOnly = phone.replace(/\D/g, '');
+    
+    // Basic validation: at least 7 digits, max 15 digits
+    if (digitsOnly.length < 7) {
+      setPhoneError('Phone number must have at least 7 digits');
+      return false;
+    }
+    
+    if (digitsOnly.length > 15) {
+      setPhoneError('Phone number is too long');
+      return false;
+    }
+    
+    // Clear error if valid
+    setPhoneError('');
+    return true;
+  };
+
+  const handlePhoneBlur = () => {
+    if (formData.phoneNumber.trim()) {
+      validatePhoneNumber(formData.phoneNumber);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds 5MB limit. Please choose a smaller image.');
+        return;
+      }
+      
       setUploadedImage(file);
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
@@ -32,6 +81,11 @@ const LimonaCustomizeYourOwn = () => {
   };
 
   const handleSubmitViaWhatsApp = () => {
+    // Validate phone number before submission
+    if (!validatePhoneNumber(formData.phoneNumber)) {
+      return;
+    }
+
     const message = `*New Custom Design Request*\n\n` +
       `*Name:* ${formData.fullName}\n` +
       `*Phone:* ${formData.phoneNumber}\n` +
@@ -46,7 +100,8 @@ const LimonaCustomizeYourOwn = () => {
   };
 
   const isFormValid = formData.fullName && formData.phoneNumber && 
-                     (formData.designUrl || uploadedImage);
+                     (formData.designUrl || uploadedImage) && 
+                     !phoneError;
 
   return (
     <>
@@ -175,9 +230,19 @@ const LimonaCustomizeYourOwn = () => {
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition tracking-[0.07em]"
-                        placeholder="Enter your phone number"
+                        onBlur={handlePhoneBlur}
+                        inputMode="numeric"
+                        pattern="[0-9\s\+\-\(\)]*"
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition tracking-[0.07em] ${
+                          phoneError ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="e.g., (+94) 76 590 8361"
                       />
+                      {phoneError && (
+                        <p className="mt-1 text-sm text-red-600 tracking-[0.07em]">
+                          {phoneError}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -260,6 +325,7 @@ const LimonaCustomizeYourOwn = () => {
                         onChange={handleInputChange}
                         rows={4}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition tracking-[0.07em] resize-none"
+                        placeholder="Any special instructions, color preferences, or design details..."
                       />
                     </div>
                   </div>
@@ -434,9 +500,19 @@ const LimonaCustomizeYourOwn = () => {
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition tracking-[0.07em] text-sm"
-                    placeholder="Enter your phone number"
+                    onBlur={handlePhoneBlur}
+                    inputMode="numeric"
+                    pattern="[0-9\s\+\-\(\)]*"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition tracking-[0.07em] text-sm ${
+                      phoneError ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., (+94) 76 590 8361"
                   />
+                  {phoneError && (
+                    <p className="mt-1 text-xs text-red-600 tracking-[0.07em]">
+                      {phoneError}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -519,6 +595,7 @@ const LimonaCustomizeYourOwn = () => {
                   onChange={handleInputChange}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition tracking-[0.07em] text-sm resize-none"
+                  placeholder="Any special instructions, color preferences, or design details..."
                 />
               </div>
             </div>
