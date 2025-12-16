@@ -9,7 +9,7 @@ interface CartPopupProps {
   whatsappNumber?: string; // Optional prop for WhatsApp number
 }
 
-const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94771234567' }) => {
+const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }) => {
   const {
     items,
     removeItem,
@@ -124,26 +124,6 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94771234567' }
                     <h3 className={styles.itemName}>{item.name}</h3>
                     <p className={styles.itemCategory}>{item.category}</p>
                     <p className={styles.itemPrice}>{formatPrice(item.price)}</p>
-                    
-                    {/* Colors */}
-                    {item.colors && item.colors.length > 0 && (
-                      <div className={styles.itemColors}>
-                        <span className={styles.colorsLabel}>Colors:</span>
-                        <div className={styles.colorDots}>
-                          {item.colors.slice(0, 4).map((color, index) => (
-                            <div
-                              key={index}
-                              className={styles.colorDot}
-                              style={{ backgroundColor: color }}
-                              title={color}
-                            />
-                          ))}
-                          {item.colors.length > 4 && (
-                            <span className={styles.moreColors}>+{item.colors.length - 4}</span>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   <div className={styles.itemActions}>

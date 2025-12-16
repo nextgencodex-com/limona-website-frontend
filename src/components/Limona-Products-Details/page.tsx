@@ -7,6 +7,7 @@ import Header from '../Limona-Header/page';
 import LatestArrivals from '../Limona-Home/Latest-Arrivals/page';
 import Footer from '../Limona-Footer/page';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCart } from '../../contexts/CartContext';
 
 interface Product {
   id: number;
@@ -31,6 +32,7 @@ const ProductDetails = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const productId = searchParams.get('id');
+  const { addItem, openCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('S');
@@ -264,6 +266,23 @@ const ProductDetails = () => {
     window.open(whatsappUrl, '_blank');
   };
 
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    for (let i = 0; i < quantity; i += 1) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        description: product.description,
+        colors: product.colors,
+        category: product.category,
+      });
+    }
+    openCart();
+  };
+
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -314,10 +333,8 @@ const ProductDetails = () => {
               >
                 <ChevronLeft className="w-5 h-5 text-gray-700" />
               </button>
-              <div className="text-sm text-gray-600">
-                <a href="/" className="hover:text-black">Home</a> / <a href="/Products" className="hover:text-black">All Products</a> / {product.name}
-              </div>
             </div>
+
 
             {/* Product Title and Fit Badge */}
             <div className="mb-4 flex items-center gap-2">
@@ -500,16 +517,28 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Buy via WhatsApp Button */}
-            <button
-              onClick={handleBuyWhatsApp}
-              className="w-full bg-black text-white py-3 rounded-lg font-semibold text-base hover:bg-gray-900 transition-colors duration-200 mb-4 flex items-center justify-center gap-2"
-            >
-              Buy via WhatsApp
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M13.5 2C13.5 2 13.5 2 13.5 2L18.5 7L13.5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-            </button>
+            {/* Action Buttons */}
+            <div className="space-y-3 mb-4">
+              <button
+                onClick={handleAddToCart}
+                className="w-full bg-black text-white py-3 rounded-lg font-semibold text-base hover:bg-gray-900 transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                Add to Cart
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </button>
+
+              <button
+                onClick={handleBuyWhatsApp}
+                className="w-full bg-white text-black py-3 rounded-lg font-semibold text-base border-2 border-black hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                Buy via WhatsApp
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.5 2C13.5 2 13.5 2 13.5 2L18.5 7L13.5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </svg>
+              </button>
+            </div>
 
             {/* Shipping Info */}
             <div className="text-sm text-gray-600 mb-1">
@@ -549,12 +578,6 @@ const ProductDetails = () => {
                         <li className="flex">
                           <span className="font-semibold w-20">Fabric:</span>
                           <span>{product.fabric}</span>
-                        </li>
-                      )}
-                      {product.fitType && (
-                        <li className="flex">
-                          <span className="font-semibold w-20">Fit:</span>
-                          <span>{product.fitType}</span>
                         </li>
                       )}
                       {product.neckline && (
@@ -599,19 +622,16 @@ const ProductDetails = () => {
               >
                 <ChevronLeft className="w-6 h-6 text-gray-700" />
               </button>
-              <div className="text-sm text-gray-600">
-                <a href="/" className="hover:text-black">Home</a> / <a href="/Products" className="hover:text-black">All Products</a> / {product.name}
-              </div>
             </div>
+
 
             {/* Left Side  */}
             <div className="lg:col-span-5 flex flex-col">
               {/* Product Title */}
               <div className="mb-6 flex items-center gap-3">
                 <h1 className="text-5xl font-bold text-black mb-0">{product.name}</h1>
-                <div className="bg-yellow-100 text-black px-2 py-2 rounded-md text-sm">
+                <div className="bg-100 text- px-2 py-2  text-sm">
                   <div className="text-xs text-gray-600"></div>
-                  <div className="font-semibold text-black">{product.fitType || product.fit}</div>
                 </div>
               </div>
 
@@ -698,16 +718,28 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              {/* Buy via WhatsApp Button */}
-              <button
-                onClick={handleBuyWhatsApp}
-                className="w-full bg-black text-white py-4 rounded-lg font-semibold text-lg hover:bg-gray-900 transition-colors duration-200 mb-6 flex items-center justify-center gap-2"
-              >
-                Buy via WhatsApp
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M13.5 2C13.5 2 13.5 2 13.5 2L18.5 7L13.5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                </svg>
-              </button>
+              {/* Action Buttons */}
+              <div className="space-y-3 mb-6">
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full bg-black text-white py-4 rounded-lg font-semibold text-lg hover:bg-gray-900 transition-colors duration-200 flex items-center justify-center gap-2"
+                >
+                  Add to Cart
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={handleBuyWhatsApp}
+                  className="w-full bg-white text-black py-4 rounded-lg font-semibold text-lg border-2 border-black hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2"
+                >
+                  Buy via WhatsApp
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13.5 2C13.5 2 13.5 2 13.5 2L18.5 7L13.5 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </svg>
+                </button>
+              </div>
 
               {/* Shipping Info */}
               <div className="text-sm text-gray-600 mb-2">
