@@ -10,6 +10,7 @@ export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     
     const { getTotalItems, toggleCart } = useCart();
     const navItems = [
@@ -24,6 +25,23 @@ export default function Header() {
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const userMenuRef = useRef<HTMLDivElement | null>(null);
     const userButtonRef = useRef<HTMLButtonElement | null>(null);
+
+    // Check if mobile on mount and resize
+    useEffect(() => {
+        const checkIfMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        
+        // Check initially
+        checkIfMobile();
+        
+        // Add resize listener
+        window.addEventListener('resize', checkIfMobile);
+        
+        return () => {
+            window.removeEventListener('resize', checkIfMobile);
+        };
+    }, []);
 
     // Close menus when clicking outside or pressing Escape
     useEffect(() => {
@@ -60,6 +78,16 @@ export default function Header() {
             document.removeEventListener("keydown", onKeyDown);
         };
     }, [menuOpen, userMenuOpen]);
+
+    // Close mobile menu when switching to desktop view
+    useEffect(() => {
+        if (!isMobile && menuOpen) {
+            setMenuOpen(false);
+        }
+        if (!isMobile && userMenuOpen) {
+            setUserMenuOpen(false);
+        }
+    }, [isMobile, menuOpen, userMenuOpen]);
 
     // Handle login success
     const handleLoginSuccess = () => {
@@ -204,83 +232,83 @@ export default function Header() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Mobile menu button */}
+                        <button
+                            ref={buttonRef}
+                            className={styles.menuButton}
+                            aria-controls="mobile-menu"
+                            aria-expanded={menuOpen}
+                            aria-label={menuOpen ? "Close menu" : "Open menu"}
+                            onClick={() => setMenuOpen((s) => !s)}
+                        >
+                            <span className={styles.hamburger} aria-hidden>
+                                <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect y="1" width="22" height="2" rx="1" fill="white" />
+                                    <rect y="8" width="22" height="2" rx="1" fill="white" />
+                                    <rect y="15" width="22" height="2" rx="1" fill="white" />
+                                </svg>
+                            </span>
+                        </button>
                     </div>
 
-                    {/* Mobile menu button */}
-                    <button
-                        ref={buttonRef}
-                        className={styles.menuButton}
-                        aria-controls="mobile-menu"
-                        aria-expanded={menuOpen}
-                        aria-label={menuOpen ? "Close menu" : "Open menu"}
-                        onClick={() => setMenuOpen((s) => !s)}
+                    {/* Mobile menu panel - INSIDE THE NAVBAR */}
+                    <div
+                        id="mobile-menu"
+                        ref={menuRef}
+                        className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ""}`}
+                        role="menu"
+                        aria-hidden={!menuOpen}
                     >
-                        <span className={styles.hamburger} aria-hidden>
-                            <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect y="1" width="22" height="2" rx="1" fill="white" />
-                                <rect y="8" width="22" height="2" rx="1" fill="white" />
-                                <rect y="15" width="22" height="2" rx="1" fill="white" />
-                            </svg>
-                        </span>
-                    </button>
+                        <ul className={styles.mobileNavList}>
+                            {navItems.map((item) => (
+                                <li key={item.label} className={styles.mobileNavItem} role="none">
+                                    <Link href={item.href} role="menuitem" onClick={() => setMenuOpen(false)}>
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            ))}
+                            
+                            {/* Mobile auth buttons */}
+                            <div className={styles.mobileAuthButtons}>
+                                <li className={styles.mobileNavItem} role="none">
+                                    <Link href="/Login-Page" role="menuitem" onClick={() => setMenuOpen(false)}>
+                                        Login
+                                    </Link>
+                                </li>
+                                
+                                <li className={styles.mobileNavItem} role="none">
+                                    <button 
+                                        className={styles.mobileLogoutButton}
+                                        onClick={handleLogout}
+                                    >
+                                        Logout
+                                    </button>
+                                </li>
+                                
+                                {isLoggedIn && (
+                                    <>
+                                        <li className={styles.mobileNavItem} role="none">
+                                            <Link href="/profile" className={styles.menuButtonLink} role="menuitem" onClick={() => setMenuOpen(false)}>
+                                                My Profile
+                                            </Link>
+                                        </li>
+                                        <li className={styles.mobileNavItem} role="none">
+                                            <Link href="/dashboard" className={styles.menuButtonLink} role="menuitem" onClick={() => setMenuOpen(false)}>
+                                                Dashboard
+                                            </Link>
+                                        </li>
+                                        <li className={styles.mobileNavItem} role="none">
+                                            <Link href="/orders" className={styles.menuButtonLink} role="menuitem" onClick={() => setMenuOpen(false)}>
+                                                My Orders
+                                            </Link>
+                                        </li>
+                                    </>
+                                )}
+                            </div>
+                        </ul>
+                    </div>
                 </nav>
-
-                {/* Mobile menu panel */}
-                <div
-                    id="mobile-menu"
-                    ref={menuRef}
-                    className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ""}`}
-                    role="menu"
-                    aria-hidden={!menuOpen}
-                >
-                    <ul className={styles.mobileNavList}>
-                        {navItems.map((item) => (
-                            <li key={item.label} className={styles.mobileNavItem} role="none">
-                                <Link href={item.href} role="menuitem" onClick={() => setMenuOpen(false)}>
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
-                        
-                        {/* Mobile auth buttons */}
-                        <div className={styles.mobileAuthButtons}>
-                            <li className={styles.mobileNavItem} role="none">
-                                <Link href="/Login-Page" role="menuitem" onClick={() => setMenuOpen(false)}>
-                                    Login
-                                </Link>
-                            </li>
-                            
-                            <li className={styles.mobileNavItem} role="none">
-                                <button 
-                                    className={styles.mobileLogoutButton}
-                                    onClick={handleLogout}
-                                >
-                                    Logout
-                                </button>
-                            </li>
-                            
-                            {isLoggedIn && (
-                                <>
-                                    <li className={styles.mobileNavItem} role="none">
-                                        <Link href="/profile" className={styles.menuButtonLink} role="menuitem" onClick={() => setMenuOpen(false)}>
-                                            My Profile
-                                        </Link>
-                                    </li>
-                                    <li className={styles.mobileNavItem} role="none">
-                                        <Link href="/dashboard" className={styles.menuButtonLink} role="menuitem" onClick={() => setMenuOpen(false)}>
-                                            Dashboard
-                                        </Link>
-                                    </li>
-                                    <li className={styles.mobileNavItem} role="none">
-                                        <Link href="/orders" className={styles.menuButtonLink} role="menuitem" onClick={() => setMenuOpen(false)}>
-                                            My Orders
-                                        </Link>
-                                    </li>
-                                </>
-                            )}
-                        </div>
-                    </ul>
-                </div>
             </header>
             
             {/* Cart Popup */}
