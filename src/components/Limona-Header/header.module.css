@@ -188,7 +188,7 @@
   background: #000;
   border-radius: 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-  min-width: 300px;
+  min-width: 240px;
   z-index: 10002;
   opacity: 0;
   visibility: hidden;
@@ -203,9 +203,88 @@
   transform: translateY(0) scale(1);
 }
 
-/* User Menu Header (Logged in) */
+/* ===== Simple User Menu Styles ===== */
+.simpleUserMenu {
+  padding: 1rem;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+/* Menu Button Links (for additional options when logged in) */
+.menuButtonLink {
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menuButtonLink:hover {
+  background: rgba(224, 176, 0, 0.2);
+  border-color: rgba(224, 176, 0, 0.3);
+  color: #e0b000;
+  transform: translateY(-1px);
+}
+
+/* Login Button - ALWAYS VISIBLE */
+.loginButton {
+  padding: 0.8rem 1rem;
+  background: #e0b000;
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  text-decoration: none;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+  width: 100%;
+}
+
+.loginButton:hover {
+  background: #ffcc00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(224, 176, 0, 0.3);
+}
+
+/* Logout Button - ALWAYS VISIBLE */
+.logoutButton {
+  padding: 0.8rem 1rem;
+  background: rgba(239, 68, 68, 0.9);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+  width: 100%;
+}
+
+.logoutButton:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* User Menu Header */
 .userMenuHeader {
-  padding: 1.2rem 1.5rem;
+  padding: 0.8rem 0.5rem 1rem;
+  margin-bottom: 0.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -213,137 +292,11 @@
   font-weight: 700;
   color: #e0b000;
   font-size: 1rem;
-}
-
-/* User Menu Items */
-.userMenuItems {
-  padding: 0.6rem 0.5rem;
-}
-
-.userMenuItem {
   display: block;
-  width: 100%;
-  padding: 0.7rem 1rem;
-  text-align: left;
-  background: none;
-  border: none;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  letter-spacing: 0.02em;
-}
-
-.userMenuItem:hover {
-  background: rgba(224, 176, 0, 0.08);
-  color: #e0b000;
-}
-
-/* ===== Login Form (Logged out) ===== */
-.loginForm {
-  padding: 1.5rem;
-}
-
-.loginTitle {
-  margin-bottom: 1.2rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #e0b000;
-  text-align: center;
-  letter-spacing: 0.03em;
-}
-
-.formGroup {
-  margin-bottom: 1rem;
-}
-
-.formLabel {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.02em;
-}
-
-.formInput {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: #fff;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.formInput:focus {
-  outline: none;
-  border-color: #e0b000;
-  background: rgba(224, 176, 0, 0.05);
-  box-shadow: 0 0 0 2px rgba(224, 176, 0, 0.1);
-}
-
-.formInput::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-/* Login Button */
-.loginButton {
-  width: 100%;
-  padding: 0.8rem;
-  background: #e0b000;
-  color: #000;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  letter-spacing: 0.03em;
-  margin-top: 0.5rem;
-}
-
-.loginButton:hover {
-  background: #ffcc00;
-  transform: translateY(-1px);
-}
-
-/* Form Footer */
-.formFooter {
-  margin-top: 1.2rem;
-  padding-top: 1.2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
 }
 
-.formFooterText {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-right: 0.5rem;
-}
-
-.signUpButton {
-  background: none;
-  border: none;
-  color: #e0b000;
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.signUpButton:hover {
-  background: rgba(224, 176, 0, 0.1);
-  text-decoration: none;
-}
-
-/* MOBILE MENU BUTTON */
+/* ===== Mobile Menu Button ===== */
 .menuButton {
   display: none;
   background: transparent;
@@ -362,7 +315,7 @@
   justify-content: center;
 }
 
-/* MOBILE MENU */
+/* ===== Mobile Menu ===== */
 .mobileMenu {
   display: block;
   position: absolute;
@@ -409,6 +362,64 @@
 
 .mobileNavItem a:hover {
   background: rgba(224,176,0,0.08);
+  color: #e0b000;
+}
+
+/* ===== Mobile Auth Buttons ===== */
+.mobileAuthButtons {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Mobile Login Link */
+.mobileAuthButtons .mobileNavItem a {
+  background: #e0b000;
+  color: #000;
+  text-align: center;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.mobileAuthButtons .mobileNavItem a:hover {
+  background: #ffcc00;
+  color: #000;
+  transform: translateY(-1px);
+}
+
+/* Mobile Logout Button */
+.mobileLogoutButton {
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(239, 68, 68, 0.9);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.mobileLogoutButton:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Mobile Menu Additional Links (for logged in users) */
+.mobileAuthButtons .mobileNavItem .menuButtonLink {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+}
+
+.mobileAuthButtons .mobileNavItem .menuButtonLink:hover {
+  background: rgba(224, 176, 0, 0.2);
   color: #e0b000;
 }
 
@@ -464,6 +475,7 @@
     margin-left: 0;
   }
   
+  /* Mobile User Menu Positioning */
   .userMenu {
     position: fixed;
     top: auto;
@@ -482,7 +494,18 @@
     transform: translateY(0);
   }
   
-  .loginForm {
+  .simpleUserMenu {
     padding: 1.2rem;
+  }
+  
+  .buttonGroup {
+    width: 100%;
+  }
+}
+
+/* ===== Desktop: Hide menuButtonLink on mobile by default ===== */
+@media (min-width: 769px) {
+  .mobileAuthButtons {
+    display: none;
   }
 }
