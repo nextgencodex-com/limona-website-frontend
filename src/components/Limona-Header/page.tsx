@@ -206,6 +206,20 @@ export default function Header() {
                         </ul>
                     </div>
 
+                    {/* Admin Settings Icon */}
+                    <Link 
+                        href="/Admin/Login"
+                        className={styles.adminIcon}
+                        aria-label="Admin Dashboard"
+                        title="Admin Dashboard"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M12 1v6m0 6v10M23 12h-6m-2 0H1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M18.36 5.64l-4.24 4.24m0 4.24l4.24 4.24M5.64 5.64l4.24 4.24m0 4.24l-4.24 4.24" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </Link>
+
                     {/* Cart Button */}
                     <button 
                         className={styles.cart}
