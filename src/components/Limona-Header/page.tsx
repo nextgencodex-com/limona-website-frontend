@@ -3,12 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import styles from "./header.module.css";
+import { useCart } from "../../contexts/CartContext";
+import CartPopup from "../CartPopup/CartPopup";
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false); // Still track login state
     
+    const { getTotalItems, toggleCart } = useCart();
     const navItems = [
         { label: "Home", href: "/" },
         { label: "Products", href: "/Products" },
@@ -68,23 +71,10 @@ export default function Header() {
     const handleLogout = () => {
         setIsLoggedIn(false);
         setUserMenuOpen(false);
-        // Add your logout logic here (clear tokens, redirect, etc.)
-        // router.push('/'); // Redirect to home if needed
+        // Add your sign out logic here (clear tokens, redirect, etc.)
     };
 
-    return (
-        <header className={styles.navbarWrapper}>
-            <nav className={styles.limonaNavbar} aria-label="Main navigation">
-                <div className={styles.logoWrap}>
-                    <Image
-                        src="/images/Hero/logo.png"
-                        alt="Limona logo"
-                        width={48}
-                        height={48}
-                        className={styles.logoImage}
-                    />
-                    <span className={styles.brandText}>Limona</span>
-                </div>
+    const totalItems = getTotalItems();
 
                 {/* Desktop nav - centered */}
                 <ul className={styles.navList}>
@@ -187,77 +177,94 @@ export default function Header() {
                         </div>
                     </div>
                 </div>
+    return (
+        <>
+            <header className={styles.navbarWrapper}>
+                <nav className={styles.limonaNavbar} aria-label="Main navigation">
+                    <div className={styles.logoWrap}>
+                        <Image
+                            src="/images/Hero/logo.png"
+                            alt="Limona logo"
+                            width={48}
+                            height={48}
+                            className={styles.logoImage}
+                        />
+                        <span className={styles.brandText}>Limona</span>
+                    </div>
 
-                {/* Mobile menu button */}
-                <button
-                    ref={buttonRef}
-                    className={styles.menuButton}
-                    aria-controls="mobile-menu"
-                    aria-expanded={menuOpen}
-                    aria-label={menuOpen ? "Close menu" : "Open menu"}
-                    onClick={() => setMenuOpen((s) => !s)}
-                >
-                    <span className={styles.hamburger} aria-hidden>
-                        <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect y="1" width="22" height="2" rx="1" fill="white" />
-                            <rect y="8" width="22" height="2" rx="1" fill="white" />
-                            <rect y="15" width="22" height="2" rx="1" fill="white" />
+                    {/* Desktop nav */}
+                    <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+                        <ul className={styles.navList}>
+                            {navItems.map((item) => (
+                                <li key={item.label} className={styles.navItem}>
+                                    <Link href={item.href}>{item.label}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Cart Button */}
+                    <button 
+                        className={styles.cart}
+                        onClick={toggleCart}
+                        aria-label={`Shopping cart with ${totalItems} items`}
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 6H4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M3 6h2l1.6 9.59A2 2 0 008.56 17h6.88a2 2 0 001.96-1.41L19 6H6z" stroke="white" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                            <circle cx="10" cy="20" r="1" fill="white" />
+                            <circle cx="17" cy="20" r="1" fill="white" />
                         </svg>
-                    </span>
-                </button>
-
-                {/* Mobile menu panel */}
-                <div
-                    id="mobile-menu"
-                    ref={menuRef}
-                    className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ""}`}
-                    role="menu"
-                    aria-hidden={!menuOpen}
-                >
-                    <ul className={styles.mobileNavList}>
-                        {navItems.map((item) => (
-                            <li key={item.label} className={styles.mobileNavItem} role="none">
-                                <Link href={item.href} role="menuitem" onClick={() => setMenuOpen(false)}>
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
                         
-                        {/* Mobile auth buttons - ALWAYS SHOW BOTH */}
-                        <div className={styles.mobileAuthButtons}>
-                            <li className={styles.mobileNavItem} role="none">
-                                <Link href="/Login-Page" role="menuitem" onClick={() => setMenuOpen(false)}>
-                                    Login
-                                </Link>
-                            </li>
-                            <li className={styles.mobileNavItem} role="none">
-                                <button 
-                                    className={styles.mobileLogoutButton}
-                                    onClick={handleLogout}
-                                >
-                                    Logout
-                                </button>
-                            </li>
-                            
-                            {/* Additional links for logged-in users */}
-                            {isLoggedIn && (
-                                <>
-                                    <li className={styles.mobileNavItem} role="none">
-                                        <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)}>
-                                            My Profile
-                                        </Link>
-                                    </li>
-                                    <li className={styles.mobileNavItem} role="none">
-                                        <Link href="/dashboard" role="menuitem" onClick={() => setMenuOpen(false)}>
-                                            Dashboard
-                                        </Link>
-                                    </li>
-                                </>
-                            )}
-                        </div>
-                    </ul>
-                </div>
-            </nav>
-        </header>
+                        {/* Cart Badge */}
+                        {totalItems > 0 && (
+                            <span className={styles.cartBadge}>
+                                {totalItems > 99 ? '99+' : totalItems}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Mobile menu button */}
+                    <button
+                        ref={buttonRef}
+                        className={styles.menuButton}
+                        aria-controls="mobile-menu"
+                        aria-expanded={menuOpen}
+                        aria-label={menuOpen ? "Close menu" : "Open menu"}
+                        onClick={() => setMenuOpen((s) => !s)}
+                    >
+                        <span className={styles.hamburger} aria-hidden>
+                            <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect y="1" width="22" height="2" rx="1" fill="white" />
+                                <rect y="8" width="22" height="2" rx="1" fill="white" />
+                                <rect y="15" width="22" height="2" rx="1" fill="white" />
+                            </svg>
+                        </span>
+                    </button>
+
+                    {/* Mobile menu panel */}
+                    <div
+                        id="mobile-menu"
+                        ref={menuRef}
+                        className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ""}`}
+                        role="menu"
+                        aria-hidden={!menuOpen}
+                    >
+                        <ul className={styles.mobileNavList}>
+                            {navItems.map((item) => (
+                                <li key={item.label} className={styles.mobileNavItem} role="none">
+                                    <Link href={item.href} role="menuitem" onClick={() => setMenuOpen(false)}>
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+            
+            {/* Cart Popup */}
+            <CartPopup whatsappNumber="+94759627589" />
+        </>
     );
 }
