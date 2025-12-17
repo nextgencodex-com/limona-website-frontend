@@ -77,7 +77,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem("adminToken");
+            const token = localStorage.getItem("token");
             const url = product
                 ? `http://localhost:5000/api/v1/products/${product.id}`
                 : "http://localhost:5000/api/v1/products";

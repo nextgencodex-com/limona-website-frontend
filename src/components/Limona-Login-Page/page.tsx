@@ -24,24 +24,28 @@ const LimonaLoginPage = () => {
       setLoading(false);
       return;
     }
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
     
     try {
-      // Replace with your actual API call
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
+      const response = await fetch('http://localhost:5000/api/v1/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
       
-      // if (!response.ok) throw new Error('Login failed');
+      const data = await response.json();
       
-      // On successful login
-      router.push('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+      
+      // Store token and admin data in localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('admin', JSON.stringify(data.admin));
+      
+      // Redirect to admin dashboard
+      router.push('/Admin/Dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }

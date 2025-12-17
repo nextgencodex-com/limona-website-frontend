@@ -11,13 +11,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const router = useRouter();
 
     const handleLogout = () => {
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminUser");
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
         router.push("/Admin/Login");
     };
 
     const adminUser = typeof window !== "undefined" 
-        ? JSON.parse(localStorage.getItem("adminUser") || "{}") 
+        ? JSON.parse(localStorage.getItem("admin") || "{}") 
         : {};
 
     return (

@@ -35,7 +35,7 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         // Check authentication
-        const token = localStorage.getItem("adminToken");
+        const token = localStorage.getItem("token");
         if (!token) {
             router.push("/Admin/Login");
             return;
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
 
     const fetchProducts = async () => {
         try {
-            const token = localStorage.getItem("adminToken");
+            const token = localStorage.getItem("token");
             const response = await fetch("http://localhost:5000/api/v1/products", {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
         }
 
         try {
-            const token = localStorage.getItem("adminToken");
+            const token = localStorage.getItem("token");
             const response = await fetch(`http://localhost:5000/api/v1/products/${id}`, {
                 method: "DELETE",
                 headers: {
