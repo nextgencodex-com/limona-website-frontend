@@ -35,7 +35,7 @@ const LeftSection = () => (
       pieces.
     </p>
 
-    {/*  Buttons */}
+    {/* Buttons */}
     <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
       <Link href="/Products">
         <button className="bg-yellow-400 text-black px-6 py-3 rounded-full text-sm font-bold inline-flex items-center gap-2 hover:bg-yellow-500 transition-colors duration-200">
@@ -43,9 +43,11 @@ const LeftSection = () => (
           <ArrowRight className="w-4 h-4" />
         </button>
       </Link>
-      <button className="bg-white text-black border-2 border-black px-6 py-3 rounded-full text-sm font-bold hover:bg-gray-50 transition-colors duration-200">
-        Customize Yours
-      </button>
+      <Link href="/Customize-Your-Own">
+        <button className="bg-white text-black border-2 border-black px-6 py-3 rounded-full text-sm font-bold hover:bg-gray-50 transition-colors duration-200">
+          Customize Yours
+        </button>
+      </Link>
     </div>
   </div>
 )
@@ -92,7 +94,6 @@ const RightSection = () => (
     </div>
 
   </div>
-
 )
 
 // Banners Section
@@ -133,7 +134,6 @@ const BannersSection = () => (
 )
 
 export default function HeroSection() {
-
   return (
     <div className="compact-hero relative min-h-screen bg-slate-50 overflow-x-hidden">
 
