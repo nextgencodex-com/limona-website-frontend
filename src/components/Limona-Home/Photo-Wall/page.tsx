@@ -19,7 +19,7 @@ const PhotoWall = () => {
     {
       id: '1',
       name: 'Aesthetic Collection',
-      image: '/images/Photo-Wall/Photowall 1.jpg',
+      image: '/images/Photo-Wall/Photowall 7.jpg',
       category: 'Aesthetic'
     },
     {
@@ -37,25 +37,25 @@ const PhotoWall = () => {
     {
       id: '4',
       name: 'Authentic Look',
-      image: '/images/Photo-Wall/Photowall 4.jpg',
+      image: '/images/Photo-Wall/Photowall 5.jpg',
       category: 'Authentic'
     },
     {
       id: '5',
       name: 'Killing Outfit',
-      image: '/images/Photo-Wall/Photowall 5.jpg',
+      image: '/images/Photo-Wall/Photowall 4.jpg',
       category: 'Killing'
     },
     {
       id: '6',
       name: 'Treated Fashion',
-      image: '/images/Photo-Wall/Photowall 9.jpg',
+      image: '/images/Photo-Wall/Photowall 6.jpg',
       category: 'Treated'
     },
     {
       id: '7',
       name: 'Bloom Overpainted',
-      image: '/images/Photo-Wall/Photowall 7.jpg',
+      image: '/images/Photo-Wall/Photowall 1.jpg',
       category: 'Bloom'
     },
     {
@@ -67,7 +67,7 @@ const PhotoWall = () => {
     {
       id: '9',
       name: 'Quotits Style',
-      image: '/images/Photo-Wall/Photowall 6.jpg',
+      image: '/images/Photo-Wall/Photowall 9.jpg',
       category: 'Quotits'
     },
     {
