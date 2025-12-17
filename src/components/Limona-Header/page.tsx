@@ -7,7 +7,7 @@ import styles from "./header.module.css";
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Change this based on your auth state
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // Still track login state
     
     const navItems = [
         { label: "Home", href: "/" },
@@ -58,19 +58,18 @@ export default function Header() {
         };
     }, [menuOpen, userMenuOpen]);
 
-    // Handle login form submission
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Add your login logic here
+    // Handle login success (call this from login page)
+    const handleLoginSuccess = () => {
         setIsLoggedIn(true);
         setUserMenuOpen(false);
     };
 
-    // Handle sign out
-    const handleSignOut = () => {
+    // Handle logout
+    const handleLogout = () => {
         setIsLoggedIn(false);
         setUserMenuOpen(false);
-        // Add your sign out logic here (clear tokens, redirect, etc.)
+        // Add your logout logic here (clear tokens, redirect, etc.)
+        // router.push('/'); // Redirect to home if needed
     };
 
     return (
@@ -115,7 +114,7 @@ export default function Header() {
                             className={styles.userButton}
                             aria-controls="user-menu"
                             aria-expanded={userMenuOpen}
-                            aria-label={isLoggedIn ? "User account menu" : "Login or sign up"}
+                            aria-label="User menu"
                             onClick={() => setUserMenuOpen((s) => !s)}
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -124,7 +123,7 @@ export default function Header() {
                             </svg>
                         </button>
 
-                        {/* User menu popup */}
+                        {/* User menu popup - ALWAYS SHOWS BOTH BUTTONS */}
                         <div
                             id="user-menu"
                             ref={userMenuRef}
@@ -132,60 +131,59 @@ export default function Header() {
                             role="menu"
                             aria-hidden={!userMenuOpen}
                         >
-                            {isLoggedIn ? (
-                                <>
-                                    <div className={styles.userMenuHeader}>
-                                        <span className={styles.userGreeting}>Hello, User!</span>
-                                    </div>
-                                    <div className={styles.userMenuItems}>
-                                        <Link href="/profile" className={styles.userMenuItem} onClick={() => setUserMenuOpen(false)}>
-                                            My Profile
-                                        </Link>
-                                        <Link href="/orders" className={styles.userMenuItem} onClick={() => setUserMenuOpen(false)}>
-                                            My Orders
-                                        </Link>
-                                        <Link href="/settings" className={styles.userMenuItem} onClick={() => setUserMenuOpen(false)}>
-                                            Settings
-                                        </Link>
-                                        <button className={styles.userMenuItem} onClick={handleSignOut}>
-                                            Sign Out
-                                        </button>
-                                    </div>
-                                </>
-                            ) : (
-                                <form className={styles.loginForm} onSubmit={handleLogin}>
-                                    <h3 className={styles.loginTitle}>Login</h3>
-                                    <div className={styles.formGroup}>
-                                        <label htmlFor="email" className={styles.formLabel}>Email</label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            className={styles.formInput}
-                                            placeholder="Enter your email"
-                                            required
-                                        />
-                                    </div>
-                                    <div className={styles.formGroup}>
-                                        <label htmlFor="password" className={styles.formLabel}>Password</label>
-                                        <input
-                                            type="password"
-                                            id="password"
-                                            className={styles.formInput}
-                                            placeholder="Enter your password"
-                                            required
-                                        />
-                                    </div>
-                                    <button type="submit" className={styles.loginButton}>
-                                        Sign In
+                            <div className={styles.simpleUserMenu}>
+                                <div className={styles.userMenuHeader}>
+                                    <span className={styles.userGreeting}>
+                                        {isLoggedIn ? "Welcome Back!" : "Hello User!"}
+                                    </span>
+                                </div>
+                                
+                                <div className={styles.buttonGroup}>
+                                    {/* Always show Login button */}
+                                    <Link 
+                                        href="/Login-Page" 
+                                        className={styles.loginButton}
+                                        onClick={() => setUserMenuOpen(false)}
+                                    >
+                                        Login
+                                    </Link>
+                                    
+                                    {/* Always show Logout button */}
+                                    <button 
+                                        className={styles.logoutButton}
+                                        onClick={handleLogout}
+                                    >
+                                        Logout
                                     </button>
-                                    <div className={styles.formFooter}>
-                                        <span className={styles.formFooterText}>Don't have an account?</span>
-                                        <button type="button" className={styles.signUpButton}>
-                                            Sign Up
-                                        </button>
-                                    </div>
-                                </form>
-                            )}
+                                    
+                                    {/* Additional links for logged-in users */}
+                                    {isLoggedIn && (
+                                        <>
+                                            <Link 
+                                                href="/profile" 
+                                                className={styles.menuButtonLink}
+                                                onClick={() => setUserMenuOpen(false)}
+                                            >
+                                                My Profile
+                                            </Link>
+                                            <Link 
+                                                href="/dashboard" 
+                                                className={styles.menuButtonLink}
+                                                onClick={() => setUserMenuOpen(false)}
+                                            >
+                                                Dashboard
+                                            </Link>
+                                            <Link 
+                                                href="/orders" 
+                                                className={styles.menuButtonLink}
+                                                onClick={() => setUserMenuOpen(false)}
+                                            >
+                                                My Orders
+                                            </Link>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -224,6 +222,39 @@ export default function Header() {
                                 </Link>
                             </li>
                         ))}
+                        
+                        {/* Mobile auth buttons - ALWAYS SHOW BOTH */}
+                        <div className={styles.mobileAuthButtons}>
+                            <li className={styles.mobileNavItem} role="none">
+                                <Link href="/Login-Page" role="menuitem" onClick={() => setMenuOpen(false)}>
+                                    Login
+                                </Link>
+                            </li>
+                            <li className={styles.mobileNavItem} role="none">
+                                <button 
+                                    className={styles.mobileLogoutButton}
+                                    onClick={handleLogout}
+                                >
+                                    Logout
+                                </button>
+                            </li>
+                            
+                            {/* Additional links for logged-in users */}
+                            {isLoggedIn && (
+                                <>
+                                    <li className={styles.mobileNavItem} role="none">
+                                        <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)}>
+                                            My Profile
+                                        </Link>
+                                    </li>
+                                    <li className={styles.mobileNavItem} role="none">
+                                        <Link href="/dashboard" role="menuitem" onClick={() => setMenuOpen(false)}>
+                                            Dashboard
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+                        </div>
                     </ul>
                 </div>
             </nav>
