@@ -82,11 +82,17 @@
   transform: translateX(-50%);
 }
 
+.navItem {
+  list-style: none;
+}
+
 .navItem a {
   text-decoration: none;
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+  cursor: pointer;
 }
 
 .navItem a:hover,
@@ -102,17 +108,41 @@
   margin-left: auto;
 }
 
-/* CART */
+/* CART BUTTON */
 .cart {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: center;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 50%;
+  position: relative;
 }
 
 .cart:hover {
+  background-color: rgba(224, 176, 0, 0.1);
   opacity: 0.8;
+}
+
+/* CART BADGE */
+.cartBadge {
+  background: #e0b000;
+  color: #000;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  padding: 0 4px;
 }
 
 /* ===== User Menu ===== */
@@ -169,6 +199,20 @@
   padding: 1rem;
 }
 
+.userMenuHeader {
+  padding: 0.8rem 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.userGreeting {
+  font-weight: 700;
+  color: #e0b000;
+  font-size: 1rem;
+  display: block;
+  text-align: center;
+}
+
 .buttonGroup {
   display: flex;
   flex-direction: column;
@@ -189,6 +233,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .menuButtonLink:hover {
@@ -213,6 +260,7 @@
   transition: all 0.2s ease;
   display: block;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .loginButton:hover {
@@ -234,27 +282,13 @@
   transition: all 0.2s ease;
   display: block;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .logoutButton:hover {
   background: #dc2626;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-/* User Menu Header */
-.userMenuHeader {
-  padding: 0.8rem 0.5rem 1rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.userGreeting {
-  font-weight: 700;
-  color: #e0b000;
-  font-size: 1rem;
-  display: block;
-  text-align: center;
 }
 
 /* ===== Mobile Menu Button ===== */
@@ -265,7 +299,7 @@
   color: #fff;
   cursor: pointer;
   padding: 0.25rem;
-  margin-left: 0.5rem;
+  margin-left: 0;
   align-items: center;
   z-index: 30;
 }
@@ -280,8 +314,8 @@
 .mobileMenu {
   display: block;
   position: absolute;
-  left: 1.8rem;
-  right: 1.8rem;
+  left: 0;
+  right: 0;
   top: calc(100% + 12px);
   background: #000;
   border-radius: 20px;
@@ -294,6 +328,7 @@
   transform-origin: top center;
   transform: translateY(-6px) scale(0.99);
   transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+  margin: 0;
 }
 
 .mobileMenuOpen {
@@ -312,6 +347,11 @@
   gap: 0.4rem;
 }
 
+.mobileNavItem {
+  display: block;
+  list-style: none;
+}
+
 .mobileNavItem a {
   display: block;
   padding: 0.6rem 0.8rem;
@@ -319,6 +359,9 @@
   text-decoration: none;
   font-weight: 700;
   border-radius: 10px;
+  transition: all 0.2s ease;
+  text-align: left;
+  cursor: pointer;
 }
 
 .mobileNavItem a:hover {
@@ -364,6 +407,7 @@
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .mobileLogoutButton:hover {
@@ -395,10 +439,11 @@
   }
 
   .limonaNavbar {
-    padding-right: 1rem;
-    padding-left: 1rem;
-    max-width: calc(100% - 1.6rem);
+    padding: 0.9rem 1rem;
+    max-width: calc(100% - 2rem);
     width: 100%;
+    justify-content: space-between;
+    position: relative;
   }
 
   .limonaNavbar::before,
@@ -462,11 +507,40 @@
   .buttonGroup {
     width: 100%;
   }
+  
+  /* Mobile menu positioning */
+  .mobileMenu {
+    left: 1rem;
+    right: 1rem;
+    margin: 0;
+  }
+  
+  /* Center the navigation items in mobile menu */
+  .mobileNavItem a {
+    text-align: center;
+  }
 }
 
-/* ===== Desktop: Hide menuButtonLink on mobile by default ===== */
+/* ===== Desktop: Hide mobile auth buttons ===== */
 @media (min-width: 769px) {
   .mobileAuthButtons {
     display: none;
   }
+}
+
+/* Ensure buttons have cursor pointer */
+.userButton,
+.cart,
+.menuButton,
+.logoutButton,
+.mobileLogoutButton,
+.loginButton {
+  cursor: pointer;
+}
+
+/* Ensure links have cursor pointer */
+.menuButtonLink,
+.navItem a,
+.mobileNavItem a {
+  cursor: pointer;
 }
