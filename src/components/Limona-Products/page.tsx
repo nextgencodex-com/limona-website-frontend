@@ -294,14 +294,28 @@ const LimonaProducts = () => {
 
   const handleCategorySelect = (category: string) => {
     if (category === 'Limited Edition' || category === 'Accessories') {
-      setComingSoonMessage(true, category);
-      setTimeout(() => {
-        setComingSoonMessage(false, '');
-      }, 3000);
+      // First, reset to All Products view
+      setSelectedCategory('All Products');
+      setSelectedWomenSubcategory('All Women');
       
+      // Set the URL parameter
       const params = new URLSearchParams(searchParams?.toString() || '');
       params.set('category', category);
       router.push(`?${params.toString()}`, { scroll: false });
+      
+      // Show the message
+      setShowComingSoonMessage(true);
+      setComingSoonCategory(category);
+      
+      setTimeout(() => {
+        setShowComingSoonMessage(false);
+        setComingSoonCategory('');
+        
+        // Clear the URL parameter after showing the message
+        const updatedParams = new URLSearchParams(searchParams?.toString() || '');
+        updatedParams.delete('category');
+        router.replace(`?${updatedParams.toString()}`, { scroll: false });
+      }, 3000);
       
       return;
     }
@@ -318,11 +332,6 @@ const LimonaProducts = () => {
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const setComingSoonMessage = (show: boolean, category: string) => {
-    setShowComingSoonMessage(show);
-    setComingSoonCategory(category);
-  };
-
   const handleWomenSubcategorySelect = (subcategory: string) => {
     setSelectedWomenSubcategory(subcategory);
     setShowWomenSubcategoryDropdown(false);
@@ -330,13 +339,27 @@ const LimonaProducts = () => {
 
   useEffect(() => {
     const categoryFromUrl = searchParams?.get('category');
+    
+    // Only process if we have a category parameter
     if (categoryFromUrl && categories.includes(categoryFromUrl)) {
+      // If it's Accessories or Limited Edition, just show the message
       if (categoryFromUrl === 'Limited Edition' || categoryFromUrl === 'Accessories') {
-        setComingSoonMessage(true, categoryFromUrl);
+        setSelectedCategory('All Products'); // Reset to All Products view
+        setShowComingSoonMessage(true);
+        setComingSoonCategory(categoryFromUrl);
+        
         setTimeout(() => {
-          setComingSoonMessage(false, '');
+          setShowComingSoonMessage(false);
+          setComingSoonCategory('');
+          
+          // Clear the URL parameter after showing the message
+          const params = new URLSearchParams(searchParams?.toString() || '');
+          params.delete('category');
+          router.replace(`?${params.toString()}`, { scroll: false });
         }, 3000);
-      } else {
+      } 
+      // For other categories, set them normally
+      else if (categoryFromUrl !== 'Limited Edition' && categoryFromUrl !== 'Accessories') {
         setSelectedCategory(categoryFromUrl);
       }
     }

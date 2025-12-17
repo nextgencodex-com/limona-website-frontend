@@ -19,61 +19,61 @@ const PhotoWall = () => {
     {
       id: '1',
       name: 'Aesthetic Collection',
-      image: '/images/Photo-Wall/Frame.png',
+      image: '/images/Photo-Wall/Photowall 1.jpg',
       category: 'Aesthetic'
     },
     {
       id: '2',
       name: 'Freshish Style',
-      image: '/images/Photo-Wall/Frame (1).png',
+      image: '/images/Photo-Wall/Photowall 2.jpg',
       category: 'Freshish'
     },
     {
       id: '3',
       name: 'Original Design',
-      image: '/images/Photo-Wall/Frame (2).png',
+      image: '/images/Photo-Wall/Photowall 3.jpg',
       category: 'Original'
     },
     {
       id: '4',
       name: 'Authentic Look',
-      image: '/images/Photo-Wall/Frame (3).png',
+      image: '/images/Photo-Wall/Photowall 4.jpg',
       category: 'Authentic'
     },
     {
       id: '5',
       name: 'Killing Outfit',
-      image: '/images/Photo-Wall/Frame (4).png',
+      image: '/images/Photo-Wall/Photowall 5.jpg',
       category: 'Killing'
     },
     {
       id: '6',
       name: 'Treated Fashion',
-      image: '/images/Photo-Wall/Frame (5).png',
+      image: '/images/Photo-Wall/Photowall 9.jpg',
       category: 'Treated'
     },
     {
       id: '7',
       name: 'Bloom Overpainted',
-      image: '/images/Photo-Wall/Frame (6).png',
+      image: '/images/Photo-Wall/Photowall 7.jpg',
       category: 'Bloom'
     },
     {
       id: '8',
       name: 'Sugar Liquid',
-      image: '/images/Photo-Wall/Frame (7).png',
+      image: '/images/Photo-Wall/Photowall 8.jpg',
       category: 'Sugar'
     },
     {
       id: '9',
       name: 'Quotits Style',
-      image: '/images/Photo-Wall/Frame (8).png',
+      image: '/images/Photo-Wall/Photowall 6.jpg',
       category: 'Quotits'
     },
     {
       id: '10',
       name: 'Guidelines',
-      image: '/images/Photo-Wall/Frame (9).png',
+      image: '/images/Photo-Wall/Photowall 10.jpg',
       category: 'Guidelines'
     },
   ];

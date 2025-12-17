@@ -23,7 +23,6 @@
   overflow: visible;
 }
 
-
 .limonaNavbar::before,
 .limonaNavbar::after {
   content: "";
@@ -78,6 +77,9 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .navItem a {
@@ -92,14 +94,217 @@
   color: #e0b000;
 }
 
+/* ===== Icons Container ===== */
+.iconsContainer {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-left: auto;
+}
+
 /* CART */
 .cart {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
+.cart:hover {
+  opacity: 0.8;
+}
 
+/* ===== User Menu ===== */
+.userMenuWrapper {
+  position: relative;
+}
+
+.userButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.userButton:hover {
+  background-color: rgba(224, 176, 0, 0.1);
+}
+
+.userButton svg {
+  stroke-width: 1.5;
+}
+
+/* User Menu Dropdown */
+.userMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.8rem;
+  background: #000;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  min-width: 300px;
+  z-index: 10002;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.99);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+  overflow: hidden;
+}
+
+.userMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* User Menu Header (Logged in) */
+.userMenuHeader {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.userGreeting {
+  font-weight: 700;
+  color: #e0b000;
+  font-size: 1rem;
+}
+
+/* User Menu Items */
+.userMenuItems {
+  padding: 0.6rem 0.5rem;
+}
+
+.userMenuItem {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.userMenuItem:hover {
+  background: rgba(224, 176, 0, 0.08);
+  color: #e0b000;
+}
+
+/* ===== Login Form (Logged out) ===== */
+.loginForm {
+  padding: 1.5rem;
+}
+
+.loginTitle {
+  margin-bottom: 1.2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #e0b000;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.02em;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #e0b000;
+  background: rgba(224, 176, 0, 0.05);
+  box-shadow: 0 0 0 2px rgba(224, 176, 0, 0.1);
+}
+
+.formInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Login Button */
+.loginButton {
+  width: 100%;
+  padding: 0.8rem;
+  background: #e0b000;
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.03em;
+  margin-top: 0.5rem;
+}
+
+.loginButton:hover {
+  background: #ffcc00;
+  transform: translateY(-1px);
+}
+
+/* Form Footer */
+.formFooter {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.formFooterText {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-right: 0.5rem;
+}
+
+.signUpButton {
+  background: none;
+  border: none;
+  color: #e0b000;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.signUpButton:hover {
+  background: rgba(224, 176, 0, 0.1);
+  text-decoration: none;
+}
+
+/* MOBILE MENU BUTTON */
 .menuButton {
   display: none;
   background: transparent;
@@ -118,7 +323,7 @@
   justify-content: center;
 }
 
-
+/* MOBILE MENU */
 .mobileMenu {
   display: block;
   position: absolute;
@@ -168,21 +373,15 @@
   color: #e0b000;
 }
 
-
+/* ===== Mobile Responsiveness ===== */
 @media (max-width: 768px) {
+  .navbarWrapper {
+    padding: 1rem;
+  }
+  
   .navList {
     display: none;
   }
-
-  .menuButton {
-    display: inline-flex;
-  }
-
-  
-  .cart {
-    margin-left: 0.4rem;
-  }
-
 
   .limonaNavbar {
     padding-right: 1rem;
@@ -190,7 +389,6 @@
     max-width: calc(100% - 1.6rem);
     width: 100%;
   }
-
 
   .limonaNavbar::before,
   .limonaNavbar::after {
@@ -211,5 +409,41 @@
     right: -28px;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 70px;
+  }
+
+  .menuButton {
+    display: inline-flex;
+  }
+
+  .iconsContainer {
+    gap: 1rem;
+    margin-left: 0;
+    order: 0;
+  }
+  
+  .cart {
+    margin-left: 0;
+  }
+  
+  .userMenu {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    margin-top: 0;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+    min-width: auto;
+    z-index: 10002;
+  }
+  
+  .userMenuOpen {
+    transform: translateY(0);
+  }
+  
+  .loginForm {
+    padding: 1.2rem;
   }
 }
