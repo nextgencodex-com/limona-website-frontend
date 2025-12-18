@@ -234,6 +234,48 @@
     display: block;
 }
 
+.customColorInput {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.customColorInput .input {
+    flex: 1;
+    margin: 0;
+}
+
+.addColorButton {
+    padding: 0.75rem 1.5rem;
+    background: #000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.addColorButton:hover:not(:disabled) {
+    background: #333;
+}
+
+.addColorButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.colorPreview {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #e0e0e0;
+    flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
     .formRow {
         grid-template-columns: 1fr;
@@ -242,5 +284,9 @@
     .formContainer {
         max-width: 100%;
         margin: 1rem;
+    }
+    
+    .customColorInput {
+        flex-wrap: wrap;
     }
 }

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/Admin/AdminLayout";
 import ProductForm from "@/components/Admin/ProductForm";
 import ProductList from "@/components/Admin/ProductList";
+import Notification from "@/components/Admin/Notification";
 import styles from "./dashboard.module.css";
 
 interface Product {
@@ -26,6 +27,11 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [notification, setNotification] = useState<{
+        show: boolean;
+        message: string;
+        type: "success" | "error" | "info";
+    }>({ show: false, message: "", type: "success" });
     const [stats, setStats] = useState({
         totalProducts: 0,
         activeProducts: 0,
@@ -78,6 +84,14 @@ export default function AdminDashboard() {
         });
     };
 
+    const showNotification = (message: string, type: "success" | "error" | "info") => {
+        setNotification({ show: true, message, type });
+    };
+
+    const closeNotification = () => {
+        setNotification({ show: false, message: "", type: "success" });
+    };
+
     const handleAddProduct = () => {
         setEditingProduct(null);
         setShowForm(true);
@@ -104,16 +118,26 @@ export default function AdminDashboard() {
 
             const data = await response.json();
             if (data.success) {
+                showNotification("Product deleted successfully!", "success");
                 fetchProducts();
+            } else {
+                showNotification("Failed to delete product", "error");
             }
         } catch (error) {
             console.error("Error deleting product:", error);
+            showNotification("Error deleting product", "error");
         }
     };
 
-    const handleFormClose = () => {
+    const handleFormClose = (saved?: boolean, isEdit?: boolean) => {
         setShowForm(false);
         setEditingProduct(null);
+        if (saved) {
+            const message = isEdit 
+                ? "Product updated successfully!" 
+                : "Product added successfully!";
+            showNotification(message, "success");
+        }
         fetchProducts();
     };
 
@@ -127,6 +151,13 @@ export default function AdminDashboard() {
 
     return (
         <AdminLayout>
+            {notification.show && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={closeNotification}
+                />
+            )}
             <div className={styles.dashboard}>
                 <div className={styles.header}>
                     <h1 className={styles.title}>Product Management</h1>
@@ -171,6 +202,7 @@ export default function AdminDashboard() {
                         <ProductForm
                             product={editingProduct}
                             onClose={handleFormClose}
+                            onSuccess={fetchProducts}
                         />
                     </div>
                 )}

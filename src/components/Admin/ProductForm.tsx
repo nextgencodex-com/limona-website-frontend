@@ -8,6 +8,7 @@ interface Product {
     description: string;
     price: number;
     category: string;
+    subcategory?: string;
     size?: string;
     color?: string;
     stock: number;
@@ -19,7 +20,8 @@ interface Product {
 
 interface ProductFormProps {
     product: Product | null;
-    onClose: () => void;
+    onClose: (saved?: boolean, isEdit?: boolean) => void;
+    onSuccess?: () => void;
 }
 
 const categories = [
@@ -47,12 +49,15 @@ const availableColors = [
 
 const availableSizes = ["S", "M", "L", "XL", "2XL"];
 
-export default function ProductForm({ product, onClose }: ProductFormProps) {
+const womenSubcategories = ["Blouse", "Frock", "Full Kits", "T-Shirt"];
+
+export default function ProductForm({ product, onClose, onSuccess }: ProductFormProps) {
     const [formData, setFormData] = useState<Product>({
         name: "",
         description: "",
         price: 0,
         category: "Men",
+        subcategory: "",
         size: "",
         color: "",
         stock: 0,
@@ -68,6 +73,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
     const [imagePreview, setImagePreview] = useState<string>("");
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+    const [customColor, setCustomColor] = useState<string>("");
 
     useEffect(() => {
         if (product) {
@@ -99,7 +105,12 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
         } else if (name === "price" || name === "stock") {
             setFormData({ ...formData, [name]: parseFloat(value) || 0 });
         } else {
-            setFormData({ ...formData, [name]: value });
+            // Reset subcategory when category changes and it's not Women
+            if (name === "category" && value !== "Women") {
+                setFormData({ ...formData, [name]: value, subcategory: "" });
+            } else {
+                setFormData({ ...formData, [name]: value });
+            }
         }
     };
 
@@ -121,6 +132,15 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
             setFormData({ ...formData, size: newSizes.join(', ') });
             return newSizes;
         });
+    };
+
+    const addCustomColor = () => {
+        if (customColor && !selectedColors.includes(customColor)) {
+            const newColors = [...selectedColors, customColor];
+            setSelectedColors(newColors);
+            setFormData({ ...formData, color: newColors.join(', ') });
+            setCustomColor("");
+        }
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,7 +241,16 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                 throw new Error(data.error || "Failed to save product");
             }
 
-            onClose();
+            // Dispatch custom event for real-time updates
+            window.dispatchEvent(new CustomEvent('productUpdated', { 
+                detail: { product: data.data } 
+            }));
+
+            // Call onSuccess callback to refresh parent component
+            if (onSuccess) {
+                onSuccess();
+            }
+            onClose(true, !!product);
         } catch (err: any) {
             setError(err.message || "Failed to save product");
         } finally {
@@ -235,7 +264,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                 <h2 className={styles.formTitle}>
                     {product ? "Edit Product" : "Add New Product"}
                 </h2>
-                <button onClick={onClose} className={styles.closeButton}>
+                <button onClick={() => onClose()} className={styles.closeButton}>
                     ✕
                 </button>
             </div>
@@ -313,6 +342,24 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                             ))}
                         </select>
                     </div>
+                    {formData.category === "Women" && (
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Subcategory</label>
+                            <select
+                                name="subcategory"
+                                value={formData.subcategory || ""}
+                                onChange={handleChange}
+                                className={styles.select}
+                            >
+                                <option value="">Select subcategory</option>
+                                {womenSubcategories.map((sub) => (
+                                    <option key={sub} value={sub}>
+                                        {sub}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.formRow}>
@@ -353,6 +400,32 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                                 </button>
                             ))}
                         </div>
+                        
+                        <div className={styles.customColorInput}>
+                            <input
+                                type="text"
+                                value={customColor}
+                                onChange={(e) => setCustomColor(e.target.value)}
+                                placeholder="Add custom color (e.g., #FF5733 or Red)"
+                                className={styles.input}
+                            />
+                            <button
+                                type="button"
+                                onClick={addCustomColor}
+                                className={styles.addColorButton}
+                                disabled={!customColor}
+                            >
+                                Add Color
+                            </button>
+                            {customColor && customColor.startsWith('#') && (
+                                <div 
+                                    className={styles.colorPreview}
+                                    style={{ backgroundColor: customColor }}
+                                    title="Color preview"
+                                />
+                            )}
+                        </div>
+                        
                         <small className={styles.helpText}>Selected: {selectedColors.join(', ') || 'None'}</small>
                     </div>
                 </div>
@@ -427,7 +500,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                 <div className={styles.formActions}>
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={() => onClose()}
                         className={styles.cancelButton}
                     >
                         Cancel

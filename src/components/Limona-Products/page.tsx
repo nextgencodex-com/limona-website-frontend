@@ -328,23 +328,40 @@ const LimonaProducts = () => {
     };
 
     fetchDatabaseProducts();
+    
+    // Listen for product updates
+    const handleProductUpdate = () => {
+      console.log('Product updated - refreshing...');
+      fetchDatabaseProducts();
+    };
+    
+    window.addEventListener('productUpdated', handleProductUpdate);
+    
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('productUpdated', handleProductUpdate);
+    };
   }, []);
   const [selectedWomenSubcategory, setSelectedWomenSubcategory] = useState<string>('All Women');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [gridView, setGridView] = useState<3 | 6 | 9>(9);
-  const [sortBy, setSortBy] = useState<string>('default');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [sortBy, setSortBy] = useState<string>('newest');
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showAllMobile, setShowAllMobile] = useState(false);
   const [showComingSoonMessage, setShowComingSoonMessage] = useState(false);
   const [showWomenSubcategoryDropdown, setShowWomenSubcategoryDropdown] = useState(false);
   const [comingSoonCategory, setComingSoonCategory] = useState<string>('');
+  
+  const itemsPerPage = 9;
 
   const categories = ['All Products', 'Men', 'Women', 'Kids', 'Accessories', 'Limited Edition'];
   const womenSubcategories = ['All Women', 'Blouse', 'Frock', 'Full Kits', 'T-Shirt'];
 
   const handleCategorySelect = (category: string) => {
+    setCurrentPage(1); // Reset to page 1 when category changes
+    
     if (category === 'Limited Edition' || category === 'Accessories') {
       // First, reset to All Products view
       setSelectedCategory('All Products');
@@ -387,6 +404,7 @@ const LimonaProducts = () => {
   const handleWomenSubcategorySelect = (subcategory: string) => {
     setSelectedWomenSubcategory(subcategory);
     setShowWomenSubcategoryDropdown(false);
+    setCurrentPage(1); // Reset to page 1 when subcategory changes
   };
 
   useEffect(() => {
@@ -420,11 +438,19 @@ const LimonaProducts = () => {
   useEffect(() => {
     let filtered = products;
 
+    console.log('Filtering products:', {
+      totalProducts: products.length,
+      selectedCategory,
+      willFilter: selectedCategory !== 'All Products'
+    });
+
     if (selectedCategory !== 'All Products') {
       filtered = filtered.filter(product => product.category === selectedCategory);
+      console.log('After category filter:', filtered.length);
       
       if (selectedCategory === 'Women' && selectedWomenSubcategory !== 'All Women') {
         filtered = filtered.filter(product => product.subcategory === selectedWomenSubcategory);
+        console.log('After subcategory filter:', filtered.length);
       }
     }
 
@@ -450,44 +476,62 @@ const LimonaProducts = () => {
       case 'newest':
         sorted.sort((a, b) => new Date(b.dateAdded || '').getTime() - new Date(a.dateAdded || '').getTime());
         break;
+      case 'oldest':
+        sorted.sort((a, b) => new Date(a.dateAdded || '').getTime() - new Date(b.dateAdded || '').getTime());
+        break;
       default:
-        sorted.sort((a, b) => a.id - b.id);
+        sorted.sort((a, b) => new Date(b.dateAdded || '').getTime() - new Date(a.dateAdded || '').getTime());
         break;
     }
 
     setFilteredProducts(sorted);
   }, [selectedCategory, selectedWomenSubcategory, priceRange, searchTerm, products, sortBy]);
 
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  
   const displayedProducts = useMemo(() => {
-    return filteredProducts.slice(0, gridView);
-  }, [filteredProducts, gridView]);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage, itemsPerPage]);
 
   const mobileDisplayedProducts = useMemo(() => {
     if (showAllMobile) {
-      return filteredProducts.slice(0, gridView);
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return filteredProducts.slice(startIndex, endIndex);
     }
     return filteredProducts.slice(0, 4);
-  }, [filteredProducts, showAllMobile, gridView]);
+  }, [filteredProducts, showAllMobile, currentPage, itemsPerPage]);
 
   const handleResetFilters = () => {
     setSelectedCategory('All Products');
     setSelectedWomenSubcategory('All Women');
     setPriceRange([0, 10000]);
     setSearchTerm('');
-    setSortBy('default');
+    setSortBy('newest');
     setShowAllMobile(false);
     setComingSoonCategory('');
+    setCurrentPage(1);
     
     router.push('?', { scroll: false });
   };
 
-  const toggleGridView = () => {
-    if (gridView === 9) {
-      setGridView(6);
-    } else if (gridView === 6) {
-      setGridView(3);
-    } else {
-      setGridView(9);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      handlePageChange(currentPage + 1);
     }
   };
 
@@ -505,7 +549,8 @@ const LimonaProducts = () => {
       case 'price-low': return 'Price: Low to High';
       case 'price-high': return 'Price: High to Low';
       case 'newest': return 'Newest First';
-      default: return 'Default Sorting';
+      case 'oldest': return 'Oldest First';
+      default: return 'Newest First';
     }
   };
 
@@ -713,15 +758,29 @@ const LimonaProducts = () => {
                   </div>
                   
                   <button
-                    onClick={() => handleSort('default')}
-                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'default' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                    onClick={() => handleSort('newest')}
+                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                   >
                     <div className="w-5 h-5 flex items-center justify-center">
-                      {sortBy === 'default' && (
+                      {sortBy === 'newest' && (
                         <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                       )}
                     </div>
-                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Default Sorting</span>
+                    <Clock size={16} className="text-gray-500" />
+                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => handleSort('oldest')}
+                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                  >
+                    <div className="w-5 h-5 flex items-center justify-center">
+                      {sortBy === 'oldest' && (
+                        <div className="w-2 h-2 rounded-full bg-gray-900"></div>
+                      )}
+                    </div>
+                    <Clock size={16} className="text-gray-500" />
+                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Oldest First</span>
                   </button>
                   
                   <button
@@ -748,19 +807,6 @@ const LimonaProducts = () => {
                     </div>
                     <ChevronDown size={16} className="text-gray-500" />
                     <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Price: High to Low</span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleSort('newest')}
-                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
-                  >
-                    <div className="w-5 h-5 flex items-center justify-center">
-                      {sortBy === 'newest' && (
-                        <div className="w-2 h-2 rounded-full bg-gray-900"></div>
-                      )}
-                    </div>
-                    <Clock size={16} className="text-gray-500" />
-                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
                   </button>
                 </div>
               </>
@@ -904,18 +950,8 @@ const LimonaProducts = () => {
                   />
                 </div>
 
-                {/* Grid and Sort Controls */}
+                {/* Sort Controls */}
                 <div className="flex items-center gap-2 self-end sm:self-center">
-                  <button
-                    onClick={toggleGridView}
-                    className="p-2 text-gray-600 hover:text-gray-900 rounded-md transition-colors duration-200"
-                    title={`Show ${gridView === 9 ? '9' : gridView === 6 ? '6' : '3'} products`}
-                  >
-                    {gridView === 9 && <Grid3x3 size={22} />}
-                    {gridView === 6 && <Grid2x2 size={22} />}
-                    {gridView === 3 && <Grid size={22} />}
-                  </button>
-
                   <div className="relative">
                     <button
                       onClick={() => setShowSortMenu(!showSortMenu)}
@@ -942,15 +978,29 @@ const LimonaProducts = () => {
                           </div>
                           
                           <button
-                            onClick={() => handleSort('default')}
-                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'default' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                            onClick={() => handleSort('newest')}
+                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                           >
                             <div className="w-5 h-5 flex items-center justify-center">
-                              {sortBy === 'default' && (
+                              {sortBy === 'newest' && (
                                 <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                               )}
                             </div>
-                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Default Sorting</span>
+                            <Clock size={16} className="text-gray-500" />
+                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => handleSort('oldest')}
+                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                          >
+                            <div className="w-5 h-5 flex items-center justify-center">
+                              {sortBy === 'oldest' && (
+                                <div className="w-2 h-2 rounded-full bg-gray-900"></div>
+                              )}
+                            </div>
+                            <Clock size={16} className="text-gray-500" />
+                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Oldest First</span>
                           </button>
                           
                           <button
@@ -977,19 +1027,6 @@ const LimonaProducts = () => {
                             </div>
                             <ChevronDown size={16} className="text-gray-500" />
                             <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Price: High to Low</span>
-                          </button>
-                          
-                          <button
-                            onClick={() => handleSort('newest')}
-                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
-                          >
-                            <div className="w-5 h-5 flex items-center justify-center">
-                              {sortBy === 'newest' && (
-                                <div className="w-2 h-2 rounded-full bg-gray-900"></div>
-                              )}
-                            </div>
-                            <Clock size={16} className="text-gray-500" />
-                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
                           </button>
                         </div>
                       </>
@@ -1282,20 +1319,156 @@ const LimonaProducts = () => {
                   ))}
                 </div>
 
+                {/* Pagination - Desktop */}
+                {totalPages > 1 && (
+                  <div className="hidden lg:flex mt-8 items-center justify-center gap-2">
+                    {/* Previous Button */}
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                      className={`px-4 py-2 rounded-lg font-medium tracking-[0.07em] text-sm font-geologica transition-colors ${
+                        currentPage === 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                      }`}
+                      style={{ letterSpacing: '0.07em' }}
+                    >
+                      Previous
+                    </button>
+
+                    {/* Page Numbers */}
+                    <div className="flex items-center gap-1">
+                      {[...Array(totalPages)].map((_, index) => {
+                        const page = index + 1;
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => handlePageChange(page)}
+                              className={`w-10 h-10 rounded-lg font-medium tracking-[0.07em] text-sm font-geologica transition-colors ${
+                                currentPage === page
+                                  ? 'bg-gray-800 text-white'
+                                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                              }`}
+                              style={{ letterSpacing: '0.07em' }}
+                            >
+                              {page}
+                            </button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="px-2 text-gray-400">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+
+                    {/* Next Button */}
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`px-4 py-2 rounded-lg font-medium tracking-[0.07em] text-sm font-geologica transition-colors ${
+                        currentPage === totalPages
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                      }`}
+                      style={{ letterSpacing: '0.07em' }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+
                 {/* Show More/Less Button for Mobile */}
-                {filteredProducts.length > 4 && (
+                {filteredProducts.length > 4 && !showAllMobile && (
                   <div className="lg:hidden mt-4 text-center">
                     <button
                       onClick={toggleMobileView}
                       className="bg-gray-800 text-white px-5 py-2.5 rounded-lg hover:bg-gray-900 transition-colors duration-200 font-bold tracking-[0.07em] text-xs flex items-center justify-center gap-1.5 mx-auto font-geologica"
                       style={{ letterSpacing: '0.07em' }}
                     >
-                      {showAllMobile ? 'Show Less' : `Show More (${filteredProducts.length - 4} more)`}
-                      {showAllMobile ? (
-                        <ChevronUp size={14} />
-                      ) : (
-                        <ChevronDown size={14} />
-                      )}
+                      Show More ({filteredProducts.length - 4} more)
+                      <ChevronDown size={14} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Pagination - Mobile (shown when showAllMobile is true) */}
+                {showAllMobile && totalPages > 1 && (
+                  <div className="lg:hidden mt-4 flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                        className={`p-2 rounded-lg font-medium text-xs font-geologica transition-colors ${
+                          currentPage === 1
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                        }`}
+                      >
+                        Prev
+                      </button>
+
+                      <div className="flex items-center gap-1">
+                        {[...Array(totalPages)].map((_, index) => {
+                          const page = index + 1;
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 && page <= currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => handlePageChange(page)}
+                                className={`w-8 h-8 rounded-lg font-medium text-xs font-geologica transition-colors ${
+                                  currentPage === page
+                                    ? 'bg-gray-800 text-white'
+                                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          } else if (page === currentPage - 2 || page === currentPage + 2) {
+                            return (
+                              <span key={page} className="px-1 text-gray-400 text-xs">
+                                ...
+                              </span>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className={`p-2 rounded-lg font-medium text-xs font-geologica transition-colors ${
+                          currentPage === totalPages
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                        }`}
+                      >
+                        Next
+                      </button>
+                    </div>
+                    <button
+                      onClick={toggleMobileView}
+                      className="text-gray-600 text-xs font-geologica flex items-center gap-1"
+                    >
+                      Show Less <ChevronUp size={14} />
                     </button>
                   </div>
                 )}

@@ -86,6 +86,19 @@ const LatestArrivals = () => {
     };
 
     fetchLatestArrivals();
+    
+    // Listen for product updates
+    const handleProductUpdate = () => {
+      console.log('Product updated - refreshing Latest Arrivals...');
+      fetchLatestArrivals();
+    };
+    
+    window.addEventListener('productUpdated', handleProductUpdate);
+    
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('productUpdated', handleProductUpdate);
+    };
   }, []);
 
   // Navigation functions for mobile carousel
@@ -156,48 +169,79 @@ const LatestArrivals = () => {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {latestProducts.map((product) => (
-              <div
-                key={product.id}
-                className="group bg-white rounded-[30px] overflow-hidden transition-all duration-300 font-geologica"
-              >
-                {/* Separate Image Container */}
-                <div 
-                  className="relative overflow-hidden bg-white-100 mb-3 rounded-[30px]"
-                  style={{
-                    width: '280px',
-                    height: '380px'
-                  }}
+          <div className="relative">
+            {/* Navigation Arrows */}
+            {latestProducts.length > 4 && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all duration-300"
+                  aria-label="Previous products"
                 >
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 280px, (max-width: 1200px) 280px, 280px"
-                  />
-                  
-                  {/* Cart Icon */}
-                  <button className="absolute top-3 left-3 text-white p-1 hover:scale-110 transition-transform duration-300">
-                    <svg 
-                      className="w-5 h-5" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all duration-300"
+                  aria-label="Next products"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )}
+            
+            {/* Scrollable Container */}
+            <div className="overflow-hidden">
+              <div 
+                className="flex gap-6 transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentIndex * (280 + 24)}px)` }}
+              >
+                {latestProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex-shrink-0 group bg-white rounded-[30px] overflow-hidden transition-all duration-300 font-geologica"
+                    style={{ width: '280px' }}
+                  >
+                    {/* Separate Image Container */}
+                    <div 
+                      className="relative overflow-hidden bg-white-100 mb-3 rounded-[30px]"
+                      style={{
+                        width: '280px',
+                        height: '380px'
+                      }}
                     >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" 
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 280px, (max-width: 1200px) 280px, 280px"
                       />
-                    </svg>
-                  </button>
-                </div>
+                      
+                      {/* Cart Icon */}
+                      <button className="absolute top-3 left-3 text-white p-1 hover:scale-110 transition-transform duration-300">
+                        <svg 
+                          className="w-5 h-5" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" 
+                          />
+                        </svg>
+                      </button>
+                    </div>
 
-                {/* Separate Description Container */}
-                <div className="px-2 py-3 font-geologica">
+                    {/* Separate Description Container */}
+                    <div className="px-2 py-3 font-geologica">
                   {/* Product Name with yellow color */}
                   <h3 
                     className="font-bold text-lg mb-1 font-geologica"
@@ -247,6 +291,23 @@ const LatestArrivals = () => {
               </div>
             ))}
           </div>
+          </div>
+          
+          {/* Dots Indicator */}
+          {latestProducts.length > 4 && (
+            <div className="flex justify-center gap-2 mt-6">
+              {Array.from({ length: Math.ceil(latestProducts.length / 4) }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index * 4)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    Math.floor(currentIndex / 4) === index ? 'bg-black w-8' : 'bg-gray-300'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* MOBILE VIEW - Carousel/Slider with Full Image Display */}
@@ -464,6 +525,7 @@ const LatestArrivals = () => {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );
