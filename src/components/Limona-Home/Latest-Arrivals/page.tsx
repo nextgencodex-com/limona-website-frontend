@@ -15,9 +15,10 @@ interface Product {
 
 const LatestArrivals = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [latestProducts, setLatestProducts] = useState<Product[]>([]);
 
-  // Sample data - current price
-  const latestProducts: Product[] = [
+  // Hardcoded fallback products
+  const fallbackProducts: Product[] = [
     {
       id: 9,
       name: 'Vintage Denim Jacket',
@@ -51,6 +52,41 @@ const LatestArrivals = () => {
       description: 'Classic denim jacket with a modern twist. Durable and stylish.'
     },
   ];
+
+  // Fetch latest arrival products from database
+  React.useEffect(() => {
+    const fetchLatestArrivals = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/products');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched products for Latest Arrivals:', data.data.length);
+          
+          const dbLatestProducts = data.data
+            .filter((p: any) => (p.latest_arrival === 1 || p.latest_arrival === true) && (p.is_active === 1 || p.is_active === true))
+            .map((p: any) => ({
+              id: p.id + 1000,
+              name: p.name,
+              price: Number(p.price),
+              image: p.image_url || '/images/Products/placeholder.png',
+              category: p.category,
+              description: p.description || ''
+            }));
+          
+          console.log('Filtered latest arrival products:', dbLatestProducts.length);
+          // Merge database products with fallback products
+          setLatestProducts([...dbLatestProducts, ...fallbackProducts]);
+        } else {
+          setLatestProducts(fallbackProducts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch latest arrivals:', error);
+        setLatestProducts(fallbackProducts);
+      }
+    };
+
+    fetchLatestArrivals();
+  }, []);
 
   // Navigation functions for mobile carousel
   const nextSlide = () => {

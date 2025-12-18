@@ -99,6 +99,27 @@
     align-items: center;
 }
 
+.backButton {
+    background: transparent;
+    border: 2px solid #e0e0e0;
+    color: #666;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.backButton:hover {
+    border-color: #000;
+    color: #000;
+    background: rgba(0, 0, 0, 0.02);
+}
+
 .logoutButton {
     background: transparent;
     border: 2px solid #e0e0e0;

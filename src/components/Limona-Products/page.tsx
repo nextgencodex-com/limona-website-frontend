@@ -277,8 +277,60 @@ const LimonaProducts = () => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState<string>('All Products');
+
+  // Fetch products from database and merge with hardcoded products
+  useEffect(() => {
+    const fetchDatabaseProducts = async () => {
+      try {
+        console.log('Fetching products from API...');
+        const response = await fetch('http://localhost:5000/api/v1/products', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response:', data);
+          console.log('Fetched products from database:', data.data.length);
+          
+          const dbProducts: Product[] = data.data
+            .filter((p: any) => {
+              const isActive = p.is_active === 1 || p.is_active === true;
+              console.log(`Product ${p.name}: is_active=${p.is_active}, filtered=${isActive}`);
+              return isActive;
+            })
+            .map((p: any) => ({
+              id: p.id + 1000, // Offset IDs to avoid conflicts with hardcoded products
+              name: p.name,
+              category: p.category as any,
+              subcategory: p.subcategory,
+              price: Number(p.price),
+              image: p.image_url || '/images/Products/placeholder.png',
+              description: p.description || '',
+              colors: p.color ? p.color.split(',').map((c: string) => c.trim()) : ['#000000'],
+              dateAdded: p.created_at || new Date().toISOString(),
+            }));
+          
+          console.log('Processed database products:', dbProducts.length);
+          console.log('Database products:', dbProducts);
+          // Append database products to hardcoded products
+          const mergedProducts = [...initialProducts, ...dbProducts];
+          console.log('Total products after merge:', mergedProducts.length);
+          setProducts(mergedProducts);
+        } else {
+          console.error('API response not OK:', response.status);
+        }
+      } catch (error) {
+        console.error('Failed to fetch database products:', error);
+      }
+    };
+
+    fetchDatabaseProducts();
+  }, []);
   const [selectedWomenSubcategory, setSelectedWomenSubcategory] = useState<string>('All Women');
-  const [priceRange, setPriceRange] = useState<[number, number]>([1000, 10000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [gridView, setGridView] = useState<3 | 6 | 9>(9);
@@ -420,7 +472,7 @@ const LimonaProducts = () => {
   const handleResetFilters = () => {
     setSelectedCategory('All Products');
     setSelectedWomenSubcategory('All Women');
-    setPriceRange([1000, 10000]);
+    setPriceRange([0, 10000]);
     setSearchTerm('');
     setSortBy('default');
     setShowAllMobile(false);

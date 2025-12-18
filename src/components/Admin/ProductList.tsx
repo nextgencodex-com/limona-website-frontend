@@ -73,7 +73,7 @@ export default function ProductList({ products, onEdit, onDelete }: ProductListP
                                     </div>
                                 </td>
                                 <td>{product.category}</td>
-                                <td className={styles.price}>${product.price.toFixed(2)}</td>
+                                <td className={styles.price}>${Number(product.price).toFixed(2)}</td>
                                 <td>
                                     <span
                                         className={`${styles.stock} ${

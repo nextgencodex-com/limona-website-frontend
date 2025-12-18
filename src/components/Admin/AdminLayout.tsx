@@ -1,6 +1,7 @@
 "use client";
-import { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { ReactNode, useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import styles from "./AdminLayout.module.css";
 
 interface AdminLayoutProps {
@@ -9,16 +10,22 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
     const router = useRouter();
+    const pathname = usePathname();
+    const [adminUser, setAdminUser] = useState<any>({ username: "Admin" });
+
+    useEffect(() => {
+        // Load admin user from localStorage on client side only
+        const storedAdmin = localStorage.getItem("admin");
+        if (storedAdmin) {
+            setAdminUser(JSON.parse(storedAdmin));
+        }
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("admin");
         router.push("/Admin/Login");
     };
-
-    const adminUser = typeof window !== "undefined" 
-        ? JSON.parse(localStorage.getItem("admin") || "{}") 
-        : {};
 
     return (
         <div className={styles.layout}>
@@ -29,26 +36,41 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 </div>
 
                 <nav className={styles.nav}>
-                    <a href="/Admin/Dashboard" className={styles.navItem}>
+                    <Link 
+                        href="/Admin/Dashboard" 
+                        className={`${styles.navItem} ${pathname === "/Admin/Dashboard" ? styles.active : ""}`}
+                    >
                         <span className={styles.navIcon}>📊</span>
                         Dashboard
-                    </a>
-                    <a href="/Admin/Dashboard" className={`${styles.navItem} ${styles.active}`}>
+                    </Link>
+                    {/* <Link 
+                        href="/Admin/Products" 
+                        className={`${styles.navItem} ${pathname === "/Admin/Products" ? styles.active : ""}`}
+                    >
                         <span className={styles.navIcon}>📦</span>
                         Products
-                    </a>
-                    <a href="#" className={styles.navItem}>
+                    </Link>
+                    <Link 
+                        href="/Admin/Orders" 
+                        className={`${styles.navItem} ${pathname === "/Admin/Orders" ? styles.active : ""}`}
+                    >
                         <span className={styles.navIcon}>📝</span>
                         Orders
-                    </a>
-                    <a href="#" className={styles.navItem}>
+                    </Link>
+                    <Link 
+                        href="/Admin/Customers" 
+                        className={`${styles.navItem} ${pathname === "/Admin/Customers" ? styles.active : ""}`}
+                    >
                         <span className={styles.navIcon}>👥</span>
                         Customers
-                    </a>
-                    <a href="#" className={styles.navItem}>
+                    </Link>
+                    <Link 
+                        href="/Admin/Settings" 
+                        className={`${styles.navItem} ${pathname === "/Admin/Settings" ? styles.active : ""}`}
+                    >
                         <span className={styles.navIcon}>⚙️</span>
                         Settings
-                    </a>
+                    </Link> */}
                 </nav>
             </aside>
 
@@ -56,10 +78,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <header className={styles.header}>
                     <div className={styles.headerLeft}>
                         <h3 className={styles.greeting}>
-                            Welcome back, {adminUser.username || "Admin"}!
+                            Welcome back, {adminUser.username}!
                         </h3>
                     </div>
                     <div className={styles.headerRight}>
+                        <Link href="/" className={styles.backButton}>
+                            ← Back to Website
+                        </Link>
                         <button onClick={handleLogout} className={styles.logoutButton}>
                             Logout
                         </button>

@@ -160,6 +160,80 @@
     cursor: not-allowed;
 }
 
+.colorPalette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.colorButton {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.colorButton:hover {
+    transform: scale(1.1);
+    border-color: #333;
+}
+
+.colorButtonSelected {
+    border-color: #000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.checkmark {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+}
+
+.sizeSelector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.sizeButton {
+    min-width: 60px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.sizeButton:hover {
+    border-color: #000;
+    transform: scale(1.05);
+}
+
+.sizeButtonSelected {
+    background: #000;
+    color: white;
+    border-color: #000;
+}
+
+.helpText {
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
 @media (max-width: 768px) {
     .formRow {
         grid-template-columns: 1fr;
