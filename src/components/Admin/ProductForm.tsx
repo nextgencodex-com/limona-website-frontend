@@ -103,7 +103,9 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
             const checked = (e.target as HTMLInputElement).checked;
             setFormData({ ...formData, [name]: checked });
         } else if (name === "price" || name === "stock") {
-            setFormData({ ...formData, [name]: parseFloat(value) || 0 });
+            // Allow empty string during typing, convert to number only if valid
+            const numValue = value === '' ? '' : value;
+            setFormData({ ...formData, [name]: numValue as any });
         } else {
             // Reset subcategory when category changes and it's not Women
             if (name === "category" && value !== "Women") {
@@ -307,13 +309,9 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             name="price"
                             value={formData.price}
                             onChange={handleChange}
-                            onFocus={(e) => {
-                                if (formData.price === 0) {
-                                    setFormData({ ...formData, price: '' as any });
-                                }
-                            }}
                             className={styles.input}
                             step="0.01"
+                            min="0"
                             required
                         />
                     </div>
@@ -324,12 +322,8 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             name="stock"
                             value={formData.stock}
                             onChange={handleChange}
-                            onFocus={(e) => {
-                                if (formData.stock === 0) {
-                                    setFormData({ ...formData, stock: '' as any });
-                                }
-                            }}
                             className={styles.input}
+                            min="0"
                             required
                         />
                     </div>
