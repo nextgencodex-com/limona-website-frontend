@@ -8,6 +8,7 @@ interface Product {
     description: string;
     price: number;
     category: string;
+    subcategory?: string;
     size?: string;
     color?: string;
     stock: number;
@@ -20,9 +21,11 @@ interface ProductListProps {
     products: Product[];
     onEdit: (product: Product) => void;
     onDelete: (id: number) => void;
+    onToggleActive: (product: Product) => void;
+    onToggleStock: (product: Product) => void;
 }
 
-export default function ProductList({ products, onEdit, onDelete }: ProductListProps) {
+export default function ProductList({ products, onEdit, onDelete, onToggleActive, onToggleStock }: ProductListProps) {
     return (
         <div className={styles.productList}>
             <div className={styles.tableContainer}>
@@ -35,7 +38,6 @@ export default function ProductList({ products, onEdit, onDelete }: ProductListP
                             <th>Price</th>
                             <th>Stock</th>
                             <th>Status</th>
-                            <th>Featured</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -72,10 +74,20 @@ export default function ProductList({ products, onEdit, onDelete }: ProductListP
                                         )}
                                     </div>
                                 </td>
-                                <td>{product.category}</td>
+                                <td>
+                                    <div>
+                                        <div>{product.category}</div>
+                                        {product.subcategory && (
+                                            <div className={styles.meta}>
+                                                {product.subcategory}
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
                                 <td className={styles.price}>${Number(product.price).toFixed(2)}</td>
                                 <td>
-                                    <span
+                                    <button
+                                        onClick={() => onToggleStock(product)}
                                         className={`${styles.stock} ${
                                             product.stock === 0
                                                 ? styles.outOfStock
@@ -83,27 +95,23 @@ export default function ProductList({ products, onEdit, onDelete }: ProductListP
                                                 ? styles.lowStock
                                                 : styles.inStock
                                         }`}
+                                        title={product.stock === 0 ? "Mark as In Stock" : "Mark as Out of Stock"}
                                     >
                                         {product.stock}
-                                    </span>
+                                    </button>
                                 </td>
                                 <td>
-                                    <span
+                                    <button
+                                        onClick={() => onToggleActive(product)}
                                         className={`${styles.badge} ${
                                             product.is_active
                                                 ? styles.badgeActive
                                                 : styles.badgeInactive
                                         }`}
+                                        title={product.is_active ? "Deactivate" : "Activate"}
                                     >
                                         {product.is_active ? "Active" : "Inactive"}
-                                    </span>
-                                </td>
-                                <td>
-                                    {product.featured && (
-                                        <span className={`${styles.badge} ${styles.badgeFeatured}`}>
-                                            ⭐ Featured
-                                        </span>
-                                    )}
+                                    </button>
                                 </td>
                                 <td>
                                     <div className={styles.actions}>

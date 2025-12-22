@@ -102,6 +102,69 @@ export default function AdminDashboard() {
         setShowForm(true);
     };
 
+    const handleToggleActive = async (product: Product) => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:5000/api/v1/products/${product.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    ...product,
+                    is_active: !product.is_active,
+                }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showNotification(
+                    `Product ${!product.is_active ? "activated" : "deactivated"} successfully!`,
+                    "success"
+                );
+                fetchProducts();
+            } else {
+                showNotification("Failed to update product status", "error");
+            }
+        } catch (error) {
+            console.error("Error updating product:", error);
+            showNotification("Error updating product status", "error");
+        }
+    };
+
+    const handleToggleStock = async (product: Product) => {
+        try {
+            const token = localStorage.getItem("token");
+            const newStock = product.stock === 0 ? 1 : 0;
+            const response = await fetch(`http://localhost:5000/api/v1/products/${product.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    ...product,
+                    stock: newStock,
+                }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showNotification(
+                    `Product marked as ${newStock === 0 ? "out of stock" : "in stock"}!`,
+                    "success"
+                );
+                fetchProducts();
+            } else {
+                showNotification("Failed to update stock status", "error");
+            }
+        } catch (error) {
+            console.error("Error updating stock:", error);
+            showNotification("Error updating stock status", "error");
+        }
+    };
+
     const handleDeleteProduct = async (id: number) => {
         if (!confirm("Are you sure you want to delete this product?")) {
             return;
@@ -211,6 +274,8 @@ export default function AdminDashboard() {
                     products={products}
                     onEdit={handleEditProduct}
                     onDelete={handleDeleteProduct}
+                    onToggleActive={handleToggleActive}
+                    onToggleStock={handleToggleStock}
                 />
             </div>
         </AdminLayout>

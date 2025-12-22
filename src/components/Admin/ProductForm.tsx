@@ -307,6 +307,11 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             name="price"
                             value={formData.price}
                             onChange={handleChange}
+                            onFocus={(e) => {
+                                if (formData.price === 0) {
+                                    setFormData({ ...formData, price: '' as any });
+                                }
+                            }}
                             className={styles.input}
                             step="0.01"
                             required
@@ -319,6 +324,11 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             name="stock"
                             value={formData.stock}
                             onChange={handleChange}
+                            onFocus={(e) => {
+                                if (formData.stock === 0) {
+                                    setFormData({ ...formData, stock: '' as any });
+                                }
+                            }}
                             className={styles.input}
                             required
                         />
@@ -474,16 +484,6 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             className={styles.checkbox}
                         />
                         Active (Show on website)
-                    </label>
-                    <label className={styles.checkboxLabel}>
-                        <input
-                            type="checkbox"
-                            name="featured"
-                            checked={formData.featured}
-                            onChange={handleChange}
-                            className={styles.checkbox}
-                        />
-                        Featured Product
                     </label>
                     <label className={styles.checkboxLabel}>
                         <input

@@ -101,16 +101,19 @@ const LatestArrivals = () => {
     };
   }, []);
 
-  // Navigation functions for mobile carousel
+  // Navigation functions for desktop carousel
+  const productsPerPage = 4;
+  const maxIndex = Math.max(0, latestProducts.length - productsPerPage);
+  
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === latestProducts.length - 1 ? 0 : prevIndex + 1
+      prevIndex < maxIndex ? prevIndex + 1 : prevIndex
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? latestProducts.length - 1 : prevIndex - 1
+      prevIndex > 0 ? prevIndex - 1 : prevIndex
     );
   };
 
@@ -171,34 +174,43 @@ const LatestArrivals = () => {
           {/* Products Grid */}
           <div className="relative">
             {/* Navigation Arrows */}
-            {latestProducts.length > 4 && (
-              <>
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all duration-300"
-                  aria-label="Previous products"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all duration-300"
-                  aria-label="Next products"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </>
+            {/* Left Arrow - Only show if not at the start */}
+            {currentIndex > 0 && (
+              <button
+                onClick={prevSlide}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all duration-300"
+                aria-label="Previous product"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+            
+            {/* Right Arrow - Only show if there are more products to the right */}
+            {currentIndex < maxIndex && (
+              <button
+                onClick={nextSlide}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all duration-300"
+                aria-label="Next product"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             )}
             
             {/* Scrollable Container */}
-            <div className="overflow-hidden">
+            <div 
+              className="overflow-hidden mx-auto"
+              style={{ maxWidth: `${4 * 280 + 3 * 24}px` }}
+            >
               <div 
                 className="flex gap-6 transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentIndex * (280 + 24)}px)` }}
+                style={{ 
+                  transform: `translateX(-${currentIndex * (280 + 24)}px)`,
+                  width: `${latestProducts.length * (280 + 24)}px`
+                }}
               >
                 {latestProducts.map((product) => (
                   <div
@@ -296,14 +308,14 @@ const LatestArrivals = () => {
           {/* Dots Indicator */}
           {latestProducts.length > 4 && (
             <div className="flex justify-center gap-2 mt-6">
-              {Array.from({ length: Math.ceil(latestProducts.length / 4) }).map((_, index) => (
+              {latestProducts.map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => setCurrentIndex(index * 4)}
+                  onClick={() => setCurrentIndex(index)}
                   className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    Math.floor(currentIndex / 4) === index ? 'bg-black w-8' : 'bg-gray-300'
+                    currentIndex === index ? 'bg-black w-8' : 'bg-gray-300'
                   }`}
-                  aria-label={`Go to slide ${index + 1}`}
+                  aria-label={`Go to product ${index + 1}`}
                 />
               ))}
             </div>
