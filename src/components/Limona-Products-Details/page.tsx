@@ -251,13 +251,46 @@ const ProductDetails = () => {
   ];
 
   useEffect(() => {
-    if (productId) {
+    const fetchProduct = async () => {
+      if (!productId) return;
+
+      try {
+        // First try to fetch from API
+        const response = await fetch(`http://localhost:5000/api/v1/products/${productId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            const apiProduct = data.data;
+            const transformedProduct: Product = {
+              id: apiProduct.id,
+              name: apiProduct.name,
+              category: apiProduct.category,
+              price: Number(apiProduct.price),
+              image: apiProduct.image_url || '/images/Products/placeholder.png',
+              description: apiProduct.description || '',
+              colors: apiProduct.color ? apiProduct.color.split(',').map((c: string) => c.trim()) : ['#000000'],
+              sizes: apiProduct.size || 'S, M, L, XL',
+              colorNames: apiProduct.color || 'Black',
+              additionalImages: apiProduct.images ? JSON.parse(apiProduct.images) : [apiProduct.image_url]
+            };
+            setProduct(transformedProduct);
+            setSelectedColor(transformedProduct.colors[0]);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching product from API:', error);
+      }
+
+      // Fallback to hardcoded products if API fails
       const foundProduct = allProducts.find(p => p.id === parseInt(productId));
       if (foundProduct) {
         setProduct(foundProduct);
-        setSelectedColor(foundProduct.colors[2]); 
+        setSelectedColor(foundProduct.colors[0]);
       }
-    }
+    };
+
+    fetchProduct();
   }, [productId]);
 
   const handleBuyWhatsApp = () => {

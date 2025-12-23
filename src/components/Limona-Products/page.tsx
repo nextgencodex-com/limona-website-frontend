@@ -343,6 +343,7 @@ const LimonaProducts = () => {
     };
   }, []);
   const [selectedWomenSubcategory, setSelectedWomenSubcategory] = useState<string>('All Women');
+  const [selectedGymwearSubcategory, setSelectedGymwearSubcategory] = useState<string>('All Gym wear');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -352,20 +353,23 @@ const LimonaProducts = () => {
   const [showAllMobile, setShowAllMobile] = useState(false);
   const [showComingSoonMessage, setShowComingSoonMessage] = useState(false);
   const [showWomenSubcategoryDropdown, setShowWomenSubcategoryDropdown] = useState(false);
+  const [showGymwearSubcategoryDropdown, setShowGymwearSubcategoryDropdown] = useState(false);
   const [comingSoonCategory, setComingSoonCategory] = useState<string>('');
   
   const itemsPerPage = 9;
 
-  const categories = ['All Products', 'Men', 'Women', 'Kids', 'Accessories', 'Limited Edition'];
+  const categories = ['All Products', 'Men', 'Women', 'Kids', 'Accessories', 'Limited Edition', 'Gym wear'];
   const womenSubcategories = ['All Women', 'Blouse', 'Frock', 'Full Kits', 'T-Shirt'];
+  const gymwearSubcategories = ['All Gym wear', 'Men', 'Women'];
 
   const handleCategorySelect = (category: string) => {
     setCurrentPage(1); // Reset to page 1 when category changes
     
-    if (category === 'Limited Edition' || category === 'Accessories') {
+    if (category === 'Limited Edition' || category === 'Accessories' || category === 'Gym wear') {
       // First, reset to All Products view
       setSelectedCategory('All Products');
       setSelectedWomenSubcategory('All Women');
+      setSelectedGymwearSubcategory('All Gym wear');
       
       // Set the URL parameter
       const params = new URLSearchParams(searchParams?.toString() || '');
@@ -407,13 +411,19 @@ const LimonaProducts = () => {
     setCurrentPage(1); // Reset to page 1 when subcategory changes
   };
 
+  const handleGymwearSubcategorySelect = (subcategory: string) => {
+    setSelectedGymwearSubcategory(subcategory);
+    setShowGymwearSubcategoryDropdown(false);
+    setCurrentPage(1); // Reset to page 1 when subcategory changes
+  };
+
   useEffect(() => {
     const categoryFromUrl = searchParams?.get('category');
     
     // Only process if we have a category parameter
     if (categoryFromUrl && categories.includes(categoryFromUrl)) {
-      // If it's Accessories or Limited Edition, just show the message
-      if (categoryFromUrl === 'Limited Edition' || categoryFromUrl === 'Accessories') {
+      // If it's Accessories, Limited Edition, or Gym wear, just show the message
+      if (categoryFromUrl === 'Limited Edition' || categoryFromUrl === 'Accessories' || categoryFromUrl === 'Gym wear') {
         setSelectedCategory('All Products'); // Reset to All Products view
         setShowComingSoonMessage(true);
         setComingSoonCategory(categoryFromUrl);
@@ -451,6 +461,11 @@ const LimonaProducts = () => {
       if (selectedCategory === 'Women' && selectedWomenSubcategory !== 'All Women') {
         filtered = filtered.filter(product => product.subcategory === selectedWomenSubcategory);
         console.log('After subcategory filter:', filtered.length);
+      }
+      
+      if (selectedCategory === 'Gym wear' && selectedGymwearSubcategory !== 'All Gym wear') {
+        filtered = filtered.filter(product => product.subcategory === selectedGymwearSubcategory);
+        console.log('After Gym wear subcategory filter:', filtered.length);
       }
     }
 
@@ -733,6 +748,52 @@ const LimonaProducts = () => {
                           {subcategory}
                         </span>
                         {selectedWomenSubcategory === subcategory && (
+                          <div className="w-2 h-2 rounded-full bg-gray-900"></div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Gym wear Subcategory Selector for Mobile */}
+            {selectedCategory === 'Gym wear' && (
+              <div className="mb-4">
+                <button
+                  onClick={() => setShowGymwearSubcategoryDropdown(!showGymwearSubcategoryDropdown)}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                      {selectedGymwearSubcategory === 'All Gym wear' ? 'All Gym wear' : `Gym wear - ${selectedGymwearSubcategory}`}
+                    </span>
+                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">
+                      {filteredProducts.length} items
+                    </span>
+                  </div>
+                  <ChevronDown size={18} className={`text-gray-500 transition-transform duration-200 ${showGymwearSubcategoryDropdown ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Gym wear Subcategory Dropdown Menu for Mobile */}
+                {showGymwearSubcategoryDropdown && (
+                  <div className="mt-2 bg-white rounded-lg shadow-lg border border-gray-200">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                        Gym wear Categories
+                      </p>
+                    </div>
+                    
+                    {gymwearSubcategories.map((subcategory) => (
+                      <button
+                        key={subcategory}
+                        onClick={() => handleGymwearSubcategorySelect(subcategory)}
+                        className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${selectedGymwearSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                      >
+                        <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                          {subcategory}
+                        </span>
+                        {selectedGymwearSubcategory === subcategory && (
                           <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                         )}
                       </button>
@@ -1091,6 +1152,54 @@ const LimonaProducts = () => {
                       )}
                     </div>
                   )}
+
+                  {/* Gym wear Subcategory Dropdown - Only shown when Gym wear category is selected */}
+                  {selectedCategory === 'Gym wear' && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowGymwearSubcategoryDropdown(!showGymwearSubcategoryDropdown)}
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors duration-200"
+                      >
+                        <span className="text-sm text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                          {selectedGymwearSubcategory === 'All Gym wear' ? 'All Gym wear' : `Gym wear - ${selectedGymwearSubcategory}`}
+                        </span>
+                        <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${showGymwearSubcategoryDropdown ? 'rotate-180' : ''}`} />
+                      </button>
+                      
+                      {/* Subcategory Dropdown Menu */}
+                      {showGymwearSubcategoryDropdown && (
+                        <>
+                          <div 
+                            className="fixed inset-0 z-40" 
+                            onClick={() => setShowGymwearSubcategoryDropdown(false)}
+                          />
+                          
+                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
+                            <div className="px-4 py-2 border-b border-gray-100">
+                              <p className="text-xs text-gray-500 font-medium tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                                Gym wear Categories
+                              </p>
+                            </div>
+                            
+                            {gymwearSubcategories.map((subcategory) => (
+                              <button
+                                key={subcategory}
+                                onClick={() => handleGymwearSubcategorySelect(subcategory)}
+                                className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 ${selectedGymwearSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                              >
+                                <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                                  {subcategory}
+                                </span>
+                                {selectedGymwearSubcategory === subcategory && (
+                                  <div className="w-2 h-2 rounded-full bg-gray-900"></div>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                   
                   {sortBy !== 'default' && (
                     <p className="text-sm text-gray-500 tracking-[0.07em] font-geologica flex items-center gap-1" style={{ letterSpacing: '0.07em' }}>
@@ -1102,13 +1211,31 @@ const LimonaProducts = () => {
               </div>
             </div>
 
-            {/* Products Grid - Show empty state for Accessories and Limited Edition */}
-            {(selectedCategory === 'Accessories' || selectedCategory === 'Limited Edition') ? (
+            {/* Products Grid - Show empty state for Accessories, Limited Edition, and Gym wear */}
+            {(selectedCategory === 'Accessories' || selectedCategory === 'Limited Edition' || selectedCategory === 'Gym wear') ? (
               <div className="text-center py-16">
                 <div className="max-w-md mx-auto">
-                  <div className={`p-6 rounded-xl ${selectedCategory === 'Limited Edition' ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200' : 'bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200'}`}>
-                    <div className={`p-3 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center ${selectedCategory === 'Limited Edition' ? 'bg-yellow-100' : 'bg-blue-100'}`}>
-                      <Clock className={selectedCategory === 'Limited Edition' ? 'text-yellow-600' : 'text-blue-600'} size={32} />
+                  <div className={`p-6 rounded-xl ${
+                    selectedCategory === 'Limited Edition' 
+                      ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200' 
+                      : selectedCategory === 'Gym wear'
+                      ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200'
+                      : 'bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200'
+                  }`}>
+                    <div className={`p-3 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center ${
+                      selectedCategory === 'Limited Edition' 
+                        ? 'bg-yellow-100' 
+                        : selectedCategory === 'Gym wear'
+                        ? 'bg-green-100'
+                        : 'bg-blue-100'
+                    }`}>
+                      <Clock className={
+                        selectedCategory === 'Limited Edition' 
+                          ? 'text-yellow-600' 
+                          : selectedCategory === 'Gym wear'
+                          ? 'text-green-600'
+                          : 'text-blue-600'
+                      } size={32} />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                       Coming Soon
@@ -1116,6 +1243,8 @@ const LimonaProducts = () => {
                     <p className="text-gray-600 mb-4 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                       {selectedCategory === 'Limited Edition' 
                         ? "Our exclusive limited edition collection is being prepared with special care."
+                        : selectedCategory === 'Gym wear'
+                        ? "Our gym wear collection is being curated with high-performance athletic wear."
                         : "Our accessories collection is being curated with the latest fashion trends."
                       }
                     </p>

@@ -30,6 +30,7 @@ const categories = [
     "Kids",
     "Accessories",
     "Limited Edition",
+    "Gym wear",
 ];
 
 const availableColors = [
@@ -50,6 +51,7 @@ const availableColors = [
 const availableSizes = ["S", "M", "L", "XL", "2XL"];
 
 const womenSubcategories = ["Blouse", "Frock", "Full Kits", "T-Shirt"];
+const gymwearSubcategories = ["Men", "Women"];
 
 export default function ProductForm({ product, onClose, onSuccess }: ProductFormProps) {
     const [formData, setFormData] = useState<Product>({
@@ -107,8 +109,8 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
             const numValue = value === '' ? '' : value;
             setFormData({ ...formData, [name]: numValue as any });
         } else {
-            // Reset subcategory when category changes and it's not Women
-            if (name === "category" && value !== "Women") {
+            // Reset subcategory when category changes and it's not Women or Gym wear
+            if (name === "category" && value !== "Women" && value !== "Gym wear") {
                 setFormData({ ...formData, [name]: value, subcategory: "" });
             } else {
                 setFormData({ ...formData, [name]: value });
@@ -357,6 +359,24 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             >
                                 <option value="">Select subcategory</option>
                                 {womenSubcategories.map((sub) => (
+                                    <option key={sub} value={sub}>
+                                        {sub}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                    {formData.category === "Gym wear" && (
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Subcategory</label>
+                            <select
+                                name="subcategory"
+                                value={formData.subcategory || ""}
+                                onChange={handleChange}
+                                className={styles.select}
+                            >
+                                <option value="">Select subcategory</option>
+                                {gymwearSubcategories.map((sub) => (
                                     <option key={sub} value={sub}>
                                         {sub}
                                     </option>
