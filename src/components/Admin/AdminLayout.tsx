@@ -43,6 +43,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         <span className={styles.navIcon}>📊</span>
                         Dashboard
                     </Link>
+                    <Link 
+                        href="/Admin/Categories" 
+                        className={`${styles.navItem} ${pathname === "/Admin/Categories" ? styles.active : ""}`}
+                    >
+                        <span className={styles.navIcon}>📂</span>
+                        Categories
+                    </Link>
                     {/* <Link 
                         href="/Admin/Products" 
                         className={`${styles.navItem} ${pathname === "/Admin/Products" ? styles.active : ""}`}

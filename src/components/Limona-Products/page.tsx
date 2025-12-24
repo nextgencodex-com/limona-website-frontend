@@ -342,8 +342,7 @@ const LimonaProducts = () => {
       window.removeEventListener('productUpdated', handleProductUpdate);
     };
   }, []);
-  const [selectedWomenSubcategory, setSelectedWomenSubcategory] = useState<string>('All Women');
-  const [selectedGymwearSubcategory, setSelectedGymwearSubcategory] = useState<string>('All Gym wear');
+  const [selectedSubcategory, setSelectedSubcategory] = useState<{[key: string]: string}>({});
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -352,24 +351,83 @@ const LimonaProducts = () => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showAllMobile, setShowAllMobile] = useState(false);
   const [showComingSoonMessage, setShowComingSoonMessage] = useState(false);
-  const [showWomenSubcategoryDropdown, setShowWomenSubcategoryDropdown] = useState(false);
-  const [showGymwearSubcategoryDropdown, setShowGymwearSubcategoryDropdown] = useState(false);
+  const [showSubcategoryDropdown, setShowSubcategoryDropdown] = useState<string | null>(null);
   const [comingSoonCategory, setComingSoonCategory] = useState<string>('');
   
   const itemsPerPage = 9;
 
-  const categories = ['All Products', 'Men', 'Women', 'Kids', 'Accessories', 'Limited Edition', 'Gym wear'];
-  const womenSubcategories = ['All Women', 'Blouse', 'Frock', 'Full Kits', 'T-Shirt'];
-  const gymwearSubcategories = ['All Gym wear', 'Men', 'Women'];
+  // Fetch categories from database
+  const [categories, setCategories] = useState<string[]>(['All Products']);
+  const [categorySubcategories, setCategorySubcategories] = useState<{[key: string]: string[]}>({});
+  const [comingSoonCategories, setComingSoonCategories] = useState<string[]>([]);
+  const [comingSoonSubcategories, setComingSoonSubcategories] = useState<{[key: string]: string[]}>({});
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/categories');
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Separate "All Products" from other categories
+          const allProductsCat = data.find((cat: any) => cat.name === 'All Products');
+          const otherCategories = data.filter((cat: any) => cat.name !== 'All Products');
+          
+          // Always put "All Products" first, then other categories
+          const sortedCategories = allProductsCat 
+            ? [allProductsCat, ...otherCategories] 
+            : otherCategories;
+          
+          const categoryNames = sortedCategories.map((cat: any) => cat.name);
+          const comingSoon = sortedCategories.filter((cat: any) => cat.coming_soon).map((cat: any) => cat.name);
+          
+          // Build subcategories map and coming soon subcategories map (exclude All Products from having subcategories)
+          const subMap: {[key: string]: string[]} = {};
+          const comingSoonSubMap: {[key: string]: string[]} = {};
+          sortedCategories.forEach((cat: any) => {
+            if (cat.name !== 'All Products' && cat.subcategories && cat.subcategories.length > 0) {
+              subMap[cat.name] = ['All ' + cat.name, ...cat.subcategories.map((sub: any) => sub.name)];
+              // Track which subcategories are coming soon
+              const comingSoonSubs = cat.subcategories
+                .filter((sub: any) => sub.coming_soon)
+                .map((sub: any) => sub.name);
+              if (comingSoonSubs.length > 0) {
+                comingSoonSubMap[cat.name] = comingSoonSubs;
+              }
+            }
+          });
+          
+          setCategories(categoryNames);
+          setComingSoonCategories(comingSoon);
+          setCategorySubcategories(subMap);
+          setComingSoonSubcategories(comingSoonSubMap);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Helper function to get current subcategory selection
+  const getCurrentSubcategory = (category: string) => {
+    return selectedSubcategory[category] || `All ${category}`;
+  };
+
+  // Helper function to get subcategories for a category
+  const getSubcategories = (category: string) => {
+    return categorySubcategories[category] || [];
+  };
 
   const handleCategorySelect = (category: string) => {
     setCurrentPage(1); // Reset to page 1 when category changes
     
-    if (category === 'Limited Edition' || category === 'Accessories' || category === 'Gym wear') {
+    // Check if category is in coming soon list
+    if (comingSoonCategories.includes(category)) {
       // First, reset to All Products view
       setSelectedCategory('All Products');
-      setSelectedWomenSubcategory('All Women');
-      setSelectedGymwearSubcategory('All Gym wear');
+      setSelectedSubcategory({});
       
       // Set the URL parameter
       const params = new URLSearchParams(searchParams?.toString() || '');
@@ -396,24 +454,17 @@ const LimonaProducts = () => {
     setSelectedCategory(category);
     setComingSoonCategory('');
     
-    if (category !== 'Women') {
-      setSelectedWomenSubcategory('All Women');
-    }
-    
     const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('category', category);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const handleWomenSubcategorySelect = (subcategory: string) => {
-    setSelectedWomenSubcategory(subcategory);
-    setShowWomenSubcategoryDropdown(false);
-    setCurrentPage(1); // Reset to page 1 when subcategory changes
-  };
-
-  const handleGymwearSubcategorySelect = (subcategory: string) => {
-    setSelectedGymwearSubcategory(subcategory);
-    setShowGymwearSubcategoryDropdown(false);
+  const handleSubcategorySelect = (category: string, subcategory: string) => {
+    setSelectedSubcategory(prev => ({
+      ...prev,
+      [category]: subcategory
+    }));
+    setShowSubcategoryDropdown(null);
     setCurrentPage(1); // Reset to page 1 when subcategory changes
   };
 
@@ -422,8 +473,8 @@ const LimonaProducts = () => {
     
     // Only process if we have a category parameter
     if (categoryFromUrl && categories.includes(categoryFromUrl)) {
-      // If it's Accessories, Limited Edition, or Gym wear, just show the message
-      if (categoryFromUrl === 'Limited Edition' || categoryFromUrl === 'Accessories' || categoryFromUrl === 'Gym wear') {
+      // Check if it's a coming soon category
+      if (comingSoonCategories.includes(categoryFromUrl)) {
         setSelectedCategory('All Products'); // Reset to All Products view
         setShowComingSoonMessage(true);
         setComingSoonCategory(categoryFromUrl);
@@ -439,11 +490,11 @@ const LimonaProducts = () => {
         }, 3000);
       } 
       // For other categories, set them normally
-      else if (categoryFromUrl !== 'Limited Edition' && categoryFromUrl !== 'Accessories') {
+      else if (!comingSoonCategories.includes(categoryFromUrl)) {
         setSelectedCategory(categoryFromUrl);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, categories, comingSoonCategories]);
 
   useEffect(() => {
     let filtered = products;
@@ -458,14 +509,11 @@ const LimonaProducts = () => {
       filtered = filtered.filter(product => product.category === selectedCategory);
       console.log('After category filter:', filtered.length);
       
-      if (selectedCategory === 'Women' && selectedWomenSubcategory !== 'All Women') {
-        filtered = filtered.filter(product => product.subcategory === selectedWomenSubcategory);
+      // Apply subcategory filter for any category that has subcategories
+      const currentSubcat = getCurrentSubcategory(selectedCategory);
+      if (currentSubcat && !currentSubcat.startsWith('All ')) {
+        filtered = filtered.filter(product => product.subcategory === currentSubcat);
         console.log('After subcategory filter:', filtered.length);
-      }
-      
-      if (selectedCategory === 'Gym wear' && selectedGymwearSubcategory !== 'All Gym wear') {
-        filtered = filtered.filter(product => product.subcategory === selectedGymwearSubcategory);
-        console.log('After Gym wear subcategory filter:', filtered.length);
       }
     }
 
@@ -500,7 +548,7 @@ const LimonaProducts = () => {
     }
 
     setFilteredProducts(sorted);
-  }, [selectedCategory, selectedWomenSubcategory, priceRange, searchTerm, products, sortBy]);
+  }, [selectedCategory, selectedSubcategory, priceRange, searchTerm, products, sortBy]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -522,7 +570,7 @@ const LimonaProducts = () => {
 
   const handleResetFilters = () => {
     setSelectedCategory('All Products');
-    setSelectedWomenSubcategory('All Women');
+    setSelectedSubcategory({});
     setPriceRange([0, 10000]);
     setSearchTerm('');
     setSortBy('newest');
@@ -711,89 +759,43 @@ const LimonaProducts = () => {
               </div>
             </div>
 
-            {/* Women Subcategory Dropdown for Mobile - ALWAYS VISIBLE WHEN WOMEN CATEGORY IS SELECTED */}
-            {selectedCategory === 'Women' && (
+            {/* Subcategory Dropdown for Mobile - Show for any category with subcategories */}
+            {getSubcategories(selectedCategory).length > 0 && (
               <div className="mb-4">
                 <button
-                  onClick={() => setShowWomenSubcategoryDropdown(!showWomenSubcategoryDropdown)}
+                  onClick={() => setShowSubcategoryDropdown(showSubcategoryDropdown === selectedCategory ? null : selectedCategory)}
                   className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                      {selectedWomenSubcategory === 'All Women' ? 'All Women\'s Products' : selectedWomenSubcategory}
+                      {getCurrentSubcategory(selectedCategory)}
                     </span>
                     <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">
                       {filteredProducts.length} items
                     </span>
                   </div>
-                  <ChevronDown size={18} className={`text-gray-500 transition-transform duration-200 ${showWomenSubcategoryDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={18} className={`text-gray-500 transition-transform duration-200 ${showSubcategoryDropdown === selectedCategory ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Women Subcategory Dropdown Menu for Mobile */}
-                {showWomenSubcategoryDropdown && (
+                {/* Subcategory Dropdown Menu for Mobile */}
+                {showSubcategoryDropdown === selectedCategory && (
                   <div className="mt-2 bg-white rounded-lg shadow-lg border border-gray-200">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                        Women's Categories
+                        {selectedCategory} Categories
                       </p>
                     </div>
                     
-                    {womenSubcategories.map((subcategory) => (
+                    {getSubcategories(selectedCategory).map((subcategory) => (
                       <button
                         key={subcategory}
-                        onClick={() => handleWomenSubcategorySelect(subcategory)}
-                        className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${selectedWomenSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                        onClick={() => handleSubcategorySelect(selectedCategory, subcategory)}
+                        className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${getCurrentSubcategory(selectedCategory) === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                       >
                         <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                           {subcategory}
                         </span>
-                        {selectedWomenSubcategory === subcategory && (
-                          <div className="w-2 h-2 rounded-full bg-gray-900"></div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Gym wear Subcategory Selector for Mobile */}
-            {selectedCategory === 'Gym wear' && (
-              <div className="mb-4">
-                <button
-                  onClick={() => setShowGymwearSubcategoryDropdown(!showGymwearSubcategoryDropdown)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                      {selectedGymwearSubcategory === 'All Gym wear' ? 'All Gym wear' : `Gym wear - ${selectedGymwearSubcategory}`}
-                    </span>
-                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">
-                      {filteredProducts.length} items
-                    </span>
-                  </div>
-                  <ChevronDown size={18} className={`text-gray-500 transition-transform duration-200 ${showGymwearSubcategoryDropdown ? 'rotate-180' : ''}`} />
-                </button>
-
-                {/* Gym wear Subcategory Dropdown Menu for Mobile */}
-                {showGymwearSubcategoryDropdown && (
-                  <div className="mt-2 bg-white rounded-lg shadow-lg border border-gray-200">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                        Gym wear Categories
-                      </p>
-                    </div>
-                    
-                    {gymwearSubcategories.map((subcategory) => (
-                      <button
-                        key={subcategory}
-                        onClick={() => handleGymwearSubcategorySelect(subcategory)}
-                        className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${selectedGymwearSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
-                      >
-                        <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                          {subcategory}
-                        </span>
-                        {selectedGymwearSubcategory === subcategory && (
+                        {getCurrentSubcategory(selectedCategory) === subcategory && (
                           <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                         )}
                       </button>
@@ -1105,92 +1107,44 @@ const LimonaProducts = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  {/* Women's Subcategory Dropdown - Only shown when Women category is selected */}
-                  {selectedCategory === 'Women' && (
+                  {/* Dynamic Subcategory Dropdown - Shown for any category with subcategories */}
+                  {getSubcategories(selectedCategory).length > 0 && (
                     <div className="relative">
                       <button
-                        onClick={() => setShowWomenSubcategoryDropdown(!showWomenSubcategoryDropdown)}
+                        onClick={() => setShowSubcategoryDropdown(showSubcategoryDropdown === selectedCategory ? null : selectedCategory)}
                         className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors duration-200"
                       >
                         <span className="text-sm text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                          {selectedWomenSubcategory === 'All Women' ? 'All Women' : selectedWomenSubcategory}
+                          {getCurrentSubcategory(selectedCategory)}
                         </span>
-                        <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${showWomenSubcategoryDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${showSubcategoryDropdown === selectedCategory ? 'rotate-180' : ''}`} />
                       </button>
                       
                       {/* Subcategory Dropdown Menu */}
-                      {showWomenSubcategoryDropdown && (
+                      {showSubcategoryDropdown === selectedCategory && (
                         <>
                           <div 
                             className="fixed inset-0 z-40" 
-                            onClick={() => setShowWomenSubcategoryDropdown(false)}
+                            onClick={() => setShowSubcategoryDropdown(null)}
                           />
                           
                           <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
                             <div className="px-4 py-2 border-b border-gray-100">
                               <p className="text-xs text-gray-500 font-medium tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                                Women's Categories
+                                {selectedCategory} Categories
                               </p>
                             </div>
                             
-                            {womenSubcategories.map((subcategory) => (
+                            {getSubcategories(selectedCategory).map((subcategory) => (
                               <button
                                 key={subcategory}
-                                onClick={() => handleWomenSubcategorySelect(subcategory)}
-                                className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 ${selectedWomenSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                                onClick={() => handleSubcategorySelect(selectedCategory, subcategory)}
+                                className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 ${getCurrentSubcategory(selectedCategory) === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                               >
                                 <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                                   {subcategory}
                                 </span>
-                                {selectedWomenSubcategory === subcategory && (
-                                  <div className="w-2 h-2 rounded-full bg-gray-900"></div>
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Gym wear Subcategory Dropdown - Only shown when Gym wear category is selected */}
-                  {selectedCategory === 'Gym wear' && (
-                    <div className="relative">
-                      <button
-                        onClick={() => setShowGymwearSubcategoryDropdown(!showGymwearSubcategoryDropdown)}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors duration-200"
-                      >
-                        <span className="text-sm text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                          {selectedGymwearSubcategory === 'All Gym wear' ? 'All Gym wear' : `Gym wear - ${selectedGymwearSubcategory}`}
-                        </span>
-                        <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${showGymwearSubcategoryDropdown ? 'rotate-180' : ''}`} />
-                      </button>
-                      
-                      {/* Subcategory Dropdown Menu */}
-                      {showGymwearSubcategoryDropdown && (
-                        <>
-                          <div 
-                            className="fixed inset-0 z-40" 
-                            onClick={() => setShowGymwearSubcategoryDropdown(false)}
-                          />
-                          
-                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
-                            <div className="px-4 py-2 border-b border-gray-100">
-                              <p className="text-xs text-gray-500 font-medium tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                                Gym wear Categories
-                              </p>
-                            </div>
-                            
-                            {gymwearSubcategories.map((subcategory) => (
-                              <button
-                                key={subcategory}
-                                onClick={() => handleGymwearSubcategorySelect(subcategory)}
-                                className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 ${selectedGymwearSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
-                              >
-                                <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                                  {subcategory}
-                                </span>
-                                {selectedGymwearSubcategory === subcategory && (
+                                {getCurrentSubcategory(selectedCategory) === subcategory && (
                                   <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                                 )}
                               </button>
@@ -1211,41 +1165,22 @@ const LimonaProducts = () => {
               </div>
             </div>
 
-            {/* Products Grid - Show empty state for Accessories, Limited Edition, and Gym wear */}
-            {(selectedCategory === 'Accessories' || selectedCategory === 'Limited Edition' || selectedCategory === 'Gym wear') ? (
+            {/* Products Grid - Show empty state for coming soon categories or subcategories */}
+            {(comingSoonCategories.includes(selectedCategory) || 
+              (comingSoonSubcategories[selectedCategory]?.includes(getCurrentSubcategory(selectedCategory)) && getCurrentSubcategory(selectedCategory) !== `All ${selectedCategory}`)) ? (
               <div className="text-center py-16">
                 <div className="max-w-md mx-auto">
-                  <div className={`p-6 rounded-xl ${
-                    selectedCategory === 'Limited Edition' 
-                      ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200' 
-                      : selectedCategory === 'Gym wear'
-                      ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200'
-                      : 'bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200'
-                  }`}>
-                    <div className={`p-3 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center ${
-                      selectedCategory === 'Limited Edition' 
-                        ? 'bg-yellow-100' 
-                        : selectedCategory === 'Gym wear'
-                        ? 'bg-green-100'
-                        : 'bg-blue-100'
-                    }`}>
-                      <Clock className={
-                        selectedCategory === 'Limited Edition' 
-                          ? 'text-yellow-600' 
-                          : selectedCategory === 'Gym wear'
-                          ? 'text-green-600'
-                          : 'text-blue-600'
-                      } size={32} />
+                  <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
+                    <div className="p-3 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-blue-100">
+                      <Clock className="text-blue-600" size={32} />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                       Coming Soon
                     </h3>
                     <p className="text-gray-600 mb-4 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                      {selectedCategory === 'Limited Edition' 
-                        ? "Our exclusive limited edition collection is being prepared with special care."
-                        : selectedCategory === 'Gym wear'
-                        ? "Our gym wear collection is being curated with high-performance athletic wear."
-                        : "Our accessories collection is being curated with the latest fashion trends."
+                      {getCurrentSubcategory(selectedCategory) !== `All ${selectedCategory}` && comingSoonSubcategories[selectedCategory]?.includes(getCurrentSubcategory(selectedCategory))
+                        ? `Our ${getCurrentSubcategory(selectedCategory)} collection is being prepared with special care.`
+                        : `Our ${selectedCategory} collection is being curated with the latest fashion trends.`
                       }
                     </p>
                     <button
