@@ -21,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geologica.variable} font-geologica antialiased`}>
+      <body 
+        className={`${geologica.variable} font-geologica antialiased`}
+        suppressHydrationWarning
+      >
         <CartProvider>
           {children}
         </CartProvider>

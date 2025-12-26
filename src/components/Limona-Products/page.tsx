@@ -277,26 +277,157 @@ const LimonaProducts = () => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState<string>('All Products');
-  const [selectedWomenSubcategory, setSelectedWomenSubcategory] = useState<string>('All Women');
-  const [priceRange, setPriceRange] = useState<[number, number]>([1000, 10000]);
+
+  // Fetch products from database and merge with hardcoded products
+  useEffect(() => {
+    const fetchDatabaseProducts = async () => {
+      try {
+        console.log('Fetching products from API...');
+        const response = await fetch('http://localhost:5000/api/v1/products', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response:', data);
+          console.log('Fetched products from database:', data.data.length);
+          
+          const dbProducts: Product[] = data.data
+            .filter((p: any) => {
+              const isActive = p.is_active === 1 || p.is_active === true;
+              console.log(`Product ${p.name}: is_active=${p.is_active}, filtered=${isActive}`);
+              return isActive;
+            })
+            .map((p: any) => ({
+              id: p.id + 1000, // Offset IDs to avoid conflicts with hardcoded products
+              name: p.name,
+              category: p.category as any,
+              subcategory: p.subcategory,
+              price: Number(p.price),
+              image: p.image_url || '/images/Products/placeholder.png',
+              description: p.description || '',
+              colors: p.color ? p.color.split(',').map((c: string) => c.trim()) : ['#000000'],
+              dateAdded: p.created_at || new Date().toISOString(),
+            }));
+          
+          console.log('Processed database products:', dbProducts.length);
+          console.log('Database products:', dbProducts);
+          // Append database products to hardcoded products
+          const mergedProducts = [...initialProducts, ...dbProducts];
+          console.log('Total products after merge:', mergedProducts.length);
+          setProducts(mergedProducts);
+        } else {
+          console.error('API response not OK:', response.status);
+        }
+      } catch (error) {
+        console.error('Failed to fetch database products:', error);
+      }
+    };
+
+    fetchDatabaseProducts();
+    
+    // Listen for product updates
+    const handleProductUpdate = () => {
+      console.log('Product updated - refreshing...');
+      fetchDatabaseProducts();
+    };
+    
+    window.addEventListener('productUpdated', handleProductUpdate);
+    
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('productUpdated', handleProductUpdate);
+    };
+  }, []);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<{[key: string]: string}>({});
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [gridView, setGridView] = useState<3 | 6 | 9>(9);
-  const [sortBy, setSortBy] = useState<string>('default');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [sortBy, setSortBy] = useState<string>('newest');
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showAllMobile, setShowAllMobile] = useState(false);
   const [showComingSoonMessage, setShowComingSoonMessage] = useState(false);
-  const [showWomenSubcategoryDropdown, setShowWomenSubcategoryDropdown] = useState(false);
+  const [showSubcategoryDropdown, setShowSubcategoryDropdown] = useState<string | null>(null);
   const [comingSoonCategory, setComingSoonCategory] = useState<string>('');
+  
+  const itemsPerPage = 9;
 
-  const categories = ['All Products', 'Men', 'Women', 'Kids', 'Accessories', 'Limited Edition'];
-  const womenSubcategories = ['All Women', 'Blouse', 'Frock', 'Full Kits', 'T-Shirt'];
+  // Fetch categories from database
+  const [categories, setCategories] = useState<string[]>(['All Products']);
+  const [categorySubcategories, setCategorySubcategories] = useState<{[key: string]: string[]}>({});
+  const [comingSoonCategories, setComingSoonCategories] = useState<string[]>([]);
+  const [comingSoonSubcategories, setComingSoonSubcategories] = useState<{[key: string]: string[]}>({});
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/categories');
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Separate "All Products" from other categories
+          const allProductsCat = data.find((cat: any) => cat.name === 'All Products');
+          const otherCategories = data.filter((cat: any) => cat.name !== 'All Products');
+          
+          // Always put "All Products" first, then other categories
+          const sortedCategories = allProductsCat 
+            ? [allProductsCat, ...otherCategories] 
+            : otherCategories;
+          
+          const categoryNames = sortedCategories.map((cat: any) => cat.name);
+          const comingSoon = sortedCategories.filter((cat: any) => cat.coming_soon).map((cat: any) => cat.name);
+          
+          // Build subcategories map and coming soon subcategories map (exclude All Products from having subcategories)
+          const subMap: {[key: string]: string[]} = {};
+          const comingSoonSubMap: {[key: string]: string[]} = {};
+          sortedCategories.forEach((cat: any) => {
+            if (cat.name !== 'All Products' && cat.subcategories && cat.subcategories.length > 0) {
+              subMap[cat.name] = ['All ' + cat.name, ...cat.subcategories.map((sub: any) => sub.name)];
+              // Track which subcategories are coming soon
+              const comingSoonSubs = cat.subcategories
+                .filter((sub: any) => sub.coming_soon)
+                .map((sub: any) => sub.name);
+              if (comingSoonSubs.length > 0) {
+                comingSoonSubMap[cat.name] = comingSoonSubs;
+              }
+            }
+          });
+          
+          setCategories(categoryNames);
+          setComingSoonCategories(comingSoon);
+          setCategorySubcategories(subMap);
+          setComingSoonSubcategories(comingSoonSubMap);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Helper function to get current subcategory selection
+  const getCurrentSubcategory = (category: string) => {
+    return selectedSubcategory[category] || `All ${category}`;
+  };
+
+  // Helper function to get subcategories for a category
+  const getSubcategories = (category: string) => {
+    return categorySubcategories[category] || [];
+  };
 
   const handleCategorySelect = (category: string) => {
-    if (category === 'Limited Edition' || category === 'Accessories') {
+    setCurrentPage(1); // Reset to page 1 when category changes
+    
+    // Check if category is in coming soon list
+    if (comingSoonCategories.includes(category)) {
       // First, reset to All Products view
       setSelectedCategory('All Products');
-      setSelectedWomenSubcategory('All Women');
+      setSelectedSubcategory({});
       
       // Set the URL parameter
       const params = new URLSearchParams(searchParams?.toString() || '');
@@ -323,18 +454,18 @@ const LimonaProducts = () => {
     setSelectedCategory(category);
     setComingSoonCategory('');
     
-    if (category !== 'Women') {
-      setSelectedWomenSubcategory('All Women');
-    }
-    
     const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('category', category);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const handleWomenSubcategorySelect = (subcategory: string) => {
-    setSelectedWomenSubcategory(subcategory);
-    setShowWomenSubcategoryDropdown(false);
+  const handleSubcategorySelect = (category: string, subcategory: string) => {
+    setSelectedSubcategory(prev => ({
+      ...prev,
+      [category]: subcategory
+    }));
+    setShowSubcategoryDropdown(null);
+    setCurrentPage(1); // Reset to page 1 when subcategory changes
   };
 
   useEffect(() => {
@@ -342,8 +473,8 @@ const LimonaProducts = () => {
     
     // Only process if we have a category parameter
     if (categoryFromUrl && categories.includes(categoryFromUrl)) {
-      // If it's Accessories or Limited Edition, just show the message
-      if (categoryFromUrl === 'Limited Edition' || categoryFromUrl === 'Accessories') {
+      // Check if it's a coming soon category
+      if (comingSoonCategories.includes(categoryFromUrl)) {
         setSelectedCategory('All Products'); // Reset to All Products view
         setShowComingSoonMessage(true);
         setComingSoonCategory(categoryFromUrl);
@@ -359,20 +490,30 @@ const LimonaProducts = () => {
         }, 3000);
       } 
       // For other categories, set them normally
-      else if (categoryFromUrl !== 'Limited Edition' && categoryFromUrl !== 'Accessories') {
+      else if (!comingSoonCategories.includes(categoryFromUrl)) {
         setSelectedCategory(categoryFromUrl);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, categories, comingSoonCategories]);
 
   useEffect(() => {
     let filtered = products;
 
+    console.log('Filtering products:', {
+      totalProducts: products.length,
+      selectedCategory,
+      willFilter: selectedCategory !== 'All Products'
+    });
+
     if (selectedCategory !== 'All Products') {
       filtered = filtered.filter(product => product.category === selectedCategory);
+      console.log('After category filter:', filtered.length);
       
-      if (selectedCategory === 'Women' && selectedWomenSubcategory !== 'All Women') {
-        filtered = filtered.filter(product => product.subcategory === selectedWomenSubcategory);
+      // Apply subcategory filter for any category that has subcategories
+      const currentSubcat = getCurrentSubcategory(selectedCategory);
+      if (currentSubcat && !currentSubcat.startsWith('All ')) {
+        filtered = filtered.filter(product => product.subcategory === currentSubcat);
+        console.log('After subcategory filter:', filtered.length);
       }
     }
 
@@ -398,44 +539,62 @@ const LimonaProducts = () => {
       case 'newest':
         sorted.sort((a, b) => new Date(b.dateAdded || '').getTime() - new Date(a.dateAdded || '').getTime());
         break;
+      case 'oldest':
+        sorted.sort((a, b) => new Date(a.dateAdded || '').getTime() - new Date(b.dateAdded || '').getTime());
+        break;
       default:
-        sorted.sort((a, b) => a.id - b.id);
+        sorted.sort((a, b) => new Date(b.dateAdded || '').getTime() - new Date(a.dateAdded || '').getTime());
         break;
     }
 
     setFilteredProducts(sorted);
-  }, [selectedCategory, selectedWomenSubcategory, priceRange, searchTerm, products, sortBy]);
+  }, [selectedCategory, selectedSubcategory, priceRange, searchTerm, products, sortBy]);
 
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  
   const displayedProducts = useMemo(() => {
-    return filteredProducts.slice(0, gridView);
-  }, [filteredProducts, gridView]);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage, itemsPerPage]);
 
   const mobileDisplayedProducts = useMemo(() => {
     if (showAllMobile) {
-      return filteredProducts.slice(0, gridView);
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return filteredProducts.slice(startIndex, endIndex);
     }
     return filteredProducts.slice(0, 4);
-  }, [filteredProducts, showAllMobile, gridView]);
+  }, [filteredProducts, showAllMobile, currentPage, itemsPerPage]);
 
   const handleResetFilters = () => {
     setSelectedCategory('All Products');
-    setSelectedWomenSubcategory('All Women');
-    setPriceRange([1000, 10000]);
+    setSelectedSubcategory({});
+    setPriceRange([0, 10000]);
     setSearchTerm('');
-    setSortBy('default');
+    setSortBy('newest');
     setShowAllMobile(false);
     setComingSoonCategory('');
+    setCurrentPage(1);
     
     router.push('?', { scroll: false });
   };
 
-  const toggleGridView = () => {
-    if (gridView === 9) {
-      setGridView(6);
-    } else if (gridView === 6) {
-      setGridView(3);
-    } else {
-      setGridView(9);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      handlePageChange(currentPage + 1);
     }
   };
 
@@ -453,7 +612,8 @@ const LimonaProducts = () => {
       case 'price-low': return 'Price: Low to High';
       case 'price-high': return 'Price: High to Low';
       case 'newest': return 'Newest First';
-      default: return 'Default Sorting';
+      case 'oldest': return 'Oldest First';
+      default: return 'Newest First';
     }
   };
 
@@ -526,24 +686,21 @@ const LimonaProducts = () => {
         </div>
       </section>
 
-      {/* Coming Soon Notification - Updated for both Accessories and Limited Edition */}
+      {/* Coming Soon Notification - Dynamic for all categories and subcategories */}
       {showComingSoonMessage && (
         <div className="container mx-auto px-4 mb-4 animate-fade-in">
           <div className="max-w-6xl mx-auto">
-            <div className={`rounded-xl p-4 shadow-sm ${comingSoonCategory === 'Limited Edition' ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200' : 'bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200'}`}>
+            <div className="rounded-xl p-4 shadow-sm bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
               <div className="flex items-center">
-                <div className={`p-2 rounded-lg mr-3 ${comingSoonCategory === 'Limited Edition' ? 'bg-yellow-100' : 'bg-blue-100'}`}>
-                  <Clock className={comingSoonCategory === 'Limited Edition' ? 'text-yellow-600' : 'text-blue-600'} size={22} />
+                <div className="p-2 rounded-lg mr-3 bg-blue-100">
+                  <Clock className="text-blue-600" size={22} />
                 </div>
                 <div className="flex-1">
                   <h4 className="font-bold text-gray-800 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                    Coming Soon: {comingSoonCategory === 'Limited Edition' ? 'Limited Edition Collection' : 'Accessories Collection'}
+                    Coming Soon: {comingSoonCategory} Collection
                   </h4>
                   <p className="text-gray-600 text-sm mt-1 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                    {comingSoonCategory === 'Limited Edition' 
-                      ? "We're working on something special! Our exclusive limited edition products will be available soon."
-                      : "Our accessories collection is being curated! Check back soon for stylish accessories to complement your look."
-                    }
+                    Our {comingSoonCategory} collection is being curated with special care. Check back soon!
                   </p>
                 </div>
               </div>
@@ -599,43 +756,43 @@ const LimonaProducts = () => {
               </div>
             </div>
 
-            {/* Women Subcategory Dropdown for Mobile - ALWAYS VISIBLE WHEN WOMEN CATEGORY IS SELECTED */}
-            {selectedCategory === 'Women' && (
+            {/* Subcategory Dropdown for Mobile - Show for any category with subcategories */}
+            {getSubcategories(selectedCategory).length > 0 && (
               <div className="mb-4">
                 <button
-                  onClick={() => setShowWomenSubcategoryDropdown(!showWomenSubcategoryDropdown)}
+                  onClick={() => setShowSubcategoryDropdown(showSubcategoryDropdown === selectedCategory ? null : selectedCategory)}
                   className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                      {selectedWomenSubcategory === 'All Women' ? 'All Women\'s Products' : selectedWomenSubcategory}
+                      {getCurrentSubcategory(selectedCategory)}
                     </span>
                     <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">
                       {filteredProducts.length} items
                     </span>
                   </div>
-                  <ChevronDown size={18} className={`text-gray-500 transition-transform duration-200 ${showWomenSubcategoryDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={18} className={`text-gray-500 transition-transform duration-200 ${showSubcategoryDropdown === selectedCategory ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Women Subcategory Dropdown Menu for Mobile */}
-                {showWomenSubcategoryDropdown && (
+                {/* Subcategory Dropdown Menu for Mobile */}
+                {showSubcategoryDropdown === selectedCategory && (
                   <div className="mt-2 bg-white rounded-lg shadow-lg border border-gray-200">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                        Women's Categories
+                        {selectedCategory} Categories
                       </p>
                     </div>
                     
-                    {womenSubcategories.map((subcategory) => (
+                    {getSubcategories(selectedCategory).map((subcategory) => (
                       <button
                         key={subcategory}
-                        onClick={() => handleWomenSubcategorySelect(subcategory)}
-                        className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${selectedWomenSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                        onClick={() => handleSubcategorySelect(selectedCategory, subcategory)}
+                        className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${getCurrentSubcategory(selectedCategory) === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                       >
                         <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                           {subcategory}
                         </span>
-                        {selectedWomenSubcategory === subcategory && (
+                        {getCurrentSubcategory(selectedCategory) === subcategory && (
                           <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                         )}
                       </button>
@@ -661,15 +818,29 @@ const LimonaProducts = () => {
                   </div>
                   
                   <button
-                    onClick={() => handleSort('default')}
-                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'default' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                    onClick={() => handleSort('newest')}
+                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                   >
                     <div className="w-5 h-5 flex items-center justify-center">
-                      {sortBy === 'default' && (
+                      {sortBy === 'newest' && (
                         <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                       )}
                     </div>
-                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Default Sorting</span>
+                    <Clock size={16} className="text-gray-500" />
+                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => handleSort('oldest')}
+                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                  >
+                    <div className="w-5 h-5 flex items-center justify-center">
+                      {sortBy === 'oldest' && (
+                        <div className="w-2 h-2 rounded-full bg-gray-900"></div>
+                      )}
+                    </div>
+                    <Clock size={16} className="text-gray-500" />
+                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Oldest First</span>
                   </button>
                   
                   <button
@@ -696,19 +867,6 @@ const LimonaProducts = () => {
                     </div>
                     <ChevronDown size={16} className="text-gray-500" />
                     <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Price: High to Low</span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleSort('newest')}
-                    className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
-                  >
-                    <div className="w-5 h-5 flex items-center justify-center">
-                      {sortBy === 'newest' && (
-                        <div className="w-2 h-2 rounded-full bg-gray-900"></div>
-                      )}
-                    </div>
-                    <Clock size={16} className="text-gray-500" />
-                    <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
                   </button>
                 </div>
               </>
@@ -852,18 +1010,8 @@ const LimonaProducts = () => {
                   />
                 </div>
 
-                {/* Grid and Sort Controls */}
+                {/* Sort Controls */}
                 <div className="flex items-center gap-2 self-end sm:self-center">
-                  <button
-                    onClick={toggleGridView}
-                    className="p-2 text-gray-600 hover:text-gray-900 rounded-md transition-colors duration-200"
-                    title={`Show ${gridView === 9 ? '9' : gridView === 6 ? '6' : '3'} products`}
-                  >
-                    {gridView === 9 && <Grid3x3 size={22} />}
-                    {gridView === 6 && <Grid2x2 size={22} />}
-                    {gridView === 3 && <Grid size={22} />}
-                  </button>
-
                   <div className="relative">
                     <button
                       onClick={() => setShowSortMenu(!showSortMenu)}
@@ -890,15 +1038,29 @@ const LimonaProducts = () => {
                           </div>
                           
                           <button
-                            onClick={() => handleSort('default')}
-                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'default' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                            onClick={() => handleSort('newest')}
+                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                           >
                             <div className="w-5 h-5 flex items-center justify-center">
-                              {sortBy === 'default' && (
+                              {sortBy === 'newest' && (
                                 <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                               )}
                             </div>
-                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Default Sorting</span>
+                            <Clock size={16} className="text-gray-500" />
+                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => handleSort('oldest')}
+                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                          >
+                            <div className="w-5 h-5 flex items-center justify-center">
+                              {sortBy === 'oldest' && (
+                                <div className="w-2 h-2 rounded-full bg-gray-900"></div>
+                              )}
+                            </div>
+                            <Clock size={16} className="text-gray-500" />
+                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Oldest First</span>
                           </button>
                           
                           <button
@@ -926,19 +1088,6 @@ const LimonaProducts = () => {
                             <ChevronDown size={16} className="text-gray-500" />
                             <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Price: High to Low</span>
                           </button>
-                          
-                          <button
-                            onClick={() => handleSort('newest')}
-                            className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
-                          >
-                            <div className="w-5 h-5 flex items-center justify-center">
-                              {sortBy === 'newest' && (
-                                <div className="w-2 h-2 rounded-full bg-gray-900"></div>
-                              )}
-                            </div>
-                            <Clock size={16} className="text-gray-500" />
-                            <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>Newest First</span>
-                          </button>
                         </div>
                       </>
                     )}
@@ -955,44 +1104,44 @@ const LimonaProducts = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  {/* Women's Subcategory Dropdown - Only shown when Women category is selected */}
-                  {selectedCategory === 'Women' && (
+                  {/* Dynamic Subcategory Dropdown - Shown for any category with subcategories */}
+                  {getSubcategories(selectedCategory).length > 0 && (
                     <div className="relative">
                       <button
-                        onClick={() => setShowWomenSubcategoryDropdown(!showWomenSubcategoryDropdown)}
+                        onClick={() => setShowSubcategoryDropdown(showSubcategoryDropdown === selectedCategory ? null : selectedCategory)}
                         className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors duration-200"
                       >
                         <span className="text-sm text-gray-700 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                          {selectedWomenSubcategory === 'All Women' ? 'All Women' : selectedWomenSubcategory}
+                          {getCurrentSubcategory(selectedCategory)}
                         </span>
-                        <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${showWomenSubcategoryDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${showSubcategoryDropdown === selectedCategory ? 'rotate-180' : ''}`} />
                       </button>
                       
                       {/* Subcategory Dropdown Menu */}
-                      {showWomenSubcategoryDropdown && (
+                      {showSubcategoryDropdown === selectedCategory && (
                         <>
                           <div 
                             className="fixed inset-0 z-40" 
-                            onClick={() => setShowWomenSubcategoryDropdown(false)}
+                            onClick={() => setShowSubcategoryDropdown(null)}
                           />
                           
                           <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1">
                             <div className="px-4 py-2 border-b border-gray-100">
                               <p className="text-xs text-gray-500 font-medium tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                                Women's Categories
+                                {selectedCategory} Categories
                               </p>
                             </div>
                             
-                            {womenSubcategories.map((subcategory) => (
+                            {getSubcategories(selectedCategory).map((subcategory) => (
                               <button
                                 key={subcategory}
-                                onClick={() => handleWomenSubcategorySelect(subcategory)}
-                                className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 ${selectedWomenSubcategory === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
+                                onClick={() => handleSubcategorySelect(selectedCategory, subcategory)}
+                                className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 ${getCurrentSubcategory(selectedCategory) === subcategory ? 'bg-gray-50 text-gray-900' : 'text-gray-700'}`}
                               >
                                 <span className="text-sm tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                                   {subcategory}
                                 </span>
-                                {selectedWomenSubcategory === subcategory && (
+                                {getCurrentSubcategory(selectedCategory) === subcategory && (
                                   <div className="w-2 h-2 rounded-full bg-gray-900"></div>
                                 )}
                               </button>
@@ -1013,21 +1162,22 @@ const LimonaProducts = () => {
               </div>
             </div>
 
-            {/* Products Grid - Show empty state for Accessories and Limited Edition */}
-            {(selectedCategory === 'Accessories' || selectedCategory === 'Limited Edition') ? (
+            {/* Products Grid - Show empty state for coming soon categories or subcategories */}
+            {(comingSoonCategories.includes(selectedCategory) || 
+              (comingSoonSubcategories[selectedCategory]?.includes(getCurrentSubcategory(selectedCategory)) && getCurrentSubcategory(selectedCategory) !== `All ${selectedCategory}`)) ? (
               <div className="text-center py-16">
                 <div className="max-w-md mx-auto">
-                  <div className={`p-6 rounded-xl ${selectedCategory === 'Limited Edition' ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200' : 'bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200'}`}>
-                    <div className={`p-3 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center ${selectedCategory === 'Limited Edition' ? 'bg-yellow-100' : 'bg-blue-100'}`}>
-                      <Clock className={selectedCategory === 'Limited Edition' ? 'text-yellow-600' : 'text-blue-600'} size={32} />
+                  <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
+                    <div className="p-3 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-blue-100">
+                      <Clock className="text-blue-600" size={32} />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
                       Coming Soon
                     </h3>
                     <p className="text-gray-600 mb-4 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                      {selectedCategory === 'Limited Edition' 
-                        ? "Our exclusive limited edition collection is being prepared with special care."
-                        : "Our accessories collection is being curated with the latest fashion trends."
+                      {getCurrentSubcategory(selectedCategory) !== `All ${selectedCategory}` && comingSoonSubcategories[selectedCategory]?.includes(getCurrentSubcategory(selectedCategory))
+                        ? `Our ${getCurrentSubcategory(selectedCategory)} collection is being prepared with special care.`
+                        : `Our ${selectedCategory} collection is being curated with the latest fashion trends.`
                       }
                     </p>
                     <button
@@ -1230,20 +1380,156 @@ const LimonaProducts = () => {
                   ))}
                 </div>
 
+                {/* Pagination - Desktop */}
+                {totalPages > 1 && (
+                  <div className="hidden lg:flex mt-8 items-center justify-center gap-2">
+                    {/* Previous Button */}
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                      className={`px-4 py-2 rounded-lg font-medium tracking-[0.07em] text-sm font-geologica transition-colors ${
+                        currentPage === 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                      }`}
+                      style={{ letterSpacing: '0.07em' }}
+                    >
+                      Previous
+                    </button>
+
+                    {/* Page Numbers */}
+                    <div className="flex items-center gap-1">
+                      {[...Array(totalPages)].map((_, index) => {
+                        const page = index + 1;
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => handlePageChange(page)}
+                              className={`w-10 h-10 rounded-lg font-medium tracking-[0.07em] text-sm font-geologica transition-colors ${
+                                currentPage === page
+                                  ? 'bg-gray-800 text-white'
+                                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                              }`}
+                              style={{ letterSpacing: '0.07em' }}
+                            >
+                              {page}
+                            </button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="px-2 text-gray-400">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+
+                    {/* Next Button */}
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`px-4 py-2 rounded-lg font-medium tracking-[0.07em] text-sm font-geologica transition-colors ${
+                        currentPage === totalPages
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                      }`}
+                      style={{ letterSpacing: '0.07em' }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+
                 {/* Show More/Less Button for Mobile */}
-                {filteredProducts.length > 4 && (
+                {filteredProducts.length > 4 && !showAllMobile && (
                   <div className="lg:hidden mt-4 text-center">
                     <button
                       onClick={toggleMobileView}
                       className="bg-gray-800 text-white px-5 py-2.5 rounded-lg hover:bg-gray-900 transition-colors duration-200 font-bold tracking-[0.07em] text-xs flex items-center justify-center gap-1.5 mx-auto font-geologica"
                       style={{ letterSpacing: '0.07em' }}
                     >
-                      {showAllMobile ? 'Show Less' : `Show More (${filteredProducts.length - 4} more)`}
-                      {showAllMobile ? (
-                        <ChevronUp size={14} />
-                      ) : (
-                        <ChevronDown size={14} />
-                      )}
+                      Show More ({filteredProducts.length - 4} more)
+                      <ChevronDown size={14} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Pagination - Mobile (shown when showAllMobile is true) */}
+                {showAllMobile && totalPages > 1 && (
+                  <div className="lg:hidden mt-4 flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                        className={`p-2 rounded-lg font-medium text-xs font-geologica transition-colors ${
+                          currentPage === 1
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                        }`}
+                      >
+                        Prev
+                      </button>
+
+                      <div className="flex items-center gap-1">
+                        {[...Array(totalPages)].map((_, index) => {
+                          const page = index + 1;
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 && page <= currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => handlePageChange(page)}
+                                className={`w-8 h-8 rounded-lg font-medium text-xs font-geologica transition-colors ${
+                                  currentPage === page
+                                    ? 'bg-gray-800 text-white'
+                                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          } else if (page === currentPage - 2 || page === currentPage + 2) {
+                            return (
+                              <span key={page} className="px-1 text-gray-400 text-xs">
+                                ...
+                              </span>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className={`p-2 rounded-lg font-medium text-xs font-geologica transition-colors ${
+                          currentPage === totalPages
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-300'
+                        }`}
+                      >
+                        Next
+                      </button>
+                    </div>
+                    <button
+                      onClick={toggleMobileView}
+                      className="text-gray-600 text-xs font-geologica flex items-center gap-1"
+                    >
+                      Show Less <ChevronUp size={14} />
                     </button>
                   </div>
                 )}

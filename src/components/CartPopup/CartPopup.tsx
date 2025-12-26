@@ -20,26 +20,13 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }
     closeCart,
   } = useCart();
 
-  /* ✅ CLEAR CART ONLY WHEN PAGE IS REFRESHED */
-  useEffect(() => {
-    const handleRefresh = () => {
-      clearCart();
-    };
-
-    window.addEventListener('beforeunload', handleRefresh);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleRefresh);
-    };
-  }, [clearCart]);
-
   // Close cart when Escape key is pressed
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         closeCart();
       }
-    };
+    }
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);

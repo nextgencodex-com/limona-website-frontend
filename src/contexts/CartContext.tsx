@@ -44,23 +44,29 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage after component mounts (client-side only)
   useEffect(() => {
-    const savedCart = localStorage.getItem('limona-cart');
-    if (savedCart) {
+    setMounted(true);
+    if (typeof window !== 'undefined') {
       try {
-        setItems(JSON.parse(savedCart));
+        const savedCart = localStorage.getItem('limona-cart');
+        if (savedCart) {
+          setItems(JSON.parse(savedCart));
+        }
       } catch (error) {
         console.error('Error loading cart from localStorage:', error);
       }
     }
   }, []);
 
-  // Save cart to localStorage whenever items change
+  // Save cart to localStorage whenever items change (only after mounted)
   useEffect(() => {
-    localStorage.setItem('limona-cart', JSON.stringify(items));
-  }, [items]);
+    if (mounted && typeof window !== 'undefined') {
+      localStorage.setItem('limona-cart', JSON.stringify(items));
+    }
+  }, [items, mounted]);
 
   const addItem = (product: Omit<CartItem, 'quantity'>) => {
     setItems(currentItems => {

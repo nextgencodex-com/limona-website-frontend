@@ -34,6 +34,7 @@ const ProductDetails = () => {
   const productId = searchParams.get('id');
   const { addItem, openCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('S');
   const [quantity, setQuantity] = useState(1);
@@ -53,8 +54,7 @@ const ProductDetails = () => {
     { name: 'Skirts', image: '/images/Size/skirt.jpg' },
   ];
 
-
-  // Sample products data 
+  // Sample products data - matches Products page
   const allProducts: Product[] = [
     {
       id: 1,
@@ -62,35 +62,21 @@ const ProductDetails = () => {
       category: 'All Products',
       price: 1500,
       image: '/images/Products/Subtract (5).png',
-      description: 'Our Essential Unisex T-Shirt is designed to be the foundation of your wardrobe. Made from 100% soft cotton, it\'s lightweight, breathable, and comfortable for everyday wear. The regular fit makes it versatile for both men and women, pairing effortlessly with jeans, shorts, or layers.\n\nWhether you\'re at work, out with friends, or relaxing at home, this T-shirt delivers comfort without compromising on style',
+      description: 'Premium soft cotton t-shirt perfect for everyday wear. Unisex design',
       colors: ['#8A38F5', '#FACC15', '#010111', '#FF0000'],
       dateAdded: '2024-01-15',
-      fit: 'Regular Fit',
-      fabric: '100% Cotton (180 GSM, pre-shrunk for durability)',
-      fitType: 'Regular / Unisex',
-      neckline: 'Classic crew neck',
-      sizes: 'XS, S, M, L, XL, XXL',
-      colorNames: 'Black, White, Navy, Olive, Maroon',
-      care: 'Machine wash cold, tumble dry low',
-      additionalImages: [
-        '/images/Products/Subtract (5).png',
-        '/images/Products/Subtract (5).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (5).png', '/images/Products/Subtract (5).png']
     },
-
     {
       id: 2,
       name: 'Urban Hoodie',
       category: 'Men',
       price: 3500,
       image: '/images/Products/Subtract (6).png',
-      description: 'Comfortable pullover hoodie with adjustable drawstring. Perfect for casual outings.',
+      description: 'Comfortable pullover hoodie with adjustable drawstring.',
       colors: ['#FFFFFF', '#024023', '#F79EFF', '#FBFF00'],
       dateAdded: '2024-02-10',
-      additionalImages: [
-        '/images/Products/Subtract (6).png',
-        '/images/Products/Subtract (6).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (6).png', '/images/Products/Subtract (6).png']
     },
     {
       id: 3,
@@ -101,10 +87,7 @@ const ProductDetails = () => {
       description: 'Classic denim jacket with a modern twist. Durable and stylish.',
       colors: ['#597585', '#1E1E1E'],
       dateAdded: '2024-01-20',
-        additionalImages: [
-        '/images/Products/Subtract (7).png',
-        '/images/Products/Subtract (7).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (7).png', '/images/Products/Subtract (7).png']
     },
     {
       id: 4,
@@ -112,13 +95,10 @@ const ProductDetails = () => {
       category: 'Men',
       price: 2200,
       image: '/images/Products/Subtract (8).png',
-      description: 'Comfortable joggers with elastic waistband. Perfect for casual outings',
+      description: 'Comfortable joggers with elastic waistband.Perfect for casual outings',
       colors: ['#9D8E8A', '#024023', '#7A5300', '#FBFF00'],
       dateAdded: '2024-03-05',
-        additionalImages: [
-        '/images/Products/Subtract (8).png',
-        '/images/Products/Subtract (8).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (8).png', '/images/Products/Subtract (8).png']
     },
     {
       id: 5,
@@ -126,13 +106,10 @@ const ProductDetails = () => {
       category: 'Accessories',
       price: 1200,
       image: '/images/Products/Subtract (9).png',
-      description: 'High-quality cotton socks pack. Comfortable and durable for everyday wear.',
+      description: 'Comfortable joggers with elastic waistband.Perfect for casual outings',
       colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
       dateAdded: '2024-02-28',
-        additionalImages: [
-        '/images/Products/Subtract (9).png',
-        '/images/Products/Subtract (9).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (9).png', '/images/Products/Subtract (9).png']
     },
     {
       id: 6,
@@ -143,10 +120,7 @@ const ProductDetails = () => {
       description: 'Cozy oversized sweater for maximum comfort. Perfect for chilly days.',
       colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
       dateAdded: '2024-03-01',
-        additionalImages: [
-        '/images/Products/Subtract (10).png',
-        '/images/Products/Subtract (10).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (10).png', '/images/Products/Subtract (10).png']
     },
     {
       id: 7,
@@ -157,10 +131,7 @@ const ProductDetails = () => {
       description: 'Bold graphic print on premium cotton. Make a statement.',
       colors: ['#C00F0C', '#024023', '#252024', '#FBFF00'],
       dateAdded: '2024-01-25',
-        additionalImages: [
-        '/images/Products/Subtract (11).png',
-        '/images/Products/Subtract (11).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (11).png', '/images/Products/Subtract (11).png']
     },
     {
       id: 8,
@@ -171,93 +142,251 @@ const ProductDetails = () => {
       description: 'Adjustable cotton cap with embroidered logo. One size fits all.',
       colors: ['#C00F0C', '#887B7C', '#110ED7', '#FBFF00'],
       dateAdded: '2024-02-15',
-        additionalImages: [
-        '/images/Products/Subtract (12).png',
-        '/images/Products/Subtract (12).png'
-      ]
+      additionalImages: ['/images/Products/Subtract (12).png', '/images/Products/Subtract (12).png']
     },
     {
       id: 9,
-      name: 'Vintage Denim Jacket',
-      category: 'Jackets',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract.png',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
-      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
-      dateAdded: '2024-12-09',
-      fit: 'Regular Fit',
-      fabric: '100% Cotton Denim',
-      fitType: 'Regular',
-      neckline: 'Classic collar',
-      sizes: 'XS, S, M, L, XL',
-      colorNames: 'Blue, Black, Purple, Yellow',
-      care: 'Machine wash cold, tumble dry low',
-      additionalImages: ['/images/Vintage-Jacket/Subtract.png']
+      name: 'Leather Tote Bag',
+      category: 'Accessories',
+      price: 2800,
+      image: '/images/Products/Subtract (13).png',
+      description: 'Premium leather tote bag with multiple compartments. Stylish and functional.',
+      colors: ['#6D3B1A'],
+      dateAdded: '2024-03-10',
+      additionalImages: ['/images/Products/Subtract (13).png', '/images/Products/Subtract (13).png']
     },
     {
       id: 10,
-      name: 'Vintage Denim Jacket',
-      category: 'Dresses',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract (1).png',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
-      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
-      dateAdded: '2024-12-09',
-      fit: 'Regular Fit',
-      fabric: '100% Cotton Denim',
-      fitType: 'Regular',
-      neckline: 'Classic collar',
-      sizes: 'XS, S, M, L, XL',
-      colorNames: 'Blue, Black, Purple, Yellow',
-      care: 'Machine wash cold, tumble dry low',
-      additionalImages: ['/images/Vintage-Jacket/Subtract (1).png']
+      name: 'Silk Evening Blouse',
+      category: 'Women',
+      price: 4200,
+      image: '/images/Blouse/Silky.jpg',
+      description: 'Elegant silk blouse with delicate embroidery for special occasions.',
+      colors: ['#FFB6C1', '#FFFFFF', '#000000', '#FF69B4'],
+      dateAdded: '2024-03-15',
+      additionalImages: ['/images/Blouse/Silky.jpg', '/images/Blouse/Silky.jpg']
     },
     {
       id: 11,
-      name: 'Vintage Denim Jacket',
-      category: 'Tops',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract (2).png',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
-      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
-      dateAdded: '2024-12-09',
-      fit: 'Regular Fit',
-      fabric: '100% Cotton Denim',
-      fitType: 'Regular',
-      neckline: 'Classic collar',
-      sizes: 'XS, S, M, L, XL',
-      colorNames: 'Blue, Black, Purple, Yellow',
-      care: 'Machine wash cold, tumble dry low',
-      additionalImages: ['/images/Vintage-Jacket/Subtract (2).png']
+      name: 'Casual Cotton Blouse',
+      category: 'Women',
+      price: 2800,
+      image: '/images/Blouse/casual.jpg',
+      description: 'Comfortable cotton blouse perfect for office or casual wear.',
+      colors: ['#87CEEB', '#32CD32', '#FFD700'],
+      dateAdded: '2024-03-10',
+      additionalImages: ['/images/Blouse/casual.jpg', '/images/Blouse/casual.jpg']
     },
     {
       id: 12,
-      name: 'Vintage Denim Jacket',
-      category: 'Bottoms',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract (3).png',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
-      colors: ['#597585', '#1E1E1E', '#8A38F5', '#FACC15'],
-      dateAdded: '2024-12-09',
-      fit: 'Regular Fit',
-      fabric: '100% Cotton Denim',
-      fitType: 'Regular',
-      neckline: 'Classic collar',
-      sizes: 'XS, S, M, L, XL',
-      colorNames: 'Blue, Black, Purple, Yellow',
-      care: 'Machine wash cold, tumble dry low',
-      additionalImages: ['/images/Vintage-Jacket/Subtract (3).png']
+      name: 'Lace Trim Blouse',
+      category: 'Women',
+      price: 3800,
+      image: '/images/Blouse/lase.jpg',
+      description: 'Beautiful blouse with lace detailing for a feminine touch.',
+      colors: ['#FFFFFF', '#F0E68C', '#DDA0DD'],
+      dateAdded: '2024-03-05',
+      additionalImages: ['/images/Blouse/lase.jpg', '/images/Blouse/lase.jpg']
+    },
+    {
+      id: 13,
+      name: 'Summer Floral Frock',
+      category: 'Women',
+      price: 5200,
+      image: '/images/Products/women-frock-1.png',
+      description: 'Light and breezy summer frock with floral patterns.',
+      colors: ['#87CEEB', '#FFD700', '#32CD32', '#FFB6C1'],
+      dateAdded: '2024-03-12',
+      additionalImages: ['/images/Products/women-frock-1.png', '/images/Products/women-frock-1.png']
+    },
+    {
+      id: 14,
+      name: 'Evening Party Frock',
+      category: 'Women',
+      price: 6800,
+      image: '/images/Products/women-frock-2.png',
+      description: 'Elegant party frock with sequin details for night events.',
+      colors: ['#000000', '#800080', '#4B0082'],
+      dateAdded: '2024-03-08',
+      additionalImages: ['/images/Products/women-frock-2.png', '/images/Products/women-frock-2.png']
+    },
+    {
+      id: 15,
+      name: 'Casual Day Frock',
+      category: 'Women',
+      price: 3500,
+      image: '/images/Frock/frock.jpg',
+      description: 'Comfortable and stylish frock for everyday casual wear.',
+      colors: ['#87CEEB', '#FFFFFF', '#FFD700'],
+      dateAdded: '2024-03-03',
+      additionalImages: ['/images/Frock/frock.jpg', '/images/Frock/frock.jpg']
+    },
+    {
+      id: 16,
+      name: 'Traditional Silk Full Kits',
+      category: 'Women',
+      price: 8500,
+      image: '/images/Full-Kits/traditional.jpg',
+      description: 'Traditional full kots with intricate embroidery and silk fabric.',
+      colors: ['#800080', '#FF1493', '#4B0082', '#8A2BE2'],
+      dateAdded: '2024-03-18',
+      additionalImages: ['/images/Full-Kits/traditional.jpg', '/images/Full-Kits/traditional.jpg']
+    },
+    {
+      id: 17,
+      name: 'Cotton Full Kits Set',
+      category: 'Women',
+      price: 6200,
+      image: '/images/Products/women-fullkots-2.png',
+      description: 'Comfortable cotton full kots set for daily traditional wear.',
+      colors: ['#006400', '#228B22', '#32CD32'],
+      dateAdded: '2024-03-14',
+      additionalImages: ['/images/Products/women-fullkots-2.png', '/images/Products/women-fullkots-2.png']
+    },
+    {
+      id: 18,
+      name: 'Designer Full Kits',
+      category: 'Women',
+      price: 9500,
+      image: '/images/Products/women-fullkots-3.png',
+      description: 'Designer full kots with premium fabric and detailed work.',
+      colors: ['#FF1493', '#8A2BE2', '#4B0082'],
+      dateAdded: '2024-03-20',
+      additionalImages: ['/images/Products/women-fullkots-3.png', '/images/Products/women-fullkots-3.png']
+    },
+    {
+      id: 19,
+      name: 'Basic Cotton T-Shirt',
+      category: 'Women',
+      price: 1800,
+      image: '/images/Women-T-Shirt/basic cotton.jpg',
+      description: 'Basic comfortable cotton t-shirt for daily wear.',
+      colors: ['#FFFFFF', '#000000', '#808080', '#FF0000'],
+      dateAdded: '2024-03-07',
+      additionalImages: ['/images/Women-T-Shirt/basic cotton.jpg', '/images/Women-T-Shirt/basic cotton.jpg']
+    },
+    {
+      id: 20,
+      name: 'Graphic Women T-Shirt',
+      category: 'Women',
+      price: 2200,
+      image: '/images/Women-T-Shirt/grphic.jpg',
+      description: 'Trendy graphic print t-shirt for casual style.',
+      colors: ['#000000', '#FFFFFF', '#FF4500'],
+      dateAdded: '2024-03-11',
+      additionalImages: ['/images/Women-T-Shirt/grphic.jpg', '/images/Women-T-Shirt/grphic.jpg']
+    },
+    {
+      id: 21,
+      name: 'V-Neck T-Shirt',
+      category: 'Women',
+      price: 2000,
+      image: '/images/Women-T-Shirt/vneck.jpg',
+      description: 'Flattering V-neck t-shirt for a stylish look.',
+      colors: ['#87CEEB', '#FFB6C1', '#FFFFFF'],
+      dateAdded: '2024-03-16',
+      additionalImages: ['/images/Women-T-Shirt/vneck.jpg', '/images/Women-T-Shirt/vneck.jpg']
+    },
+    {
+      id: 22,
+      name: 'Kids Cartoon Hoodie',
+      category: 'Kids',
+      price: 2200,
+      image: '/images/Products/kids-hoodie.png',
+      description: 'Adorable cartoon printed hoodie for kids. Soft and comfortable fabric.',
+      colors: ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0'],
+      dateAdded: '2024-03-25',
+      additionalImages: ['/images/Products/kids-hoodie.png', '/images/Products/kids-hoodie.png']
     }
   ];
 
   useEffect(() => {
-    if (productId) {
-      const foundProduct = allProducts.find(p => p.id === parseInt(productId));
-      if (foundProduct) {
-        setProduct(foundProduct);
-        setSelectedColor(foundProduct.colors[2]); 
+    const fetchProduct = async () => {
+      if (!productId) {
+        setLoading(false);
+        return;
       }
-    }
+
+      setLoading(true);
+      
+      const numericId = parseInt(productId);
+      
+      // Check if this is a database product ID (>= 1000) or hardcoded product ID (< 1000)
+      const isDatabaseProduct = numericId >= 1000;
+      const actualDatabaseId = isDatabaseProduct ? numericId - 1000 : numericId;
+
+      // For hardcoded products (ID < 1000), try to find in allProducts array
+      if (!isDatabaseProduct) {
+        console.log('Searching for hardcoded product with ID:', numericId);
+        const foundProduct = allProducts.find(p => p.id === numericId);
+        if (foundProduct) {
+          console.log('Found hardcoded product:', foundProduct);
+          setProduct(foundProduct);
+          setSelectedColor(foundProduct.colors[0]);
+        } else {
+          console.log('Hardcoded product not found with ID:', numericId);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // For database products (ID >= 1000), fetch from API
+      try {
+        const response = await fetch(`http://localhost:5000/api/v1/products/${actualDatabaseId}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response:', data);
+          if (data.success && data.data) {
+            const apiProduct = data.data;
+          
+            // Parse colors - handle both hex codes and color names
+            let colorsArray = ['#000000'];
+            if (apiProduct.color) {
+              const colorString = apiProduct.color;
+              // Check if colors are hex codes or names
+              if (colorString.includes('#')) {
+                colorsArray = colorString.split(',').map((c: string) => c.trim());
+              } else {
+                // If color names, convert to hex or use default
+                colorsArray = ['#000000']; // Default for now
+              }
+            }
+          
+            const transformedProduct: Product = {
+              id: apiProduct.id,
+              name: apiProduct.name,
+              category: apiProduct.category,
+              price: Number(apiProduct.price),
+              image: apiProduct.image_url || '/images/Products/placeholder.png',
+              description: apiProduct.description || '',
+              colors: colorsArray,
+              sizes: apiProduct.size || 'S, M, L, XL',
+              colorNames: apiProduct.color || 'Black',
+              additionalImages: apiProduct.image_url ? [apiProduct.image_url, apiProduct.image_url] : []
+            };
+            console.log('Transformed product:', transformedProduct);
+            setProduct(transformedProduct);
+            setSelectedColor(colorsArray[0]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching product from API:', error);
+      }
+
+      // Fallback to hardcoded products
+      console.log('Falling back to hardcoded products, searching for ID:', productId);
+      const foundProduct = allProducts.find(p => p.id === numericId);
+      if (foundProduct) {
+        console.log('Found hardcoded product:', foundProduct);
+        setProduct(foundProduct);
+        setSelectedColor(foundProduct.colors[0]);
+      } else {
+        console.log('No hardcoded product found with ID:', productId);
+      }
+      setLoading(false);
+    };
+
+    fetchProduct();
   }, [productId]);
 
   const handleBuyWhatsApp = () => {
@@ -283,10 +412,26 @@ const ProductDetails = () => {
     openCart();
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500">Loading product...</div>
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-500">Product not found</div>
+        <div className="text-center">
+          <div className="text-gray-500 mb-4">Product not found</div>
+          <button
+            onClick={() => router.push('/Products')}
+            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+          >
+            Back to Products
+          </button>
+        </div>
       </div>
     );
   }

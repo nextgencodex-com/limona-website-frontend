@@ -110,6 +110,7 @@
 
 /* CART BUTTON */
 .cart {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -179,7 +180,7 @@
   background: #000;
   border-radius: 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-  min-width: 240px;
+  min-width: 300px;
   z-index: 10002;
   opacity: 0;
   visibility: hidden;
@@ -245,17 +246,16 @@
   transform: translateY(-1px);
 }
 
-/* Login Button - ALWAYS VISIBLE */
+/* Login Button */
 .loginButton {
-  padding: 0.8rem 1rem;
+  width: 100%;
+  padding: 0.8rem;
   background: #e0b000;
-  border: none;
-  border-radius: 10px;
   color: #000;
-  text-decoration: none;
-  text-align: center;
-  font-size: 0.95rem;
+  border: none;
+  border-radius: 12px;
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: block;
@@ -266,19 +266,31 @@
 .loginButton:hover {
   background: #ffcc00;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(224, 176, 0, 0.3);
 }
 
-/* Logout Button - ALWAYS VISIBLE */
-.logoutButton {
-  padding: 0.8rem 1rem;
-  background: rgba(239, 68, 68, 0.9);
+/* Form Footer */
+.formFooter {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.formFooterText {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-right: 0.5rem;
+}
+
+.signUpButton {
+  background: none;
   border: none;
-  border-radius: 10px;
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 600;
+  color: #e0b000;
+  font-weight: 700;
   cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
   transition: all 0.2s ease;
   display: block;
   width: 100%;
@@ -291,7 +303,7 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-/* ===== Mobile Menu Button ===== */
+/* MOBILE MENU BUTTON */
 .menuButton {
   display: none;
   background: transparent;
@@ -310,7 +322,7 @@
   justify-content: center;
 }
 
-/* ===== Mobile Menu ===== */
+/* MOBILE MENU */
 .mobileMenu {
   display: block;
   position: absolute;
@@ -481,7 +493,6 @@
     margin-left: 0;
   }
   
-  /* Mobile User Menu Positioning */
   .userMenu {
     position: fixed;
     top: auto;
@@ -500,7 +511,7 @@
     transform: translateY(0);
   }
   
-  .simpleUserMenu {
+  .loginForm {
     padding: 1.2rem;
   }
   
