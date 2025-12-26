@@ -686,24 +686,21 @@ const LimonaProducts = () => {
         </div>
       </section>
 
-      {/* Coming Soon Notification - Updated for both Accessories and Limited Edition */}
+      {/* Coming Soon Notification - Dynamic for all categories and subcategories */}
       {showComingSoonMessage && (
         <div className="container mx-auto px-4 mb-4 animate-fade-in">
           <div className="max-w-6xl mx-auto">
-            <div className={`rounded-xl p-4 shadow-sm ${comingSoonCategory === 'Limited Edition' ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200' : 'bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200'}`}>
+            <div className="rounded-xl p-4 shadow-sm bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
               <div className="flex items-center">
-                <div className={`p-2 rounded-lg mr-3 ${comingSoonCategory === 'Limited Edition' ? 'bg-yellow-100' : 'bg-blue-100'}`}>
-                  <Clock className={comingSoonCategory === 'Limited Edition' ? 'text-yellow-600' : 'text-blue-600'} size={22} />
+                <div className="p-2 rounded-lg mr-3 bg-blue-100">
+                  <Clock className="text-blue-600" size={22} />
                 </div>
                 <div className="flex-1">
                   <h4 className="font-bold text-gray-800 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                    Coming Soon: {comingSoonCategory === 'Limited Edition' ? 'Limited Edition Collection' : 'Accessories Collection'}
+                    Coming Soon: {comingSoonCategory} Collection
                   </h4>
                   <p className="text-gray-600 text-sm mt-1 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
-                    {comingSoonCategory === 'Limited Edition' 
-                      ? "We're working on something special! Our exclusive limited edition products will be available soon."
-                      : "Our accessories collection is being curated! Check back soon for stylish accessories to complement your look."
-                    }
+                    Our {comingSoonCategory} collection is being curated with special care. Check back soon!
                   </p>
                 </div>
               </div>

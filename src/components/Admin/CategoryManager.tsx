@@ -279,7 +279,7 @@ export default function CategoryManager() {
                                         <div key={sub.id} className={styles.subcategoryItem}>
                                             <span className={styles.subcategoryName}>
                                                 {sub.name}
-                                                {sub.coming_soon && (
+                                                {sub.coming_soon === true && (
                                                     <span className={`${styles.badge} ${styles.comingSoonBadge}`} style={{ marginLeft: '8px' }}>
                                                         Coming Soon
                                                     </span>

@@ -50,10 +50,8 @@ const availableColors = [
 
 const availableSizes = ["S", "M", "L", "XL", "2XL"];
 
-const womenSubcategories = ["Blouse", "Frock", "Full Kits", "T-Shirt"];
-const gymwearSubcategories = ["Men", "Women"];
-
 export default function ProductForm({ product, onClose, onSuccess }: ProductFormProps) {
+    const [categorySubcategories, setCategorySubcategories] = useState<{[key: string]: any[]}>({});
     const [formData, setFormData] = useState<Product>({
         name: "",
         description: "",
@@ -76,6 +74,36 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
     const [customColor, setCustomColor] = useState<string>("");
+
+    // Fetch all subcategories
+    useEffect(() => {
+        const fetchSubcategories = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/api/v1/categories");
+                const data = await response.json();
+                
+                // The API returns { success: true, data: [...] }
+                const categories = data.success ? data.data : data;
+                
+                if (categories && Array.isArray(categories)) {
+                    // Group subcategories by category
+                    const subsByCategory: {[key: string]: any[]} = {};
+                    categories.forEach((category: any) => {
+                        if (category.subcategories && category.subcategories.length > 0) {
+                            // Filter only active subcategories that are not coming soon
+                            subsByCategory[category.name] = category.subcategories.filter(
+                                (sub: any) => sub.is_active && !sub.coming_soon
+                            );
+                        }
+                    });
+                    setCategorySubcategories(subsByCategory);
+                }
+            } catch (error) {
+                console.error("Failed to fetch subcategories:", error);
+            }
+        };
+        fetchSubcategories();
+    }, []);
 
     useEffect(() => {
         if (product) {
@@ -109,8 +137,8 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
             const numValue = value === '' ? '' : value;
             setFormData({ ...formData, [name]: numValue as any });
         } else {
-            // Reset subcategory when category changes and it's not Women or Gym wear
-            if (name === "category" && value !== "Women" && value !== "Gym wear") {
+            // Reset subcategory when category changes
+            if (name === "category") {
                 setFormData({ ...formData, [name]: value, subcategory: "" });
             } else {
                 setFormData({ ...formData, [name]: value });
@@ -167,7 +195,10 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
         try {
             const token = localStorage.getItem("token");
             if (!token) {
-                throw new Error("No authentication token found. Please login again.");
+                setError("No authentication token found. Please login again.");
+                // Redirect to login
+                window.location.href = "/Admin/Login";
+                throw new Error("No authentication token found");
             }
 
             const formDataUpload = new FormData();
@@ -184,6 +215,16 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
             });
 
             console.log("Upload response status:", response.status);
+            
+            if (response.status === 401 || response.status === 403) {
+                // Token expired or invalid
+                setError("Session expired. Please login again.");
+                localStorage.removeItem("token");
+                localStorage.removeItem("admin");
+                window.location.href = "/Admin/Login";
+                throw new Error("Invalid or expired token");
+            }
+
             const data = await response.json();
             console.log("Upload response data:", data);
 
@@ -348,7 +389,7 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             ))}
                         </select>
                     </div>
-                    {formData.category === "Women" && (
+                    {categorySubcategories[formData.category] && categorySubcategories[formData.category].length > 0 && (
                         <div className={styles.formGroup}>
                             <label className={styles.label}>Subcategory</label>
                             <select
@@ -358,27 +399,9 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                                 className={styles.select}
                             >
                                 <option value="">Select subcategory</option>
-                                {womenSubcategories.map((sub) => (
-                                    <option key={sub} value={sub}>
-                                        {sub}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-                    {formData.category === "Gym wear" && (
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>Subcategory</label>
-                            <select
-                                name="subcategory"
-                                value={formData.subcategory || ""}
-                                onChange={handleChange}
-                                className={styles.select}
-                            >
-                                <option value="">Select subcategory</option>
-                                {gymwearSubcategories.map((sub) => (
-                                    <option key={sub} value={sub}>
-                                        {sub}
+                                {categorySubcategories[formData.category].map((sub: any) => (
+                                    <option key={sub.id} value={sub.name}>
+                                        {sub.name}
                                     </option>
                                 ))}
                             </select>

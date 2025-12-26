@@ -35,10 +35,17 @@ export default function Header() {
         const token = localStorage.getItem("token");
         const admin = localStorage.getItem("admin");
         
-        if (token && admin) {
-            setIsLoggedIn(true);
-            setIsAdmin(true);
-            setAdminUser(JSON.parse(admin));
+        if (token && admin && admin !== "undefined" && admin !== "null") {
+            try {
+                setIsLoggedIn(true);
+                setIsAdmin(true);
+                setAdminUser(JSON.parse(admin));
+            } catch (error) {
+                console.error("Failed to parse admin data:", error);
+                // Clear invalid data
+                localStorage.removeItem("admin");
+                localStorage.removeItem("token");
+            }
         }
 
         function onPointerDown(e: PointerEvent | MouseEvent) {
