@@ -17,42 +17,6 @@ const LatestArrivals = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [latestProducts, setLatestProducts] = useState<Product[]>([]);
 
-  // Hardcoded fallback products
-  const fallbackProducts: Product[] = [
-    {
-      id: 9,
-      name: 'Vintage Denim Jacket',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract.png',
-      category: 'Jackets',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.'
-    },
-    {
-      id: 10,
-      name: 'Vintage Denim Jacket',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract (1).png',
-      category: 'Dresses',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.'
-    },
-    {
-      id: 11,
-      name: 'Vintage Denim Jacket',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract (2).png',
-      category: 'Tops',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.'
-    },
-    {
-      id: 12,
-      name: 'Vintage Denim Jacket',
-      price: 3500.00,
-      image: '/images/Vintage-Jacket/Subtract (3).png',
-      category: 'Bottoms',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.'
-    },
-  ];
-
   // Fetch latest arrival products from database
   React.useEffect(() => {
     const fetchLatestArrivals = async () => {
@@ -74,14 +38,14 @@ const LatestArrivals = () => {
             }));
           
           console.log('Filtered latest arrival products:', dbLatestProducts.length);
-          // Merge database products with fallback products
-          setLatestProducts([...dbLatestProducts, ...fallbackProducts]);
+          // Use only database products
+          setLatestProducts(dbLatestProducts);
         } else {
-          setLatestProducts(fallbackProducts);
+          setLatestProducts([]);
         }
       } catch (error) {
         console.error('Failed to fetch latest arrivals:', error);
-        setLatestProducts(fallbackProducts);
+        setLatestProducts([]);
       }
     };
 
