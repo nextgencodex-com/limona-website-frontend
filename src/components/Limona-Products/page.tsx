@@ -40,261 +40,11 @@ const LimonaProducts = () => {
     router.push(`/Products-Details?id=${productId}`);
   };
 
-  // Sample product data with colors - UPDATED WITH WOMEN SUBCATEGORIES
-  const initialProducts: Product[] = [
-    // Existing products
-    {
-      id: 1,
-      name: 'Classic Cotton Tee',
-      category: 'All Products',
-      price: 1500,
-      image: '/images/Products/Subtract (5).png',
-      description: 'Premium soft cotton t-shirt perfect for everyday wear. Unisex design',
-      colors: ['#8A38F5', '#FACC15', '#010111', '#FF0000'],
-      dateAdded: '2024-01-15'
-    },
-    {
-      id: 2,
-      name: 'Urban Hoodie',
-      category: 'Men',
-      price: 3500,
-      image: '/images/Products/Subtract (6).png',
-      description: 'Comfortable pullover hoodie with adjustable drawstring.',
-      colors: ['#FFFFFF', '#024023', '#F79EFF', '#FBFF00'],
-      dateAdded: '2024-02-10'
-    },
-    {
-      id: 3,
-      name: 'Vintage Denim Jacket',
-      category: 'Men',
-      price: 4500,
-      image: '/images/Products/Subtract (7).png',
-      description: 'Classic denim jacket with a modern twist. Durable and stylish.',
-      colors: ['#597585', '#1E1E1E'],
-      dateAdded: '2024-01-20'
-    },
-    {
-      id: 4,
-      name: 'Slim Fit Joggers',
-      category: 'Men',
-      price: 2200,
-      image: '/images/Products/Subtract (8).png',
-      description: 'Comfortable joggers with elastic waistband.Perfect for casual outings',
-      colors: ['#9D8E8A', '#024023', '#7A5300', '#FBFF00'],
-      dateAdded: '2024-03-05'
-    },
-    {
-      id: 5,
-      name: 'Cotton Socks Pack',
-      category: 'Accessories',
-      price: 1200,
-      image: '/images/Products/Subtract (9).png',
-      description: 'Comfortable joggers with elastic waistband.Perfect for casual outings',
-      colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
-      dateAdded: '2024-02-28'
-    },
-    {
-      id: 6,
-      name: 'Oversized Sweater',
-      category: 'Women',
-      subcategory: 'T-Shirt',
-      price: 3500,
-      image: '/images/Products/Subtract (10).png',
-      description: 'Cozy oversized sweater for maximum comfort. Perfect for chilly days.',
-      colors: ['#C00F0C', '#024023', '#110ED7', '#FBFF00'],
-      dateAdded: '2024-03-01'
-    },
-    {
-      id: 7,
-      name: 'Graphic Print Tee',
-      category: 'All Products',
-      price: 2500,
-      image: '/images/Products/Subtract (11).png',
-      description: 'Bold graphic print on premium cotton. Make a statement.',
-      colors: ['#C00F0C', '#024023', '#252024', '#FBFF00'],
-      dateAdded: '2024-01-25'
-    },
-    {
-      id: 8,
-      name: 'Classic Baseball Cap',
-      category: 'Accessories',
-      price: 1700,
-      image: '/images/Products/Subtract (12).png',
-      description: 'Adjustable cotton cap with embroidered logo. One size fits all.',
-      colors: ['#C00F0C', '#887B7C', '#110ED7', '#FBFF00'],
-      dateAdded: '2024-02-15'
-    },
-    {
-      id: 9,
-      name: 'Leather Tote Bag',
-      category: 'Accessories',
-      price: 2800,
-      image: '/images/Products/Subtract (13).png',
-      description: 'Premium leather tote bag with multiple compartments. Stylish and functional.',
-      colors: ['#6D3B1A'],
-      dateAdded: '2024-03-10'
-    },
-    
-    // NEW KIDS PRODUCT - Added
-    {
-      id: 22,
-      name: 'Kids Cartoon Hoodie',
-      category: 'Kids',
-      price: 2200,
-      image: '/images/Products/kids-hoodie.png',
-      description: 'Adorable cartoon printed hoodie for kids. Soft and comfortable fabric.',
-      colors: ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0'],
-      dateAdded: '2024-03-25'
-    },
-    
-    // NEW WOMEN PRODUCTS WITH SUBCATEGORIES
-    
-    // Blouse Products
-    {
-      id: 10,
-      name: 'Silk Evening Blouse',
-      category: 'Women',
-      subcategory: 'Blouse',
-      price: 4200,
-      image: '/images/Blouse/Silky.jpg',
-      description: 'Elegant silk blouse with delicate embroidery for special occasions.',
-      colors: ['#FFB6C1', '#FFFFFF', '#000000', '#FF69B4'],
-      dateAdded: '2024-03-15'
-    },
-    {
-      id: 11,
-      name: 'Casual Cotton Blouse',
-      category: 'Women',
-      subcategory: 'Blouse',
-      price: 2800,
-      image: '/images/Blouse/casual.jpg',
-      description: 'Comfortable cotton blouse perfect for office or casual wear.',
-      colors: ['#87CEEB', '#32CD32', '#FFD700'],
-      dateAdded: '2024-03-10'
-    },
-    {
-      id: 12,
-      name: 'Lace Trim Blouse',
-      category: 'Women',
-      subcategory: 'Blouse',
-      price: 3800,
-      image: '/images/Blouse/lase.jpg',
-      description: 'Beautiful blouse with lace detailing for a feminine touch.',
-      colors: ['#FFFFFF', '#F0E68C', '#DDA0DD'],
-      dateAdded: '2024-03-05'
-    },
-    
-    // Frock Products
-    {
-      id: 13,
-      name: 'Summer Floral Frock',
-      category: 'Women',
-      subcategory: 'Frock',
-      price: 5200,
-      image: '/images/Products/women-frock-1.png',
-      description: 'Light and breezy summer frock with floral patterns.',
-      colors: ['#87CEEB', '#FFD700', '#32CD32', '#FFB6C1'],
-      dateAdded: '2024-03-12'
-    },
-    {
-      id: 14,
-      name: 'Evening Party Frock',
-      category: 'Women',
-      subcategory: 'Frock',
-      price: 6800,
-      image: '/images/Products/women-frock-2.png',
-      description: 'Elegant party frock with sequin details for night events.',
-      colors: ['#000000', '#800080', '#4B0082'],
-      dateAdded: '2024-03-08'
-    },
-    {
-      id: 15,
-      name: 'Casual Day Frock',
-      category: 'Women',
-      subcategory: 'Frock',
-      price: 3500,
-      image: '/images/Frock/frock.jpg',
-      description: 'Comfortable and stylish frock for everyday casual wear.',
-      colors: ['#87CEEB', '#FFFFFF', '#FFD700'],
-      dateAdded: '2024-03-03'
-    },
-    
-    // Full Kits Products
-    {
-      id: 16,
-      name: 'Traditional Silk Full Kits',
-      category: 'Women',
-      subcategory: 'Full Kits',
-      price: 8500,
-      image: '/images/Full-Kits/traditional.jpg',
-      description: 'Traditional full kots with intricate embroidery and silk fabric.',
-      colors: ['#800080', '#FF1493', '#4B0082', '#8A2BE2'],
-      dateAdded: '2024-03-18'
-    },
-    {
-      id: 17,
-      name: 'Cotton Full Kits Set',
-      category: 'Women',
-      subcategory: 'Full Kits',
-      price: 6200,
-      image: '/images/Products/women-fullkots-2.png',
-      description: 'Comfortable cotton full kots set for daily traditional wear.',
-      colors: ['#006400', '#228B22', '#32CD32'],
-      dateAdded: '2024-03-14'
-    },
-    {
-      id: 18,
-      name: 'Designer Full Kits',
-      category: 'Women',
-      subcategory: 'Full Kits',
-      price: 9500,
-      image: '/images/Products/women-fullkots-3.png',
-      description: 'Designer full kots with premium fabric and detailed work.',
-      colors: ['#FF1493', '#8A2BE2', '#4B0082'],
-      dateAdded: '2024-03-20'
-    },
-    
-    // T-Shirt Products (additional to existing)
-    {
-      id: 19,
-      name: 'Basic Cotton T-Shirt',
-      category: 'Women',
-      subcategory: 'T-Shirt',
-      price: 1800,
-      image: '/images/Women-T-Shirt/basic cotton.jpg',
-      description: 'Basic comfortable cotton t-shirt for daily wear.',
-      colors: ['#FFFFFF', '#000000', '#808080', '#FF0000'],
-      dateAdded: '2024-03-07'
-    },
-    {
-      id: 20,
-      name: 'Graphic Women T-Shirt',
-      category: 'Women',
-      subcategory: 'T-Shirt',
-      price: 2200,
-      image: '/images/Women-T-Shirt/grphic.jpg',
-      description: 'Trendy graphic print t-shirt for casual style.',
-      colors: ['#000000', '#FFFFFF', '#FF4500'],
-      dateAdded: '2024-03-11'
-    },
-    {
-      id: 21,
-      name: 'V-Neck T-Shirt',
-      category: 'Women',
-      subcategory: 'T-Shirt',
-      price: 2000,
-      image: '/images/Women-T-Shirt/vneck.jpg',
-      description: 'Flattering V-neck t-shirt for a stylish look.',
-      colors: ['#87CEEB', '#FFB6C1', '#FFFFFF'],
-      dateAdded: '2024-03-16'
-    }
-  ];
-
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All Products');
 
-  // Fetch products from database and merge with hardcoded products
+  // Fetch products from database
   useEffect(() => {
     const fetchDatabaseProducts = async () => {
       try {
@@ -318,7 +68,7 @@ const LimonaProducts = () => {
               return isActive;
             })
             .map((p: any) => ({
-              id: p.id + 1000, // Offset IDs to avoid conflicts with hardcoded products
+              id: p.id + 1000, // Offset IDs to avoid conflicts
               name: p.name,
               category: p.category as any,
               subcategory: p.subcategory,
@@ -331,10 +81,8 @@ const LimonaProducts = () => {
           
           console.log('Processed database products:', dbProducts.length);
           console.log('Database products:', dbProducts);
-          // Append database products to hardcoded products
-          const mergedProducts = [...initialProducts, ...dbProducts];
-          console.log('Total products after merge:', mergedProducts.length);
-          setProducts(mergedProducts);
+          // Use only database products
+          setProducts(dbProducts);
         } else {
           console.error('API response not OK:', response.status);
         }
@@ -439,34 +187,7 @@ const LimonaProducts = () => {
   const handleCategorySelect = (category: string) => {
     setCurrentPage(1); // Reset to page 1 when category changes
     
-    // Check if category is in coming soon list
-    if (comingSoonCategories.includes(category)) {
-      // First, reset to All Products view
-      setSelectedCategory('All Products');
-      setSelectedSubcategory({});
-      
-      // Set the URL parameter
-      const params = new URLSearchParams(searchParams?.toString() || '');
-      params.set('category', category);
-      router.push(`?${params.toString()}`, { scroll: false });
-      
-      // Show the message
-      setShowComingSoonMessage(true);
-      setComingSoonCategory(category);
-      
-      setTimeout(() => {
-        setShowComingSoonMessage(false);
-        setComingSoonCategory('');
-        
-        // Clear the URL parameter after showing the message
-        const updatedParams = new URLSearchParams(searchParams?.toString() || '');
-        updatedParams.delete('category');
-        router.replace(`?${updatedParams.toString()}`, { scroll: false });
-      }, 3000);
-      
-      return;
-    }
-    
+    // Allow coming soon categories to be selected and show the coming soon message
     setSelectedCategory(category);
     setComingSoonCategory('');
     
@@ -489,26 +210,8 @@ const LimonaProducts = () => {
     
     // Only process if we have a category parameter
     if (categoryFromUrl && categories.includes(categoryFromUrl)) {
-      // Check if it's a coming soon category
-      if (comingSoonCategories.includes(categoryFromUrl)) {
-        setSelectedCategory('All Products'); // Reset to All Products view
-        setShowComingSoonMessage(true);
-        setComingSoonCategory(categoryFromUrl);
-        
-        setTimeout(() => {
-          setShowComingSoonMessage(false);
-          setComingSoonCategory('');
-          
-          // Clear the URL parameter after showing the message
-          const params = new URLSearchParams(searchParams?.toString() || '');
-          params.delete('category');
-          router.replace(`?${params.toString()}`, { scroll: false });
-        }, 3000);
-      } 
-      // For other categories, set them normally
-      else if (!comingSoonCategories.includes(categoryFromUrl)) {
-        setSelectedCategory(categoryFromUrl);
-      }
+      // Set the category (coming soon categories will show the animated message in the product area)
+      setSelectedCategory(categoryFromUrl);
     }
   }, [searchParams, categories, comingSoonCategories]);
 
@@ -1178,31 +881,59 @@ const LimonaProducts = () => {
               </div>
             </div>
 
-            {/* Products Grid - Show empty state for coming soon categories or subcategories */}
-            {(comingSoonCategories.includes(selectedCategory) || 
-              (comingSoonSubcategories[selectedCategory]?.includes(getCurrentSubcategory(selectedCategory)) && getCurrentSubcategory(selectedCategory) !== `All ${selectedCategory}`)) ? (
-              <div className="text-center py-16">
-                <div className="max-w-md mx-auto">
-                  <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
-                    <div className="p-3 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-blue-100">
-                      <Clock className="text-blue-600" size={32} />
+            {/* Products Grid - Show animated Coming Soon message for categories marked as coming soon (exclude All Products) */}
+            {(selectedCategory !== 'All Products' && comingSoonCategories.includes(selectedCategory)) || 
+              (comingSoonSubcategories[selectedCategory]?.includes(getCurrentSubcategory(selectedCategory)) && getCurrentSubcategory(selectedCategory) !== `All ${selectedCategory}`) ? (
+              <div className="text-center py-20 md:py-24">
+                <div className="max-w-lg mx-auto">
+                  <div className="relative p-8 md:p-10 rounded-2xl bg-gradient-to-br from-[#FACC15]/10 via-[#FCC900]/5 to-transparent border-2 border-[#FACC15]/30 shadow-lg animate-fadeIn">
+                    {/* Shimmer effect overlay */}
+                    <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                    
+                    {/* Clock Icon with pulse animation */}
+                    <div className="relative p-4 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center bg-gradient-to-br from-[#FACC15] to-[#FCC900] shadow-lg animate-pulse-icon">
+                      <Clock className="text-gray-900" size={40} />
+                    </div>
+                    
+                    {/* Coming Soon Text with pulse animation */}
+                    <h3 className="relative text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-[0.07em] font-geologica animate-pulse-text" style={{ letterSpacing: '0.07em', color: '#FCC900' }}>
                       Coming Soon
                     </h3>
-                    <p className="text-gray-600 mb-4 tracking-[0.07em] font-geologica" style={{ letterSpacing: '0.07em' }}>
+                    
+                    {/* Description */}
+                    <p className="relative text-gray-700 text-base md:text-lg mb-6 tracking-[0.07em] font-geologica leading-relaxed" style={{ letterSpacing: '0.07em' }}>
                       {getCurrentSubcategory(selectedCategory) !== `All ${selectedCategory}` && comingSoonSubcategories[selectedCategory]?.includes(getCurrentSubcategory(selectedCategory))
-                        ? `Our ${getCurrentSubcategory(selectedCategory)} collection is being prepared with special care.`
-                        : `Our ${selectedCategory} collection is being curated with the latest fashion trends.`
+                        ? `Our ${getCurrentSubcategory(selectedCategory)} collection is being prepared with special care. Stay tuned for exciting new arrivals!`
+                        : `Our ${selectedCategory} collection is being curated with special care. Stay tuned for exciting new arrivals!`
                       }
                     </p>
-                    <button
-                      onClick={handleResetFilters}
-                      className="mt-4 bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors tracking-[0.07em] font-geologica"
+                    
+                    {/* WhatsApp Contact Button */}
+                    <a 
+                      href="https://wa.me/94784865398"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="relative inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-bold tracking-[0.07em] font-geologica mb-4"
                       style={{ letterSpacing: '0.07em' }}
                     >
-                      Back to All Products
-                    </button>
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.867-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                      </svg>
+                      Contact Us on WhatsApp
+                    </a>
+                    
+                    {/* Back Button */}
+                    <div className="relative mt-4">
+                      <button
+                        onClick={handleResetFilters}
+                        className="text-gray-600 hover:text-gray-900 text-sm tracking-[0.07em] font-geologica transition-colors duration-200 underline"
+                        style={{ letterSpacing: '0.07em' }}
+                      >
+                        Back to All Products
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

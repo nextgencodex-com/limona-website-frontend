@@ -110,10 +110,37 @@
     }
 
     .title {
-        font-size: 2rem;
+        font-size: 1.5rem;
+    }
+
+    .addButton {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9rem;
     }
 
     .statsGrid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .statCard {
+        padding: 1rem;
+    }
+
+    .statIcon {
+        font-size: 2rem;
+    }
+
+    .statValue {
+        font-size: 1.5rem;
+    }
+
+    .statLabel {
+        font-size: 0.85rem;
+    }
+
+    .formModal {
+        padding: 1rem;
     }
 }
