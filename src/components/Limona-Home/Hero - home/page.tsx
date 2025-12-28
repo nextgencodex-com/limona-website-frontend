@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
+import { useRef, useEffect } from "react"
 
 // Left Section: Full text block
 const LeftSection = () => (
@@ -133,12 +134,46 @@ const BannersSection = () => (
   </div>
 )
 
+// Video Component - Top of hero section
+const HeroVideo = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.log("Autoplay prevented:", error);
+      });
+    }
+  }, []);
+
+  return (
+    <div className="relative mx-auto mb-8 sm:mb-12 z-30 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-60">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="w-full h-56 object-cover rounded-full "
+      >
+        <source src="/pvv.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+}
+
 export default function HeroSection() {
   return (
-    <div className="compact-hero relative min-h-screen bg-slate-50 overflow-x-hidden">
-
+    <div className="compact-hero relative min-h-screen  overflow-x-hidden">
+      
       {/* Main hero content */}
-      <div className="relative w-full px-6 md:px-12 lg:px-24 xl:px-40 bg-transparent">
+      <div className="relative w-full px-6 md:px-12 lg:px-24 xl:px-40 bg-transparent pt-8 sm:pt-12">
+        
+        {/* Hero Video at the top */}
+        <div className="flex justify-center">
+          <HeroVideo />
+        </div>
 
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12 md:gap-40 lg:gap-96 xl:gap-[160px] py-8 sm:py-12 lg:py-0">
           <LeftSection />
