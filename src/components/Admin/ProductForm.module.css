@@ -277,16 +277,78 @@
 }
 
 @media (max-width: 768px) {
-    .formRow {
-        grid-template-columns: 1fr;
-    }
-
     .formContainer {
         max-width: 100%;
-        margin: 1rem;
+        margin: 0.5rem;
+        max-height: 95vh;
+        border-radius: 8px;
     }
-    
+
+    .formHeader {
+        padding: 1rem 1.5rem;
+    }
+
+    .formTitle {
+        font-size: 1.25rem;
+    }
+
+    .form {
+        padding: 1.5rem;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .input,
+    .textarea,
+    .select {
+        padding: 0.625rem;
+        font-size: 0.9rem;
+    }
+
+    .label {
+        font-size: 0.85rem;
+    }
+
+    .checkboxGroup {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .colorGrid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 0.5rem;
+    }
+
     .customColorInput {
         flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .customColorInput input {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .formActions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .submitButton,
+    .cancelButton {
+        width: 100%;
+    }
+
+    .imagePreviewContainer {
+        flex-direction: column;
+    }
+
+    .imagePreview {
+        width: 100%;
+        max-width: 100%;
     }
 }

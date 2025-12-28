@@ -223,12 +223,7 @@ export default function Header() {
                 {isLoggedIn ? (
                   <>
                     <div className={styles.userMenuHeader}>
-                      <span>Hello, {adminUser?.username || "User"}!</span>
-                      {isAdmin && (
-                        <div style={{ fontSize: "0.8rem", color: "#e0b000" }}>
-                          Admin Account
-                        </div>
-                      )}
+                      <span className={styles.userGreeting}>Hello, Admin 👋</span>
                     </div>
 
                     <div className={styles.userMenuItems}>
@@ -238,11 +233,11 @@ export default function Header() {
                           className={styles.userMenuItem}
                           onClick={() => setUserMenuOpen(false)}
                         >
-                          📊 Admin Dashboard
+                          — Admin Dashboard
                         </Link>
                       )}
                       <button className={styles.userMenuItem} onClick={handleSignOut}>
-                        Sign Out
+                        — Sign Out
                       </button>
                     </div>
                   </>
