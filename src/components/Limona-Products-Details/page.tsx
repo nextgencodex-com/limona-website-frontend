@@ -410,7 +410,7 @@ const ProductDetails = () => {
 
   const handleBuyWhatsApp = () => {
     const message = `Product Purchase Request:\n\n• Product: ${product!.name}\n• Size: ${selectedSize}\n• Color: ${selectedColorName}\n• Quantity: ${quantity}\n• Unit Price: LKR ${product!.price.toLocaleString()}\n• Total Price: LKR ${(product!.price * quantity).toLocaleString()}`;
-    const whatsappUrl = `https://wa.me/94759627589?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/94784865398?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 

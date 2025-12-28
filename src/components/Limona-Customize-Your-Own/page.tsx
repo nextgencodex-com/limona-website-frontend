@@ -94,7 +94,7 @@ const LimonaCustomizeYourOwn = () => {
       `${uploadedImage ? '*Image Uploaded:* Yes' : ''}`;
     
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/94759627589?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/94784865398?text=${encodedMessage}`;
     
     window.open(whatsappUrl, '_blank');
   };
