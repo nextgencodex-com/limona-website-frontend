@@ -301,7 +301,7 @@ export default function Header() {
         </nav>
       </header>
 
-      <CartPopup whatsappNumber="+94784865398" />
+      <CartPopup whatsappNumber="+94759627589" />
     </>
   );
 }
