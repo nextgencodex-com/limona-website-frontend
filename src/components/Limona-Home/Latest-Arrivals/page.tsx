@@ -57,7 +57,8 @@ const LatestArrivals = () => {
   React.useEffect(() => {
     const fetchLatestArrivals = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/products');
+        const API_BASE = 'https://backend.srilankawildsafari.com';
+        const response = await fetch(`${API_BASE}/api/v1/products`);
         if (response.ok) {
           const data = await response.json();
           console.log('Fetched products for Latest Arrivals:', data.data.length);

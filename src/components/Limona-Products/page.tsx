@@ -4,6 +4,22 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Filter, X, Search, Grid3x3, Grid2x2, Grid, ChevronUp, ChevronDown, Clock, ChevronRight } from 'lucide-react';
 
+const API_BASE = 'https://backend.srilankawildsafari.com';
+const toAbsoluteImageUrl = (url?: string | null) => {
+  if (!url) return '';
+  try {
+    const api = new URL(API_BASE);
+    const parsed = new URL(url, API_BASE);
+    const isUploads = parsed.pathname.startsWith('/uploads/');
+    if (isUploads && parsed.host !== api.host) {
+      return `${API_BASE}${parsed.pathname}`;
+    }
+    return parsed.href;
+  } catch {
+    return `${API_BASE}${url.startsWith('/') ? url : `/${url}`}`;
+  }
+};
+
 interface Product {
   id: number;
   name: string;
@@ -283,7 +299,7 @@ const LimonaProducts = () => {
     const fetchDatabaseProducts = async () => {
       try {
         console.log('Fetching products from API...');
-        const response = await fetch('http://localhost:5000/api/v1/products', {
+        const response = await fetch(`${API_BASE}/api/v1/products`, {
           cache: 'no-store',
           headers: {
             'Cache-Control': 'no-cache'
@@ -307,7 +323,7 @@ const LimonaProducts = () => {
               category: p.category as any,
               subcategory: p.subcategory,
               price: Number(p.price),
-              image: p.image_url || '/images/Products/placeholder.png',
+              image: toAbsoluteImageUrl(p.image_url) || '/images/Products/placeholder.png',
               description: p.description || '',
               colors: p.color ? p.color.split(',').map((c: string) => c.trim()) : ['#000000'],
               dateAdded: p.created_at || new Date().toISOString(),
@@ -365,7 +381,7 @@ const LimonaProducts = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/categories');
+        const response = await fetch(`${API_BASE}/api/v1/categories`);
         if (response.ok) {
           const data = await response.json();
           

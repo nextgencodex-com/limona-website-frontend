@@ -1,0 +1,20 @@
+[00:00:26.374] Server  LOG      ✓ Ready in 22s
+[00:00:29.424] Server  LOG      ○ Compiling / ...
+[00:01:03.082] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:03.337] Browser WARN    Image with src "/images/Hero/bgtxtur.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:01:04.186] Browser LOG     Fetched products for Latest Arrivals: 5
+[00:01:04.186] Browser LOG     Filtered latest arrival products: 0
+[00:01:15.306] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Frock/floral-frock.jpg" "received" null
+[00:01:15.308] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Hoodies/black-hoodie.jpg" "received" null
+[00:01:15.310] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/T-Shirts/white-tshirt.jpg" "received" null
+[00:01:15.312] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Shorts/khaki-shorts.jpg" "received" null
+[00:01:15.314] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Vintage-Jacket/denim.jpg" "received" null
+[00:01:15.832] Browser LOG     Fetched products for Latest Arrivals: 5
+[00:01:15.832] Browser LOG     Filtered latest arrival products: 0
+[00:01:16.099] Browser LOG     Fetched products for Latest Arrivals: 5
+[00:01:16.099] Browser LOG     Filtered latest arrival products: 0
+[00:01:43.663] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/T-Shirts/white-tshirt.jpg" "received" null
+[00:01:43.665] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Hoodies/black-hoodie.jpg" "received" null
+[00:01:43.666] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Vintage-Jacket/denim.jpg" "received" null
+[00:01:43.678] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Frock/floral-frock.jpg" "received" null
+[00:01:43.688] Server  ERROR    ⨯ "The requested resource isn't a valid image for" "/images/Shorts/khaki-shorts.jpg" "received" null

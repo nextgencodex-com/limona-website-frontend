@@ -9,6 +9,22 @@ import Footer from '../Limona-Footer/page';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 
+const API_BASE = 'https://backend.srilankawildsafari.com';
+const toAbsoluteImageUrl = (url?: string | null) => {
+  if (!url) return '';
+  try {
+    const api = new URL(API_BASE);
+    const parsed = new URL(url, API_BASE);
+    const isUploads = parsed.pathname.startsWith('/uploads/');
+    if (isUploads && parsed.host !== api.host) {
+      return `${API_BASE}${parsed.pathname}`;
+    }
+    return parsed.href;
+  } catch {
+    return `${API_BASE}${url.startsWith('/') ? url : `/${url}`}`;
+  }
+};
+
 interface Product {
   id: number;
   name: string;
@@ -332,7 +348,7 @@ const ProductDetails = () => {
 
       // For database products (ID >= 1000), fetch from API
       try {
-        const response = await fetch(`http://localhost:5000/api/v1/products/${actualDatabaseId}`);
+        const response = await fetch(`${API_BASE}/api/v1/products/${actualDatabaseId}`);
         if (response.ok) {
           const data = await response.json();
           console.log('API Response:', data);
@@ -352,17 +368,20 @@ const ProductDetails = () => {
               }
             }
           
+            const mainImage = apiProduct.image_url ? toAbsoluteImageUrl(apiProduct.image_url) : '/images/Products/placeholder.png';
+            const additional = apiProduct.image_url ? [toAbsoluteImageUrl(apiProduct.image_url), toAbsoluteImageUrl(apiProduct.image_url)] : [];
+
             const transformedProduct: Product = {
               id: apiProduct.id,
               name: apiProduct.name,
               category: apiProduct.category,
               price: Number(apiProduct.price),
-              image: apiProduct.image_url || '/images/Products/placeholder.png',
+              image: mainImage,
               description: apiProduct.description || '',
               colors: colorsArray,
               sizes: apiProduct.size || 'S, M, L, XL',
               colorNames: apiProduct.color || 'Black',
-              additionalImages: apiProduct.image_url ? [apiProduct.image_url, apiProduct.image_url] : []
+              additionalImages: additional
             };
             console.log('Transformed product:', transformedProduct);
             setProduct(transformedProduct);

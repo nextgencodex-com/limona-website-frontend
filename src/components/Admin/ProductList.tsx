@@ -2,6 +2,22 @@
 import Image from "next/image";
 import styles from "./ProductList.module.css";
 
+const API_BASE = 'https://backend.srilankawildsafari.com';
+const toAbsoluteImageUrl = (url?: string | null) => {
+    if (!url) return "";
+    try {
+        const api = new URL(API_BASE);
+        const parsed = new URL(url, API_BASE);
+        const isUploads = parsed.pathname.startsWith('/uploads/');
+        if (isUploads && parsed.host !== api.host) {
+            return `${API_BASE}${parsed.pathname}`;
+        }
+        return parsed.href;
+    } catch {
+        return `${API_BASE}${url.startsWith('/') ? url : `/${url}`}`;
+    }
+};
+
 interface Product {
     id: number;
     name: string;
@@ -48,7 +64,7 @@ export default function ProductList({ products, onEdit, onDelete, onToggleActive
                                     <div className={styles.imageCell}>
                                         {product.image_url ? (
                                             <Image
-                                                src={product.image_url}
+                                                src={toAbsoluteImageUrl(product.image_url) || '/images/Products/placeholder.png'}
                                                 alt={product.name}
                                                 width={50}
                                                 height={50}

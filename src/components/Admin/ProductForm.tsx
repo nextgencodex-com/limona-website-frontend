@@ -49,6 +49,22 @@ const availableColors = [
 ];
 
 const availableSizes = ["S", "M", "L", "XL", "2XL"];
+const API_BASE = 'https://backend.srilankawildsafari.com';
+
+const toAbsoluteImageUrl = (url?: string | null) => {
+    if (!url) return "";
+    try {
+        const api = new URL(API_BASE);
+        const parsed = new URL(url, API_BASE);
+        const isUploads = parsed.pathname.startsWith('/uploads/');
+        if (isUploads && parsed.host !== api.host) {
+            return `${API_BASE}${parsed.pathname}`;
+        }
+        return parsed.href;
+    } catch {
+        return `${API_BASE}${url.startsWith('/') ? url : `/${url}`}`;
+    }
+};
 
 export default function ProductForm({ product, onClose, onSuccess }: ProductFormProps) {
     const [categorySubcategories, setCategorySubcategories] = useState<{[key: string]: any[]}>({});
@@ -79,7 +95,7 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
     useEffect(() => {
         const fetchSubcategories = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/v1/categories");
+                const response = await fetch("https://backend.srilankawildsafari.com/api/v1/categories");
                 const data = await response.json();
                 
                 // The API returns { success: true, data: [...] }
@@ -206,7 +222,7 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
 
             console.log("Uploading image:", imageFile.name);
 
-            const response = await fetch("http://localhost:5000/api/v1/upload/product-image", {
+            const response = await fetch("https://backend.srilankawildsafari.com/api/v1/upload/product-image", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -232,11 +248,29 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                 throw new Error(data.error || `Upload failed with status ${response.status}`);
             }
 
-            if (!data.success || !data.data || !data.data.image_url) {
-                throw new Error("Invalid response from server");
+            // Handle different response formats from backend
+            let imageUrl = null;
+            
+            if (data.success && data.data && data.data.image_url) {
+                imageUrl = data.data.image_url;
+            } else if (data.data && typeof data.data === 'string') {
+                // Backend might return just the URL as string
+                imageUrl = data.data;
+            } else if (data.image_url) {
+                // Backend might return image_url directly
+                imageUrl = data.image_url;
+            } else if (data.url) {
+                // Backend might return just 'url'
+                imageUrl = data.url;
             }
 
-            return data.data.image_url;
+            if (!imageUrl) {
+                console.error("No image URL in response:", data);
+                throw new Error("No image URL returned from server");
+            }
+
+            console.log("Image uploaded successfully:", imageUrl);
+            return imageUrl;
         } catch (err: any) {
             console.error("Upload error:", err);
             setError(`Image upload failed: ${err.message}`);
@@ -254,19 +288,44 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
         try {
             // Upload image first if there's a new one
             let imageUrl = formData.image_url;
+            console.log("Initial image URL from form:", imageUrl);
+            console.log("Image file to upload:", imageFile?.name || "No new file");
+            
             if (imageFile) {
+                console.log("Starting image upload...");
                 const uploadedUrl = await uploadImage();
                 if (!uploadedUrl) {
+                    console.error("Image upload failed, aborting product save");
                     setLoading(false);
                     return; // Error already set in uploadImage
                 }
                 imageUrl = uploadedUrl;
+                console.log("Image upload successful, new URL:", imageUrl);
+            } else {
+                console.log("No new image to upload, using existing URL:", imageUrl);
             }
 
             const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("No authentication token found. Please login again.");
+            }
+
             const url = product
-                ? `http://localhost:5000/api/v1/products/${product.id}`
-                : "http://localhost:5000/api/v1/products";
+                ? `https://backend.srilankawildsafari.com/api/v1/products/${product.id}`
+                : "https://backend.srilankawildsafari.com/api/v1/products";
+
+            const productData = {
+                ...formData,
+                image_url: imageUrl,
+                // Ensure required fields have default values
+                name: formData.name?.trim() || '',
+                category: formData.category || '',
+                price: Number(formData.price) || 0,
+                stock: Number(formData.stock) || 0,
+            };
+
+            console.log("Sending product data:", productData);
+            console.log("Image URL to be saved:", imageUrl);
 
             const response = await fetch(url, {
                 method: product ? "PUT" : "POST",
@@ -274,16 +333,25 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    image_url: imageUrl
-                }),
+                body: JSON.stringify(productData),
             });
 
+            console.log("Product API response status:", response.status);
+            
             const data = await response.json();
+            console.log("Product API response data:", data);
 
             if (!response.ok) {
-                throw new Error(data.error || "Failed to save product");
+                const errorMessage = data.error || data.message || `Failed to save product (${response.status})`;
+                console.error("Product save failed:", errorMessage, data);
+                throw new Error(errorMessage);
+            }
+
+            // Verify the saved product has the image URL
+            if (data.data && data.data.image_url) {
+                console.log("✓ Product saved with image URL:", data.data.image_url);
+            } else if (imageUrl) {
+                console.warn("⚠ Product saved but response doesn't show image URL. Expected:", imageUrl);
             }
 
             // Dispatch custom event for real-time updates
