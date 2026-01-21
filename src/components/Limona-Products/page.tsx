@@ -282,7 +282,6 @@ const LimonaProducts = () => {
   useEffect(() => {
     const fetchDatabaseProducts = async () => {
       try {
-        console.log('Fetching products from API...');
         const response = await fetch('http://localhost:5000/api/v1/products', {
           cache: 'no-store',
           headers: {
@@ -292,13 +291,10 @@ const LimonaProducts = () => {
         
         if (response.ok) {
           const data = await response.json();
-          console.log('API Response:', data);
-          console.log('Fetched products from database:', data.data.length);
           
           const dbProducts: Product[] = data.data
             .filter((p: any) => {
               const isActive = p.is_active === 1 || p.is_active === true;
-              console.log(`Product ${p.name}: is_active=${p.is_active}, filtered=${isActive}`);
               return isActive;
             })
             .map((p: any) => ({
@@ -313,11 +309,8 @@ const LimonaProducts = () => {
               dateAdded: p.created_at || new Date().toISOString(),
             }));
           
-          console.log('Processed database products:', dbProducts.length);
-          console.log('Database products:', dbProducts);
           // Append database products to hardcoded products
           const mergedProducts = [...initialProducts, ...dbProducts];
-          console.log('Total products after merge:', mergedProducts.length);
           setProducts(mergedProducts);
         } else {
           console.error('API response not OK:', response.status);
@@ -331,7 +324,6 @@ const LimonaProducts = () => {
     
     // Listen for product updates
     const handleProductUpdate = () => {
-      console.log('Product updated - refreshing...');
       fetchDatabaseProducts();
     };
     
@@ -507,13 +499,11 @@ const LimonaProducts = () => {
 
     if (selectedCategory !== 'All Products') {
       filtered = filtered.filter(product => product.category === selectedCategory);
-      console.log('After category filter:', filtered.length);
       
       // Apply subcategory filter for any category that has subcategories
       const currentSubcat = getCurrentSubcategory(selectedCategory);
       if (currentSubcat && !currentSubcat.startsWith('All ')) {
         filtered = filtered.filter(product => product.subcategory === currentSubcat);
-        console.log('After subcategory filter:', filtered.length);
       }
     }
 

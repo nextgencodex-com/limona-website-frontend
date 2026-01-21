@@ -13,6 +13,9 @@ interface Product {
     color?: string;
     stock: number;
     image_url?: string;
+    image_url_2?: string;
+    image_url_3?: string;
+    size_chart_url?: string;
     is_active: boolean;
     featured: boolean;
     latest_arrival?: boolean;
@@ -62,6 +65,9 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
         color: "",
         stock: 0,
         image_url: "",
+        image_url_2: "",
+        image_url_3: "",
+        size_chart_url: "",
         is_active: true,
         featured: false,
         latest_arrival: false,
@@ -70,7 +76,13 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
     const [error, setError] = useState("");
     const [uploading, setUploading] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imageFile2, setImageFile2] = useState<File | null>(null);
+    const [imageFile3, setImageFile3] = useState<File | null>(null);
+    const [sizeChartFile, setSizeChartFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string>("");
+    const [imagePreview2, setImagePreview2] = useState<string>("");
+    const [imagePreview3, setImagePreview3] = useState<string>("");
+    const [sizeChartPreview, setSizeChartPreview] = useState<string>("");
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
     const [customColor, setCustomColor] = useState<string>("");
@@ -113,6 +125,9 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                 stock: Number(product.stock)
             });
             setImagePreview(product.image_url || "");
+            setImagePreview2(product.image_url_2 || "");
+            setImagePreview3(product.image_url_3 || "");
+            setSizeChartPreview(product.size_chart_url || "");
             
             // Parse existing colors and sizes
             if (product.color) {
@@ -188,23 +203,56 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
         }
     };
 
-    const uploadImage = async (): Promise<string | null> => {
-        if (!imageFile) return formData.image_url || null;
+    const handleImageChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile2(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview2(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleImageChange3 = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile3(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview3(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSizeChartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSizeChartFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSizeChartPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const uploadImage = async (file: File | null, fieldName: string): Promise<string | null> => {
+        if (!file) return null;
 
         setUploading(true);
         try {
             const token = localStorage.getItem("token");
             if (!token) {
                 setError("No authentication token found. Please login again.");
-                // Redirect to login
-                window.location.href = "/Admin/Login";
+                window.location.href = "/";
                 throw new Error("No authentication token found");
             }
 
             const formDataUpload = new FormData();
-            formDataUpload.append("image", imageFile);
-
-            console.log("Uploading image:", imageFile.name);
+            formDataUpload.append("image", file);
 
             const response = await fetch("http://localhost:5000/api/v1/upload/product-image", {
                 method: "POST",
@@ -213,20 +261,16 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                 },
                 body: formDataUpload,
             });
-
-            console.log("Upload response status:", response.status);
             
             if (response.status === 401 || response.status === 403) {
-                // Token expired or invalid
                 setError("Session expired. Please login again.");
                 localStorage.removeItem("token");
                 localStorage.removeItem("admin");
-                window.location.href = "/Admin/Login";
+                window.location.href = "/";
                 throw new Error("Invalid or expired token");
             }
 
             const data = await response.json();
-            console.log("Upload response data:", data);
 
             if (!response.ok) {
                 throw new Error(data.error || `Upload failed with status ${response.status}`);
@@ -238,8 +282,8 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
 
             return data.data.image_url;
         } catch (err: any) {
-            console.error("Upload error:", err);
-            setError(`Image upload failed: ${err.message}`);
+            console.error(`${fieldName} upload error:`, err);
+            setError(`${fieldName} upload failed: ${err.message}`);
             return null;
         } finally {
             setUploading(false);
@@ -252,15 +296,30 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
         setLoading(true);
 
         try {
-            // Upload image first if there's a new one
-            let imageUrl = formData.image_url;
-            if (imageFile) {
-                const uploadedUrl = await uploadImage();
-                if (!uploadedUrl) {
-                    setLoading(false);
-                    return; // Error already set in uploadImage
-                }
-                imageUrl = uploadedUrl;
+            // Upload all images
+            const imageUrl = imageFile 
+                ? await uploadImage(imageFile, "Image 1") 
+                : formData.image_url;
+            
+            const imageUrl2 = imageFile2 
+                ? await uploadImage(imageFile2, "Image 2") 
+                : formData.image_url_2;
+            
+            const imageUrl3 = imageFile3 
+                ? await uploadImage(imageFile3, "Image 3") 
+                : formData.image_url_3;
+            
+            const sizeChartUrl = sizeChartFile 
+                ? await uploadImage(sizeChartFile, "Size Chart") 
+                : formData.size_chart_url;
+
+            // Check if any uploads failed
+            if ((imageFile && !imageUrl) || 
+                (imageFile2 && !imageUrl2) || 
+                (imageFile3 && !imageUrl3) || 
+                (sizeChartFile && !sizeChartUrl)) {
+                setLoading(false);
+                return;
             }
 
             const token = localStorage.getItem("token");
@@ -276,7 +335,10 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                 },
                 body: JSON.stringify({
                     ...formData,
-                    image_url: imageUrl
+                    image_url: imageUrl,
+                    image_url_2: imageUrl2,
+                    image_url_3: imageUrl3,
+                    size_chart_url: sizeChartUrl
                 }),
             });
 
@@ -479,7 +541,7 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
 
                 <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>Product Image</label>
+                        <label className={styles.label}>Product Image 1 *</label>
                         <input
                             type="file"
                             id="image"
@@ -490,26 +552,67 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                         />
                         {imagePreview && (
                             <div className={styles.imagePreview}>
-                                <img src={imagePreview} alt="Product preview" style={{ maxWidth: '200px', marginTop: '10px', borderRadius: '8px' }} />
+                                <img src={imagePreview} alt="Product preview 1" style={{ maxWidth: '150px', marginTop: '10px', borderRadius: '8px' }} />
                             </div>
                         )}
-                        {uploading && <p style={{ color: '#666', fontSize: '14px', marginTop: '5px' }}>Uploading image...</p>}
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Product Image 2</label>
+                        <input
+                            type="file"
+                            id="image2"
+                            name="image2"
+                            accept="image/*"
+                            onChange={handleImageChange2}
+                            className={styles.input}
+                        />
+                        {imagePreview2 && (
+                            <div className={styles.imagePreview}>
+                                <img src={imagePreview2} alt="Product preview 2" style={{ maxWidth: '150px', marginTop: '10px', borderRadius: '8px' }} />
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>Image URL (or upload above)</label>
+                        <label className={styles.label}>Product Image 3</label>
                         <input
-                            type="text"
-                            name="image_url"
-                            value={formData.image_url}
-                            onChange={handleChange}
+                            type="file"
+                            id="image3"
+                            name="image3"
+                            accept="image/*"
+                            onChange={handleImageChange3}
                             className={styles.input}
-                            placeholder="/images/category/product.jpg"
                         />
+                        {imagePreview3 && (
+                            <div className={styles.imagePreview}>
+                                <img src={imagePreview3} alt="Product preview 3" style={{ maxWidth: '150px', marginTop: '10px', borderRadius: '8px' }} />
+                            </div>
+                        )}
                     </div>
                 </div>
+
+                <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Size Chart Image</label>
+                        <input
+                            type="file"
+                            id="sizeChart"
+                            name="sizeChart"
+                            accept="image/*"
+                            onChange={handleSizeChartChange}
+                            className={styles.input}
+                        />
+                        {sizeChartPreview && (
+                            <div className={styles.imagePreview}>
+                                <img src={sizeChartPreview} alt="Size chart preview" style={{ maxWidth: '150px', marginTop: '10px', borderRadius: '8px' }} />
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
+                {uploading && <p style={{ color: '#666', fontSize: '14px', marginTop: '5px' }}>Uploading images...</p>}
 
                 <div className={styles.checkboxGroup}>
                     <label className={styles.checkboxLabel}>

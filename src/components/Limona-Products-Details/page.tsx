@@ -9,6 +9,22 @@ import Footer from '../Limona-Footer/page';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 
+// Color name to hex code mapping (matches ProductForm colors)
+const COLOR_MAP: { [key: string]: string } = {
+  'Black': '#000000',
+  'White': '#FFFFFF',
+  'Navy': '#1E3A8A',
+  'Red': '#DC2626',
+  'Blue': '#3B82F6',
+  'Green': '#10B981',
+  'Yellow': '#FCD34D',
+  'Purple': '#8B5CF6',
+  'Pink': '#EC4899',
+  'Orange': '#F97316',
+  'Gray': '#6B7280',
+  'Brown': '#92400E',
+};
+
 interface Product {
   id: number;
   name: string;
@@ -26,6 +42,7 @@ interface Product {
   colorNames?: string;
   care?: string;
   additionalImages?: string[];
+  sizeChartUrl?: string | null;
 }
 
 const ProductDetails = () => {
@@ -317,14 +334,10 @@ const ProductDetails = () => {
 
       // For hardcoded products (ID < 1000), try to find in allProducts array
       if (!isDatabaseProduct) {
-        console.log('Searching for hardcoded product with ID:', numericId);
         const foundProduct = allProducts.find(p => p.id === numericId);
         if (foundProduct) {
-          console.log('Found hardcoded product:', foundProduct);
           setProduct(foundProduct);
           setSelectedColor(foundProduct.colors[0]);
-        } else {
-          console.log('Hardcoded product not found with ID:', numericId);
         }
         setLoading(false);
         return;
@@ -335,20 +348,30 @@ const ProductDetails = () => {
         const response = await fetch(`http://localhost:5000/api/v1/products/${actualDatabaseId}`);
         if (response.ok) {
           const data = await response.json();
-          console.log('API Response:', data);
           if (data.success && data.data) {
             const apiProduct = data.data;
           
-            // Parse colors - handle both hex codes and color names
-            let colorsArray = ['#000000'];
+            // Parse colors - convert color names to hex codes
+            let colorsArray: string[] = ['#000000'];
+            let colorNamesArray: string[] = ['Black'];
+            
             if (apiProduct.color) {
-              const colorString = apiProduct.color;
-              // Check if colors are hex codes or names
-              if (colorString.includes('#')) {
-                colorsArray = colorString.split(',').map((c: string) => c.trim());
-              } else {
-                // If color names, convert to hex or use default
-                colorsArray = ['#000000']; // Default for now
+              const colorString = apiProduct.color.trim();
+              
+              // Split by comma and trim each color name
+              const colorNames = colorString.split(',').map((c: string) => c.trim()).filter(c => c.length > 0);
+              
+              if (colorNames.length > 0) {
+                colorNamesArray = colorNames;
+                // Convert color names to hex codes
+                colorsArray = colorNames.map(name => {
+                  // If it's already a hex code, use it
+                  if (name.startsWith('#')) {
+                    return name;
+                  }
+                  // Otherwise, look up in COLOR_MAP
+                  return COLOR_MAP[name] || '#000000';
+                });
               }
             }
           
@@ -361,33 +384,44 @@ const ProductDetails = () => {
               description: apiProduct.description || '',
               colors: colorsArray,
               sizes: apiProduct.size || 'S, M, L, XL',
-              colorNames: apiProduct.color || 'Black',
-              additionalImages: apiProduct.image_url ? [apiProduct.image_url, apiProduct.image_url] : []
+              colorNames: colorNamesArray.join(', '),
+              additionalImages: [
+                apiProduct.image_url_2,
+                apiProduct.image_url_3
+              ].filter(Boolean), // Filter out null/undefined values
+              sizeChartUrl: apiProduct.size_chart_url || null
             };
-            console.log('Transformed product:', transformedProduct);
             setProduct(transformedProduct);
             setSelectedColor(colorsArray[0]);
+            setLoading(false);
+            return; // Exit early, product found from API
           }
         }
       } catch (error) {
         console.error('Error fetching product from API:', error);
       }
 
-      // Fallback to hardcoded products
-      console.log('Falling back to hardcoded products, searching for ID:', productId);
+      // Fallback to hardcoded products only if API call failed
       const foundProduct = allProducts.find(p => p.id === numericId);
       if (foundProduct) {
-        console.log('Found hardcoded product:', foundProduct);
         setProduct(foundProduct);
         setSelectedColor(foundProduct.colors[0]);
-      } else {
-        console.log('No hardcoded product found with ID:', productId);
       }
       setLoading(false);
     };
 
     fetchProduct();
   }, [productId]);
+
+  // Validate and correct selected size when product changes
+  useEffect(() => {
+    if (product?.sizes && typeof product.sizes === 'string') {
+      const availableSizes = product.sizes.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      if (availableSizes.length > 0 && !availableSizes.includes(selectedSize)) {
+        setSelectedSize(availableSizes[0]);
+      }
+    }
+  }, [product, selectedSize]);
 
   const handleBuyWhatsApp = () => {
     const message = `Product Purchase Request:\n\n• Product: ${product!.name}\n• Size: ${selectedSize}\n• Color: ${selectedColorName}\n• Quantity: ${quantity}\n• Unit Price: LKR ${product!.price.toLocaleString()}\n• Total Price: LKR ${(product!.price * quantity).toLocaleString()}`;
@@ -436,7 +470,10 @@ const ProductDetails = () => {
     );
   }
 
-  const sizes = ['S', 'M', 'L', 'XL'];
+  // Get available sizes from product database
+  const sizes = product?.sizes && typeof product.sizes === 'string'
+    ? product.sizes.split(',').map(s => s.trim()).filter(s => s.length > 0)
+    : ['S', 'M', 'L', 'XL'];
 
   //selected color name
   const colorNamesArray = product.colorNames?.split(', ') || [];
@@ -621,13 +658,25 @@ const ProductDetails = () => {
                 <h3 className="text-sm font-semibold text-black">Available Size : {selectedSize}</h3>
                 <div className="relative">
                   <button 
-                    onClick={() => setShowSizeGuideDropdown(!showSizeGuideDropdown)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      
+                      // If product has uploaded size chart, show it directly
+                      if (product.sizeChartUrl && product.sizeChartUrl.trim() !== '') {
+                        setSelectedSizeGuide(product.sizeChartUrl);
+                      } else {
+                        setShowSizeGuideDropdown(!showSizeGuideDropdown);
+                      }
+                    }}
                     className="text-sm underline flex items-center gap-1"
                   >
                     Size Guide
-                    <ChevronDown className={`w-4 h-4 transition-transform ${showSizeGuideDropdown ? 'rotate-180' : ''}`} />
+                    {!product.sizeChartUrl && (
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showSizeGuideDropdown ? 'rotate-180' : ''}`} />
+                    )}
                   </button>
-                  {showSizeGuideDropdown && (
+                  {!product.sizeChartUrl && showSizeGuideDropdown && (
                     <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 p-2">
                       {sizeGuides.map((guide) => (
                         <button
@@ -822,13 +871,25 @@ const ProductDetails = () => {
                   <h3 className="text-sm font-semibold text-black">Available Size : {selectedSize}</h3>
                   <div className="relative">
                     <button 
-                      onClick={() => setShowSizeGuideDropdown(!showSizeGuideDropdown)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // If product has uploaded size chart, show it directly
+                        if (product.sizeChartUrl && product.sizeChartUrl.trim() !== '') {
+                          setSelectedSizeGuide(product.sizeChartUrl);
+                        } else {
+                          setShowSizeGuideDropdown(!showSizeGuideDropdown);
+                        }
+                      }}
                       className="text-sm underline flex items-center gap-1"
                     >
                       Size Guide
-                      <ChevronDown className={`w-4 h-4 transition-transform ${showSizeGuideDropdown ? 'rotate-180' : ''}`} />
+                      {!product.sizeChartUrl && (
+                        <ChevronDown className={`w-4 h-4 transition-transform ${showSizeGuideDropdown ? 'rotate-180' : ''}`} />
+                      )}
                     </button>
-                    {showSizeGuideDropdown && (
+                    {!product.sizeChartUrl && showSizeGuideDropdown && (
                       <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 p-2">
                         {sizeGuides.map((guide) => (
                           <button

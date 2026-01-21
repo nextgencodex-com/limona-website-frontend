@@ -95,8 +95,6 @@ export default function Header() {
         const email = emailInput?.value || "";
         const password = passwordInput?.value || "";
 
-        console.log("Login attempt:", { email, passwordLength: password.length }); // Debug
-
         if (!email || !password) {
             setLoginError("Please enter both email and password");
             setLoginLoading(false);
@@ -113,7 +111,6 @@ export default function Header() {
             });
 
             const data = await response.json();
-            console.log("Login response:", data); // Debug log
 
             if (!response.ok) {
                 throw new Error(data.error || data.message || "Login failed");
