@@ -61,7 +61,6 @@ const LatestArrivals = () => {
         const response = await fetch(`${API_BASE}/api/v1/products`);
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched products for Latest Arrivals:', data.data.length);
           
           const dbLatestProducts = data.data
             .filter((p: any) => (p.latest_arrival === 1 || p.latest_arrival === true) && (p.is_active === 1 || p.is_active === true))
@@ -74,7 +73,6 @@ const LatestArrivals = () => {
               description: p.description || ''
             }));
           
-          console.log('Filtered latest arrival products:', dbLatestProducts.length);
           // Merge database products with fallback products
           setLatestProducts([...dbLatestProducts, ...fallbackProducts]);
         } else {
@@ -90,7 +88,6 @@ const LatestArrivals = () => {
     
     // Listen for product updates
     const handleProductUpdate = () => {
-      console.log('Product updated - refreshing Latest Arrivals...');
       fetchLatestArrivals();
     };
     
