@@ -1,0 +1,134 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/About",
+      "regex": "^/About(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/About(?:/)?$"
+    },
+    {
+      "page": "/Admin/Categories",
+      "regex": "^/Admin/Categories(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Admin/Categories(?:/)?$"
+    },
+    {
+      "page": "/Admin/Dashboard",
+      "regex": "^/Admin/Dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Admin/Dashboard(?:/)?$"
+    },
+    {
+      "page": "/Admin/Login",
+      "regex": "^/Admin/Login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Admin/Login(?:/)?$"
+    },
+    {
+      "page": "/Contact",
+      "regex": "^/Contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Contact(?:/)?$"
+    },
+    {
+      "page": "/Customize-Your-Own",
+      "regex": "^/Customize\\-Your\\-Own(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Customize\\-Your\\-Own(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/Home",
+      "regex": "^/Home(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Home(?:/)?$"
+    },
+    {
+      "page": "/Login-Page",
+      "regex": "^/Login\\-Page(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Login\\-Page(?:/)?$"
+    },
+    {
+      "page": "/Printed-T-Shirt",
+      "regex": "^/Printed\\-T\\-Shirt(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Printed\\-T\\-Shirt(?:/)?$"
+    },
+    {
+      "page": "/Products",
+      "regex": "^/Products(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Products(?:/)?$"
+    },
+    {
+      "page": "/Products-Details",
+      "regex": "^/Products\\-Details(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Products\\-Details(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

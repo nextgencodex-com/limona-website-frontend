@@ -26,7 +26,7 @@ const LimonaLoginPage = () => {
     }
     
     try {
-      const response = await fetch('http://localhost:5000/api/v1/admin/login', {
+      const response = await fetch('https://backend.srilankawildsafari.com/api/v1/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

@@ -1,0 +1,513 @@
+/* [project]/src/components/Limona-Header/header.module.css [app-client] (css) */
+.header-module__xLxYTa__navbarWrapper {
+  justify-content: center;
+  padding: 1.5rem 2rem;
+  display: flex;
+  overflow: visible;
+}
+
+.header-module__xLxYTa__limonaNavbar {
+  color: #fff;
+  z-index: 9999;
+  background: #000;
+  border-radius: 40px;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1250px;
+  padding: .9rem 1.8rem;
+  display: flex;
+  position: relative;
+  overflow: visible;
+}
+
+.header-module__xLxYTa__limonaNavbar:before, .header-module__xLxYTa__limonaNavbar:after {
+  content: "";
+  z-index: -1;
+  background: #000;
+  border-radius: 26px;
+  width: 90px;
+  height: 77px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.header-module__xLxYTa__limonaNavbar:before {
+  border-top-left-radius: 85px;
+  border-bottom-left-radius: 25px;
+  left: -42px;
+}
+
+.header-module__xLxYTa__limonaNavbar:after {
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 95px;
+  right: -42px;
+}
+
+.header-module__xLxYTa__logoWrap {
+  align-items: center;
+  gap: 1.6rem;
+  display: flex;
+}
+
+.header-module__xLxYTa__logoImage {
+  object-fit: contain;
+  width: 48px;
+  height: 48px;
+}
+
+.header-module__xLxYTa__brandText {
+  color: #e0b000;
+  letter-spacing: .04em;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.header-module__xLxYTa__navList {
+  gap: 2.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.header-module__xLxYTa__navItem {
+  list-style: none;
+}
+
+.header-module__xLxYTa__navItem a {
+  color: #fff;
+  letter-spacing: .05em;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.header-module__xLxYTa__navItem a:hover, .header-module__xLxYTa__navItem a.header-module__xLxYTa__active {
+  color: #e0b000;
+}
+
+.header-module__xLxYTa__iconsContainer {
+  align-items: center;
+  gap: 1.2rem;
+  margin-left: auto;
+  display: flex;
+}
+
+.header-module__xLxYTa__cart {
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  padding: .5rem;
+  transition: opacity .2s;
+  display: flex;
+  position: relative;
+}
+
+.header-module__xLxYTa__cart:hover {
+  opacity: .8;
+  background-color: #e0b0001a;
+}
+
+.header-module__xLxYTa__cartBadge {
+  color: #000;
+  background: #e0b000;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+
+.header-module__xLxYTa__userMenuWrapper {
+  position: relative;
+}
+
+.header-module__xLxYTa__userButton {
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  padding: .5rem;
+  transition: background-color .2s;
+  display: flex;
+}
+
+.header-module__xLxYTa__userButton:hover {
+  background-color: #e0b0001a;
+}
+
+.header-module__xLxYTa__userButton svg {
+  stroke-width: 1.5px;
+}
+
+.header-module__xLxYTa__userMenu {
+  z-index: 10002;
+  opacity: 0;
+  visibility: hidden;
+  background: #000;
+  border-radius: 20px;
+  min-width: 300px;
+  margin-top: .8rem;
+  transition: opacity .18s, transform .18s, visibility .18s;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  overflow: hidden;
+  transform: translateY(-6px)scale(.99);
+  box-shadow: 0 8px 24px #00000073;
+}
+
+.header-module__xLxYTa__userMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0)scale(1);
+}
+
+.header-module__xLxYTa__simpleUserMenu {
+  padding: 1rem;
+}
+
+.header-module__xLxYTa__userMenuHeader {
+  border-bottom: 1px solid #ffffff1a;
+  margin-bottom: .5rem;
+  padding: .8rem .5rem 1rem;
+}
+
+.header-module__xLxYTa__userGreeting {
+  color: #e0b000;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  display: block;
+}
+
+.header-module__xLxYTa__buttonGroup {
+  flex-direction: column;
+  gap: .6rem;
+  width: 100%;
+  display: flex;
+}
+
+.header-module__xLxYTa__menuButtonLink {
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  background: #ffffff0d;
+  border: 1px solid #ffffff1a;
+  border-radius: 10px;
+  width: 100%;
+  padding: .8rem 1rem;
+  font-size: .95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all .2s;
+  display: block;
+}
+
+.header-module__xLxYTa__menuButtonLink:hover {
+  color: #e0b000;
+  background: #e0b00033;
+  border-color: #e0b0004d;
+  transform: translateY(-1px);
+}
+
+.header-module__xLxYTa__loginButton {
+  color: #000;
+  cursor: pointer;
+  box-sizing: border-box;
+  background: #e0b000;
+  border: none;
+  border-radius: 12px;
+  width: 100%;
+  padding: .8rem;
+  font-size: .95rem;
+  font-weight: 700;
+  transition: all .2s;
+  display: block;
+}
+
+.header-module__xLxYTa__loginButton:hover {
+  background: #fc0;
+  transform: translateY(-1px);
+}
+
+.header-module__xLxYTa__formFooter {
+  text-align: center;
+  border-top: 1px solid #ffffff1a;
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+}
+
+.header-module__xLxYTa__formFooterText {
+  color: #fff9;
+  margin-right: .5rem;
+  font-size: .9rem;
+}
+
+.header-module__xLxYTa__signUpButton {
+  color: #e0b000;
+  cursor: pointer;
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  width: 100%;
+  padding: .25rem .5rem;
+  font-size: .9rem;
+  font-weight: 700;
+  transition: all .2s;
+  display: block;
+}
+
+.header-module__xLxYTa__logoutButton:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px #ef44444d;
+}
+
+.header-module__xLxYTa__menuButton {
+  color: #fff;
+  cursor: pointer;
+  z-index: 30;
+  background: none;
+  border: none;
+  align-items: center;
+  margin-left: 0;
+  padding: .25rem;
+  display: none;
+}
+
+.header-module__xLxYTa__hamburger {
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+
+.header-module__xLxYTa__mobileMenu {
+  z-index: 10001;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform-origin: top;
+  background: #000;
+  border-radius: 20px;
+  margin: 0;
+  padding: .6rem 1rem;
+  transition: opacity .18s, transform .18s, visibility .18s;
+  display: block;
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  right: 0;
+  transform: translateY(-6px)scale(.99);
+  box-shadow: 0 8px 24px #00000073;
+}
+
+.header-module__xLxYTa__mobileMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0)scale(1);
+}
+
+.header-module__xLxYTa__mobileNavList {
+  flex-direction: column;
+  gap: .4rem;
+  margin: 0;
+  padding: .4rem 0;
+  list-style: none;
+  display: flex;
+}
+
+.header-module__xLxYTa__mobileNavItem {
+  list-style: none;
+  display: block;
+}
+
+.header-module__xLxYTa__mobileNavItem a {
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: .6rem .8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all .2s;
+  display: block;
+}
+
+.header-module__xLxYTa__mobileNavItem a:hover {
+  color: #e0b000;
+  background: #e0b00014;
+}
+
+.header-module__xLxYTa__mobileAuthButtons {
+  border-top: 1px solid #ffffff1a;
+  flex-direction: column;
+  gap: .5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  display: flex;
+}
+
+.header-module__xLxYTa__mobileAuthButtons .header-module__xLxYTa__mobileNavItem a {
+  color: #000;
+  text-align: center;
+  background: #e0b000;
+  font-weight: 700;
+  transition: all .2s;
+}
+
+.header-module__xLxYTa__mobileAuthButtons .header-module__xLxYTa__mobileNavItem a:hover {
+  color: #000;
+  background: #fc0;
+  transform: translateY(-1px);
+}
+
+.header-module__xLxYTa__mobileLogoutButton {
+  color: #fff;
+  cursor: pointer;
+  text-align: center;
+  background: #ef4444e6;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  padding: .8rem;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  transition: all .2s;
+}
+
+.header-module__xLxYTa__mobileLogoutButton:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.header-module__xLxYTa__mobileAuthButtons .header-module__xLxYTa__mobileNavItem .header-module__xLxYTa__menuButtonLink {
+  color: #fff;
+  text-align: center;
+  background: #ffffff0d;
+  font-weight: 600;
+}
+
+.header-module__xLxYTa__mobileAuthButtons .header-module__xLxYTa__mobileNavItem .header-module__xLxYTa__menuButtonLink:hover {
+  color: #e0b000;
+  background: #e0b00033;
+}
+
+@media (max-width: 768px) {
+  .header-module__xLxYTa__navbarWrapper {
+    padding: 1rem;
+  }
+
+  .header-module__xLxYTa__navList {
+    display: none;
+  }
+
+  .header-module__xLxYTa__limonaNavbar {
+    justify-content: space-between;
+    width: 100%;
+    max-width: calc(100% - 2rem);
+    padding: .9rem 1rem;
+    position: relative;
+  }
+
+  .header-module__xLxYTa__limonaNavbar:before, .header-module__xLxYTa__limonaNavbar:after {
+    z-index: -1;
+    width: 78px;
+    height: 100%;
+    top: 0;
+    transform: none;
+  }
+
+  .header-module__xLxYTa__limonaNavbar:before {
+    border-top-left-radius: 70px;
+    border-bottom-left-radius: 20px;
+    left: -28px;
+  }
+
+  .header-module__xLxYTa__limonaNavbar:after {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 70px;
+    right: -28px;
+  }
+
+  .header-module__xLxYTa__menuButton {
+    display: inline-flex;
+  }
+
+  .header-module__xLxYTa__iconsContainer {
+    order: 0;
+    gap: 1rem;
+    margin-left: 0;
+  }
+
+  .header-module__xLxYTa__cart {
+    margin-left: 0;
+  }
+
+  .header-module__xLxYTa__userMenu {
+    z-index: 10002;
+    border-radius: 20px 20px 0 0;
+    width: auto;
+    min-width: auto;
+    margin-top: 0;
+    position: fixed;
+    inset: auto 1rem 0;
+    transform: translateY(100%);
+  }
+
+  .header-module__xLxYTa__userMenuOpen {
+    transform: translateY(0);
+  }
+
+  .header-module__xLxYTa__loginForm {
+    padding: 1.2rem;
+  }
+
+  .header-module__xLxYTa__buttonGroup {
+    width: 100%;
+  }
+
+  .header-module__xLxYTa__mobileMenu {
+    margin: 0;
+    left: 1rem;
+    right: 1rem;
+  }
+
+  .header-module__xLxYTa__mobileNavItem a {
+    text-align: center;
+  }
+}
+
+@media (min-width: 769px) {
+  .header-module__xLxYTa__mobileAuthButtons {
+    display: none;
+  }
+}
+
+.header-module__xLxYTa__userButton, .header-module__xLxYTa__cart, .header-module__xLxYTa__menuButton, .header-module__xLxYTa__logoutButton, .header-module__xLxYTa__mobileLogoutButton, .header-module__xLxYTa__loginButton, .header-module__xLxYTa__menuButtonLink, .header-module__xLxYTa__navItem a, .header-module__xLxYTa__mobileNavItem a {
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=src_components_Limona-Header_header_module_css_bad6b30c._.single.css.map*/

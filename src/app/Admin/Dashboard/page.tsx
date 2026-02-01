@@ -21,6 +21,8 @@ interface Product {
     featured: boolean;
 }
 
+const API_BASE = 'https://backend.srilankawildsafari.com';
+
 export default function AdminDashboard() {
     const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
@@ -53,7 +55,7 @@ export default function AdminDashboard() {
     const fetchProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/v1/products", {
+            const response = await fetch(`${API_BASE}/api/v1/products`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -105,7 +107,7 @@ export default function AdminDashboard() {
     const handleToggleActive = async (product: Product) => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:5000/api/v1/products/${product.id}`, {
+            const response = await fetch(`${API_BASE}/api/v1/products/${product.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -137,7 +139,7 @@ export default function AdminDashboard() {
         try {
             const token = localStorage.getItem("token");
             const newStock = product.stock === 0 ? 1 : 0;
-            const response = await fetch(`http://localhost:5000/api/v1/products/${product.id}`, {
+            const response = await fetch(`${API_BASE}/api/v1/products/${product.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -172,7 +174,7 @@ export default function AdminDashboard() {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:5000/api/v1/products/${id}`, {
+            const response = await fetch(`${API_BASE}/api/v1/products/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,

@@ -51,9 +51,11 @@ export default function CategoryManager() {
         fetchCategories();
     }, []);
 
+    const API_BASE = 'https://backend.srilankawildsafari.com';
+
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/v1/categories');
+            const response = await fetch(`${API_BASE}/api/v1/categories`);
             if (!response.ok) throw new Error('Failed to fetch categories');
             const data = await response.json();
             setCategories(data);
@@ -92,8 +94,8 @@ export default function CategoryManager() {
     const handleSaveCategory = async () => {
         try {
             const url = editingCategory
-                ? `http://localhost:5000/api/v1/categories/${editingCategory.id}`
-                : 'http://localhost:5000/api/v1/categories';
+                ? `${API_BASE}/api/v1/categories/${editingCategory.id}`
+                : `${API_BASE}/api/v1/categories`;
 
             const method = editingCategory ? 'PUT' : 'POST';
 
@@ -123,7 +125,7 @@ export default function CategoryManager() {
         if (!confirm('Are you sure you want to delete this category?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/categories/${id}`, {
+            const response = await fetch(`${API_BASE}/api/v1/categories/${id}`, {
                 method: 'DELETE'
             });
 
@@ -159,8 +161,8 @@ export default function CategoryManager() {
 
         try {
             const url = editingSubcategory
-                ? `http://localhost:5000/api/v1/categories/subcategories/${editingSubcategory.id}`
-                : 'http://localhost:5000/api/v1/categories/subcategories';
+                ? `${API_BASE}/api/v1/categories/subcategories/${editingSubcategory.id}`
+                : `${API_BASE}/api/v1/categories/subcategories`;
             
             const method = editingSubcategory ? 'PUT' : 'POST';
             
@@ -194,7 +196,7 @@ export default function CategoryManager() {
         if (!confirm('Are you sure you want to delete this subcategory?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/categories/subcategories/${id}`, {
+            const response = await fetch(`${API_BASE}/api/v1/categories/subcategories/${id}`, {
                 method: 'DELETE'
             });
 

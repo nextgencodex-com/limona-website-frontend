@@ -325,3 +325,85 @@
     padding: 40px;
     color: #666;
 }
+
+@media (max-width: 768px) {
+    .categoryManager {
+        padding: 15px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        margin-bottom: 20px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .addButton {
+        width: 100%;
+        padding: 10px 20px;
+    }
+
+    .categoriesGrid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .categoryCard {
+        padding: 15px;
+    }
+
+    .categoryHeader {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .categoryActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .categoryName {
+        font-size: 1.125rem;
+    }
+
+    .modal {
+        padding: 20px;
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .modalTitle {
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+    }
+
+    .form {
+        gap: 15px;
+    }
+
+    .modalActions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cancelButton,
+    .submitButton {
+        width: 100%;
+    }
+
+    .subcategoryItem {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .subcategoryActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

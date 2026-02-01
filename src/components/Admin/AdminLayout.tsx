@@ -12,6 +12,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const router = useRouter();
     const pathname = usePathname();
     const [adminUser, setAdminUser] = useState<any>({ username: "Admin" });
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     useEffect(() => {
         // Load admin user from localStorage on client side only
@@ -29,10 +30,25 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
     return (
         <div className={styles.layout}>
-            <aside className={styles.sidebar}>
-                <div className={styles.logo}>
-                    <h2 className={styles.brandName}>LIMONA</h2>
-                    <p className={styles.adminText}>Admin Panel</p>
+            {sidebarOpen && (
+                <div 
+                    className={styles.overlay}
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+            <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
+                <div className={styles.sidebarHeader}>
+                    <div className={styles.logo}>
+                        <h2 className={styles.brandName}>LIMONA</h2>
+                        <p className={styles.adminText}>Admin Panel</p>
+                    </div>
+                    <button 
+                        className={styles.mobileCloseButton}
+                        onClick={() => setSidebarOpen(false)}
+                        aria-label="Close menu"
+                    >
+                        ✕
+                    </button>
                 </div>
 
                 <nav className={styles.nav}>
@@ -83,6 +99,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
             <div className={styles.main}>
                 <header className={styles.header}>
+                    <button 
+                        className={styles.mobileMenuButton}
+                        onClick={() => setSidebarOpen(true)}
+                        aria-label="Open menu"
+                    >
+                        ☰
+                    </button>
                     <div className={styles.headerLeft}>
                         <h3 className={styles.greeting}>
                             Welcome back, {adminUser.username}!
@@ -90,10 +113,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     </div>
                     <div className={styles.headerRight}>
                         <Link href="/" className={styles.backButton}>
-                            ← Back to Website
+                            <span className={styles.backButtonText}>← Back to Website</span>
                         </Link>
                         <button onClick={handleLogout} className={styles.logoutButton}>
-                            Logout
+                            <span className={styles.logoutButtonText}>Logout</span>
                         </button>
                     </div>
                 </header>

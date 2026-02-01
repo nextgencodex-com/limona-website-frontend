@@ -1,0 +1,17 @@
+{
+  "/About/page": "app/About/page.js",
+  "/Admin/Categories/page": "app/Admin/Categories/page.js",
+  "/Admin/Dashboard/page": "app/Admin/Dashboard/page.js",
+  "/Admin/Login/page": "app/Admin/Login/page.js",
+  "/Contact/page": "app/Contact/page.js",
+  "/Customize-Your-Own/page": "app/Customize-Your-Own/page.js",
+  "/Home/page": "app/Home/page.js",
+  "/Login-Page/page": "app/Login-Page/page.js",
+  "/Printed-T-Shirt/page": "app/Printed-T-Shirt/page.js",
+  "/Products-Details/page": "app/Products-Details/page.js",
+  "/Products/page": "app/Products/page.js",
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
+}
