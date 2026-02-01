@@ -1,0 +1,17 @@
+{
+  "/About/page": "/About",
+  "/Admin/Categories/page": "/Admin/Categories",
+  "/Admin/Dashboard/page": "/Admin/Dashboard",
+  "/Admin/Login/page": "/Admin/Login",
+  "/Contact/page": "/Contact",
+  "/Customize-Your-Own/page": "/Customize-Your-Own",
+  "/Home/page": "/Home",
+  "/Login-Page/page": "/Login-Page",
+  "/Printed-T-Shirt/page": "/Printed-T-Shirt",
+  "/Products-Details/page": "/Products-Details",
+  "/Products/page": "/Products",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/"
+}

@@ -1,0 +1,46 @@
+{
+  "app": {
+    "[project]/src/app/About/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Admin/Categories/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Admin/Dashboard/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Admin/Login/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Contact/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Customize-Your-Own/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Home/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Login-Page/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Printed-T-Shirt/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Products-Details/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/Products/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/_not-found/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

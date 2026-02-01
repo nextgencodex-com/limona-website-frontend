@@ -9,7 +9,7 @@ interface CartPopupProps {
   whatsappNumber?: string;
 }
 
-const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94759627589' }) => {
+const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94784865398' }) => {
   const {
     items,
     removeItem,

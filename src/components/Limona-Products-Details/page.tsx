@@ -345,7 +345,7 @@ const ProductDetails = () => {
 
       // For database products (ID >= 1000), fetch from API
       try {
-        const response = await fetch(`http://localhost:5000/api/v1/products/${actualDatabaseId}`);
+        const response = await fetch(`${API_BASE}/api/v1/products/${actualDatabaseId}`);
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data) {
@@ -375,12 +375,15 @@ const ProductDetails = () => {
               }
             }
           
+            const mainImage = apiProduct.image_url ? toAbsoluteImageUrl(apiProduct.image_url) : '/images/Products/placeholder.png';
+            const additional = apiProduct.image_url ? [toAbsoluteImageUrl(apiProduct.image_url), toAbsoluteImageUrl(apiProduct.image_url)] : [];
+
             const transformedProduct: Product = {
               id: apiProduct.id,
               name: apiProduct.name,
               category: apiProduct.category,
               price: Number(apiProduct.price),
-              image: apiProduct.image_url || '/images/Products/placeholder.png',
+              image: mainImage,
               description: apiProduct.description || '',
               colors: colorsArray,
               sizes: apiProduct.size || 'S, M, L, XL',

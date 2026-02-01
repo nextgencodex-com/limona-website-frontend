@@ -1,0 +1,16 @@
+{
+  "app": {
+    "[project]/src/app/Admin/Dashboard/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/_not-found/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/0981397205f5a2e0-s.p.3573b386.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

@@ -14,7 +14,7 @@ export default function ContactUs() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const whatsappMessage = `Hello, I'm ${formData.name}%0A%0AEmail: ${formData.email}%0A%0AMessage: ${formData.message}`;
-    window.open(`https://wa.me/94759627589?text=${whatsappMessage}`, '_blank');
+    window.open(`https://wa.me/94784865398?text=${whatsappMessage}`, '_blank');
   };
 
   return (
@@ -205,7 +205,7 @@ export default function ContactUs() {
                     </div>
                     
                     <a 
-                      href="https://wa.me/94759627589"
+                      href="https://wa.me/94784865398"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full bg-white text-green-600 font-semibold py-3 px-5 rounded-xl hover:bg-gray-50 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"

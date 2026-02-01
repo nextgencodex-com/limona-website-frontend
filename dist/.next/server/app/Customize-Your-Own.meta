@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/Customize-Your-Own/layout,_N_T_/Customize-Your-Own/page,_N_T_/Customize-Your-Own"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/Customize-Your-Own/__PAGE__",
+    "/Customize-Your-Own",
+    "/_index",
+    "/_head"
+  ]
+}
