@@ -23,6 +23,8 @@ interface Product {
     name: string;
     description: string;
     price: number;
+    price_sml?: number;
+    price_xl_2xl?: number;
     category: string;
     subcategory?: string;
     size?: string;
@@ -100,7 +102,10 @@ export default function ProductList({ products, onEdit, onDelete, onToggleActive
                                         )}
                                     </div>
                                 </td>
-                                <td className={styles.price}>${Number(product.price).toFixed(2)}</td>
+                                <td className={styles.price}>
+                                    <div>S/M/L: ${Number(product.price_sml ?? product.price).toFixed(2)}</div>
+                                    <div className={styles.meta}>XL/2XL: ${Number(product.price_xl_2xl ?? product.price).toFixed(2)}</div>
+                                </td>
                                 <td>
                                     <button
                                         onClick={() => onToggleStock(product)}

@@ -60,6 +60,12 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94784865398' }
       message += `   💰 Price: ${formatPrice(item.price)}\n`;
       message += `   📦 Quantity: ${item.quantity}\n`;
       message += `   🏷️ Category: ${item.category}\n`;
+      if (item.selectedSize) {
+        message += `   📏 Size: ${item.selectedSize}\n`;
+      }
+      if (item.selectedColor) {
+        message += `   🎨 Selected Color: ${item.selectedColor}\n`;
+      }
       if (item.colors && item.colors.length > 0) {
         message += `   🎨 Colors: ${item.colors.join(', ')}\n`;
       }
@@ -107,7 +113,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94784865398' }
           ) : (
             <div className={styles.cartItems}>
               {items.map((item) => (
-                <div key={item.id} className={styles.cartItem}>
+                <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}`} className={styles.cartItem}>
                   <div className={styles.itemImageContainer}>
                     <img
                       src={item.image}
@@ -122,6 +128,8 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94784865398' }
                   <div className={styles.itemDetails}>
                     <h3 className={styles.itemName}>{item.name}</h3>
                     <p className={styles.itemCategory}>{item.category}</p>
+                    {item.selectedSize && <p className={styles.itemCategory}>Size: {item.selectedSize}</p>}
+                    {item.selectedColor && <p className={styles.itemCategory}>Color: {item.selectedColor}</p>}
                     <p className={styles.itemPrice}>{formatPrice(item.price)}</p>
                   </div>
 
@@ -129,7 +137,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94784865398' }
                     {/* Quantity Controls */}
                     <div className={styles.quantityControls}>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedSize, item.selectedColor)}
                         className={styles.quantityButton}
                         aria-label="Decrease quantity"
                       >
@@ -137,7 +145,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94784865398' }
                       </button>
                       <span className={styles.quantityDisplay}>{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedSize, item.selectedColor)}
                         className={styles.quantityButton}
                         aria-label="Increase quantity"
                       >
@@ -152,7 +160,7 @@ const CartPopup: React.FC<CartPopupProps> = ({ whatsappNumber = '+94784865398' }
 
                     {/* Remove Button */}
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.id, item.selectedSize, item.selectedColor)}
                       className={styles.removeButton}
                       aria-label={`Remove ${item.name} from cart`}
                     >

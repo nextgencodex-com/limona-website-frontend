@@ -25,11 +25,21 @@ const COLOR_MAP: { [key: string]: string } = {
   'Brown': '#92400E',
 };
 
+const API_BASE = 'https://backend.srilankawildsafari.com';
+
+const toAbsoluteImageUrl = (imageUrl: string) => {
+  if (!imageUrl) return '/images/Products/placeholder.png';
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+  return `${API_BASE}${imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`}`;
+};
+
 interface Product {
   id: number;
   name: string;
   category: string;
   price: number;
+  priceSml?: number;
+  priceXl2xl?: number;
   image: string;
   description: string;
   colors: string[];
@@ -59,6 +69,19 @@ const ProductDetails = () => {
   const [mobileSlide, setMobileSlide] = useState(0);
   const [showSizeGuideDropdown, setShowSizeGuideDropdown] = useState(false);
   const [selectedSizeGuide, setSelectedSizeGuide] = useState<string | null>(null);
+
+  const isXlTierSize = (size: string) => {
+    const normalized = size.trim().toUpperCase();
+    return normalized === 'XL' || normalized === '2XL';
+  };
+
+  const getPriceForSize = (item: Product, size: string) => {
+    if (isXlTierSize(size)) {
+      return item.priceXl2xl ?? item.priceSml ?? item.price;
+    }
+
+    return item.priceSml ?? item.price;
+  };
 
   // Size guide data
   const sizeGuides = [
@@ -359,12 +382,15 @@ const ProductDetails = () => {
               const colorString = apiProduct.color.trim();
               
               // Split by comma and trim each color name
-              const colorNames = colorString.split(',').map((c: string) => c.trim()).filter(c => c.length > 0);
+              const colorNames = colorString
+                .split(',')
+                .map((c: string) => c.trim())
+                .filter((c: string) => c.length > 0);
               
               if (colorNames.length > 0) {
                 colorNamesArray = colorNames;
                 // Convert color names to hex codes
-                colorsArray = colorNames.map(name => {
+                colorsArray = colorNames.map((name: string) => {
                   // If it's already a hex code, use it
                   if (name.startsWith('#')) {
                     return name;
@@ -376,22 +402,23 @@ const ProductDetails = () => {
             }
           
             const mainImage = apiProduct.image_url ? toAbsoluteImageUrl(apiProduct.image_url) : '/images/Products/placeholder.png';
-            const additional = apiProduct.image_url ? [toAbsoluteImageUrl(apiProduct.image_url), toAbsoluteImageUrl(apiProduct.image_url)] : [];
+            const additional = [apiProduct.image_url_2, apiProduct.image_url_3]
+              .filter(Boolean)
+              .map((url: string) => toAbsoluteImageUrl(url));
 
             const transformedProduct: Product = {
               id: apiProduct.id,
               name: apiProduct.name,
               category: apiProduct.category,
               price: Number(apiProduct.price),
+              priceSml: Number(apiProduct.price_sml ?? apiProduct.price),
+              priceXl2xl: Number(apiProduct.price_xl_2xl ?? apiProduct.price_sml ?? apiProduct.price),
               image: mainImage,
               description: apiProduct.description || '',
               colors: colorsArray,
               sizes: apiProduct.size || 'S, M, L, XL',
               colorNames: colorNamesArray.join(', '),
-              additionalImages: [
-                apiProduct.image_url_2,
-                apiProduct.image_url_3
-              ].filter(Boolean), // Filter out null/undefined values
+              additionalImages: additional,
               sizeChartUrl: apiProduct.size_chart_url || null
             };
             setProduct(transformedProduct);
@@ -427,7 +454,7 @@ const ProductDetails = () => {
   }, [product, selectedSize]);
 
   const handleBuyWhatsApp = () => {
-    const message = `Product Purchase Request:\n\n• Product: ${product!.name}\n• Size: ${selectedSize}\n• Color: ${selectedColorName}\n• Quantity: ${quantity}\n• Unit Price: LKR ${product!.price.toLocaleString()}\n• Total Price: LKR ${(product!.price * quantity).toLocaleString()}`;
+    const message = `Product Purchase Request:\n\n• Product: ${product!.name}\n• Size: ${selectedSize}\n• Color: ${selectedColorName}\n• Quantity: ${quantity}\n• Unit Price: LKR ${currentPrice.toLocaleString()}\n• Total Price: LKR ${(currentPrice * quantity).toLocaleString()}`;
     const whatsappUrl = `https://wa.me/94759627589?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -439,10 +466,12 @@ const ProductDetails = () => {
       addItem({
         id: product.id,
         name: product.name,
-        price: product.price,
+        price: currentPrice,
         image: product.image,
         description: product.description,
         colors: product.colors,
+        selectedColor: selectedColorName,
+        selectedSize,
         category: product.category,
       });
     }
@@ -477,6 +506,8 @@ const ProductDetails = () => {
   const sizes = product?.sizes && typeof product.sizes === 'string'
     ? product.sizes.split(',').map(s => s.trim()).filter(s => s.length > 0)
     : ['S', 'M', 'L', 'XL'];
+
+  const currentPrice = getPriceForSize(product, selectedSize);
 
   //selected color name
   const colorNamesArray = product.colorNames?.split(', ') || [];
@@ -623,8 +654,8 @@ const ProductDetails = () => {
 
             {/* Price */}
             <div className="mb-4">
-              <div className="text-2xl font-bold text-black">LKR {product.price.toFixed(2)}</div>
-              <div className="text-sm text-gray-600 mt-1">or with 3 installments of LKR {(product.price / 3).toFixed(2)}</div>
+              <div className="text-2xl font-bold text-black">LKR {currentPrice.toFixed(2)}</div>
+              <div className="text-sm text-gray-600 mt-1">or with 3 installments of LKR {(currentPrice / 3).toFixed(2)}</div>
               <div className="mt-2">
                 <Image
                   src="/images/Products-Details/koko.png"
@@ -834,8 +865,8 @@ const ProductDetails = () => {
 
               {/* Price */}
               <div className="mb-6">
-                <div className="text-4xl font-bold text-black">LKR {product.price.toFixed(2)}</div>
-                <div className="text-sm text-gray-600 mt-1">or with 3 installments of LKR {(product.price / 3).toFixed(2)}</div>
+                <div className="text-4xl font-bold text-black">LKR {currentPrice.toFixed(2)}</div>
+                <div className="text-sm text-gray-600 mt-1">or with 3 installments of LKR {(currentPrice / 3).toFixed(2)}</div>
                 <div className="mt-2 flex items-center gap-2">
                   <div className="flex items-center gap-1">
                     <Image
