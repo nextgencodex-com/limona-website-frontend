@@ -9,6 +9,8 @@ export interface CartItem {
   image: string;
   description: string;
   colors: string[];
+  selectedColor?: string;
+  selectedSize?: string;
   quantity: number;
   category: string;
 }
@@ -16,8 +18,8 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addItem: (product: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeItem: (productId: number, selectedSize?: string, selectedColor?: string) => void;
+  updateQuantity: (productId: number, quantity: number, selectedSize?: string, selectedColor?: string) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -70,11 +72,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const addItem = (product: Omit<CartItem, 'quantity'>) => {
     setItems(currentItems => {
-      const existingItem = currentItems.find(item => item.id === product.id);
+      const existingItem = currentItems.find(
+        item =>
+          item.id === product.id &&
+          item.selectedSize === product.selectedSize &&
+          item.selectedColor === product.selectedColor
+      );
       
       if (existingItem) {
         return currentItems.map(item =>
-          item.id === product.id
+          item.id === product.id &&
+          item.selectedSize === product.selectedSize &&
+          item.selectedColor === product.selectedColor
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -84,19 +93,26 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     });
   };
 
-  const removeItem = (productId: number) => {
-    setItems(currentItems => currentItems.filter(item => item.id !== productId));
+  const removeItem = (productId: number, selectedSize?: string, selectedColor?: string) => {
+    setItems(currentItems =>
+      currentItems.filter(
+        item =>
+          !(item.id === productId && item.selectedSize === selectedSize && item.selectedColor === selectedColor)
+      )
+    );
   };
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (productId: number, quantity: number, selectedSize?: string, selectedColor?: string) => {
     if (quantity <= 0) {
-      removeItem(productId);
+      removeItem(productId, selectedSize, selectedColor);
       return;
     }
 
     setItems(currentItems =>
       currentItems.map(item =>
-        item.id === productId
+        item.id === productId &&
+        item.selectedSize === selectedSize &&
+        item.selectedColor === selectedColor
           ? { ...item, quantity }
           : item
       )

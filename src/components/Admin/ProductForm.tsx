@@ -7,6 +7,8 @@ interface Product {
     name: string;
     description: string;
     price: number;
+    price_sml?: number;
+    price_xl_2xl?: number;
     category: string;
     subcategory?: string;
     size?: string;
@@ -27,14 +29,20 @@ interface ProductFormProps {
     onSuccess?: () => void;
 }
 
-const categories = [
-    "Men",
-    "Women",
-    "Kids",
-    "Accessories",
-    "Limited Edition",
-    "Gym wear",
-];
+interface CategoryApiResponse {
+    id: number;
+    name: string;
+    is_active: boolean;
+    coming_soon: boolean;
+    subcategories?: SubcategoryApiResponse[];
+}
+
+interface SubcategoryApiResponse {
+    id: number;
+    name: string;
+    is_active: boolean;
+    coming_soon: boolean;
+}
 
 const availableColors = [
     { name: "Black", hex: "#000000" },
@@ -70,12 +78,15 @@ const toAbsoluteImageUrl = (url?: string | null) => {
 };
 
 export default function ProductForm({ product, onClose, onSuccess }: ProductFormProps) {
+    const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
     const [categorySubcategories, setCategorySubcategories] = useState<{[key: string]: any[]}>({});
     const [formData, setFormData] = useState<Product>({
         name: "",
         description: "",
         price: 0,
-        category: "Men",
+        price_sml: 0,
+        price_xl_2xl: 0,
+        category: "",
         subcategory: "",
         size: "",
         color: "",
@@ -103,41 +114,56 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
     const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
     const [customColor, setCustomColor] = useState<string>("");
 
-    // Fetch all subcategories
+    // Fetch categories and subcategories for dynamic product classification
     useEffect(() => {
-        const fetchSubcategories = async () => {
+        const fetchCategories = async () => {
             try {
                 const response = await fetch("https://backend.srilankawildsafari.com/api/v1/categories");
                 const data = await response.json();
                 
-                // The API returns { success: true, data: [...] }
-                const categories = data.success ? data.data : data;
+                const categories: CategoryApiResponse[] = data.success ? data.data : data;
                 
                 if (categories && Array.isArray(categories)) {
+                    const availableCategories = categories
+                        .filter((category) => category.is_active)
+                        .map((category) => category.name);
+                    setCategoryOptions(availableCategories);
+
+                    setFormData((prev) => {
+                        if (prev.category) return prev;
+                        return { ...prev, category: availableCategories[0] || "" };
+                    });
+
                     // Group subcategories by category
-                    const subsByCategory: {[key: string]: any[]} = {};
-                    categories.forEach((category: any) => {
+                    const subsByCategory: {[key: string]: SubcategoryApiResponse[]} = {};
+                    categories.forEach((category) => {
                         if (category.subcategories && category.subcategories.length > 0) {
-                            // Filter only active subcategories that are not coming soon
+                            // Keep all active subcategories for the selected category
                             subsByCategory[category.name] = category.subcategories.filter(
-                                (sub: any) => sub.is_active && !sub.coming_soon
+                                (sub) => sub.is_active
                             );
                         }
                     });
                     setCategorySubcategories(subsByCategory);
                 }
             } catch (error) {
-                console.error("Failed to fetch subcategories:", error);
+                console.error("Failed to fetch categories:", error);
             }
         };
-        fetchSubcategories();
+        fetchCategories();
     }, []);
+
+    const selectableCategories = formData.category && !categoryOptions.includes(formData.category)
+        ? [formData.category, ...categoryOptions]
+        : categoryOptions;
 
     useEffect(() => {
         if (product) {
             setFormData({
                 ...product,
                 price: Number(product.price),
+                price_sml: Number((product as any).price_sml ?? product.price),
+                price_xl_2xl: Number((product as any).price_xl_2xl ?? product.price),
                 stock: Number(product.stock)
             });
             setImagePreview(product.image_url || "");
@@ -163,7 +189,7 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
         if (type === "checkbox") {
             const checked = (e.target as HTMLInputElement).checked;
             setFormData({ ...formData, [name]: checked });
-        } else if (name === "price" || name === "stock") {
+        } else if (name === "price" || name === "price_sml" || name === "price_xl_2xl" || name === "stock") {
             // Allow empty string during typing, convert to number only if valid
             const numValue = value === '' ? '' : value;
             setFormData({ ...formData, [name]: numValue as any });
@@ -386,6 +412,7 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                 },
                 body: JSON.stringify({
                     ...formData,
+                    price: formData.price_sml,
                     image_url: imageUrl,
                     image_url_2: imageUrl2,
                     image_url_3: imageUrl3,
@@ -471,11 +498,11 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
 
                 <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>Price ($) *</label>
+                        <label className={styles.label}>Price (S, M, L) *</label>
                         <input
                             type="number"
-                            name="price"
-                            value={formData.price}
+                            name="price_sml"
+                            value={formData.price_sml}
                             onChange={handleChange}
                             className={styles.input}
                             step="0.01"
@@ -483,6 +510,23 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             required
                         />
                     </div>
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Price (XL, 2XL) *</label>
+                        <input
+                            type="number"
+                            name="price_xl_2xl"
+                            value={formData.price_xl_2xl}
+                            onChange={handleChange}
+                            className={styles.input}
+                            step="0.01"
+                            min="0"
+                            required
+                        />
+                        <small className={styles.helpText}>Used when customer selects XL or 2XL</small>
+                    </div>
+                </div>
+
+                <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Stock *</label>
                         <input
@@ -507,7 +551,10 @@ export default function ProductForm({ product, onClose, onSuccess }: ProductForm
                             className={styles.select}
                             required
                         >
-                            {categories.map((cat) => (
+                            <option value="" disabled>
+                                Select category
+                            </option>
+                            {selectableCategories.map((cat) => (
                                 <option key={cat} value={cat}>
                                     {cat}
                                 </option>

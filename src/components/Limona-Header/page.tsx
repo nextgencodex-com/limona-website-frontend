@@ -18,72 +18,21 @@ export default function Header() {
   // ⭐ Mobile state (this fixes your error)
   const [isMobile, setIsMobile] = useState(false);
 
+    const menuRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const userMenuRef = useRef<HTMLDivElement>(null);
+    const userButtonRef = useRef<HTMLButtonElement>(null);
+
+    const navItems = [
+    { label: "Home", href: "/Home" },
+    { label: "Products", href: "/Products" },
+    { label: "Customize Your Own", href: "/Customize-Your-Own" },
+    { label: "Printed T-Shirt", href: "/Printed-T-Shirt" },
+    { label: "About", href: "/About" },
+    { label: "Contact", href: "/Contact" },
+    ];
+
   const { getTotalItems, toggleCart } = useCart();
-
-        document.addEventListener("pointerdown", onPointerDown);
-        document.addEventListener("keydown", onKeyDown);
-        return () => {
-            document.removeEventListener("pointerdown", onPointerDown);
-            document.removeEventListener("keydown", onKeyDown);
-        };
-    }, [menuOpen, userMenuOpen]);
-
-    // Handle login form submission
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoginError("");
-        setLoginLoading(true);
-
-        const form = e.target as HTMLFormElement;
-        const emailInput = form.elements.namedItem("email") as HTMLInputElement;
-        const passwordInput = form.elements.namedItem("password") as HTMLInputElement;
-        
-        const email = emailInput?.value || "";
-        const password = passwordInput?.value || "";
-
-        if (!email || !password) {
-            setLoginError("Please enter both email and password");
-            setLoginLoading(false);
-            return;
-        }
-
-        try {
-            const response = await fetch("http://localhost:5000/api/v1/admin/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || data.message || "Login failed");
-            }
-
-            // Store token and admin data - check the response structure
-            const token = data.token || data.data?.token;
-            const admin = data.admin || data.data?.admin;
-
-            if (!token || !admin) {
-                throw new Error("Invalid response format from server");
-            }
-
-            localStorage.setItem("token", token);
-            localStorage.setItem("admin", JSON.stringify(admin));
-
-            setIsLoggedIn(true);
-            setIsAdmin(true);
-            setAdminUser(admin);
-            setUserMenuOpen(false);
-        } catch (err: any) {
-            console.error("Login error:", err); // Debug log
-            setLoginError(err.message || "Invalid email or password");
-        } finally {
-            setLoginLoading(false);
-        }
-    };
 
   // Detect mobile
   useEffect(() => {
