@@ -38,13 +38,15 @@ export default function CategoryManager() {
     const [categoryForm, setCategoryForm] = useState({
         name: '',
         coming_soon: false,
-        display_order: 0
+        display_order: 0,
+        is_active: true
     });
 
     const [subcategoryForm, setSubcategoryForm] = useState({
         name: '',
         coming_soon: false,
-        display_order: 0
+        display_order: 0,
+        is_active: true
     });
 
     useEffect(() => {
@@ -55,7 +57,7 @@ export default function CategoryManager() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch(`${API_BASE}/api/v1/categories`);
+            const response = await fetch('http://localhost:5000/api/v1/categories');
             if (!response.ok) throw new Error('Failed to fetch categories');
             const data = await response.json();
             setCategories(data);
@@ -76,7 +78,7 @@ export default function CategoryManager() {
     };
 
     const handleCreateCategory = () => {
-        setCategoryForm({ name: '', coming_soon: false, display_order: 0 });
+        setCategoryForm({ name: '', coming_soon: false, display_order: 0, is_active: true });
         setEditingCategory(null);
         setShowCategoryModal(true);
     };
@@ -85,7 +87,8 @@ export default function CategoryManager() {
         setCategoryForm({
             name: category.name,
             coming_soon: category.coming_soon,
-            display_order: category.display_order
+            display_order: category.display_order,
+            is_active: category.is_active
         });
         setEditingCategory(category);
         setShowCategoryModal(true);
@@ -141,7 +144,7 @@ export default function CategoryManager() {
     const handleAddSubcategory = (categoryId: number) => {
         setSelectedCategoryId(categoryId);
         setEditingSubcategory(null);
-        setSubcategoryForm({ name: '', coming_soon: false, display_order: 0 });
+        setSubcategoryForm({ name: '', coming_soon: false, display_order: 0, is_active: true });
         setShowSubcategoryModal(true);
     };
 
@@ -151,7 +154,8 @@ export default function CategoryManager() {
         setSubcategoryForm({
             name: subcategory.name,
             coming_soon: subcategory.coming_soon || false,
-            display_order: subcategory.display_order
+            display_order: subcategory.display_order,
+            is_active: subcategory.is_active
         });
         setShowSubcategoryModal(true);
     };
@@ -251,8 +255,8 @@ export default function CategoryManager() {
                                                 Coming Soon
                                             </span>
                                         )}
-                                        <span className={`${styles.badge} ${styles.activeBadge}`}>
-                                            Active
+                                        <span className={`${styles.badge} ${category.is_active ? styles.activeBadge : styles.inactiveBadge}`}>
+                                            {category.is_active ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
                                 </div>
@@ -281,6 +285,9 @@ export default function CategoryManager() {
                                         <div key={sub.id} className={styles.subcategoryItem}>
                                             <span className={styles.subcategoryName}>
                                                 {sub.name}
+                                                <span className={`${styles.badge} ${sub.is_active ? styles.activeBadge : styles.inactiveBadge}`} style={{ marginLeft: '8px' }}>
+                                                    {sub.is_active ? 'Active' : 'Inactive'}
+                                                </span>
                                                 {sub.coming_soon === true && (
                                                     <span className={`${styles.badge} ${styles.comingSoonBadge}`} style={{ marginLeft: '8px' }}>
                                                         Coming Soon
@@ -363,6 +370,19 @@ export default function CategoryManager() {
                                 </label>
                             </div>
 
+                            <div className={styles.checkboxGroup}>
+                                <input
+                                    type="checkbox"
+                                    id="categoryIsActive"
+                                    className={styles.checkbox}
+                                    checked={categoryForm.is_active}
+                                    onChange={(e) => setCategoryForm({ ...categoryForm, is_active: e.target.checked })}
+                                />
+                                <label htmlFor="categoryIsActive" className={styles.label}>
+                                    Active (show this category in product forms)
+                                </label>
+                            </div>
+
                             <div className={styles.modalActions}>
                                 <button
                                     className={styles.cancelButton}
@@ -422,6 +442,19 @@ export default function CategoryManager() {
                                 />
                                 <label htmlFor="subcategoryComingSoon" className={styles.label}>
                                     Coming Soon (Show coming soon message)
+                                </label>
+                            </div>
+
+                            <div className={styles.checkboxGroup}>
+                                <input
+                                    type="checkbox"
+                                    id="subcategoryIsActive"
+                                    className={styles.checkbox}
+                                    checked={subcategoryForm.is_active}
+                                    onChange={(e) => setSubcategoryForm({ ...subcategoryForm, is_active: e.target.checked })}
+                                />
+                                <label htmlFor="subcategoryIsActive" className={styles.label}>
+                                    Active (show this subcategory in product forms)
                                 </label>
                             </div>
 

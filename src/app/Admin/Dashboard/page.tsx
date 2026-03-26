@@ -12,6 +12,8 @@ interface Product {
     name: string;
     description: string;
     price: number;
+    price_sml?: number;
+    price_xl_2xl?: number;
     category: string;
     size?: string;
     color?: string;
