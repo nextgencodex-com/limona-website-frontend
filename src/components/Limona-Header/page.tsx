@@ -162,7 +162,7 @@ export default function Header() {
           </div>
 
           {/* Center nav (desktop) */}
-          <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          <div className={styles.navCenter}>
             <ul className={styles.navList}>
               {navItems.map((n) => (
                 <li key={n.label} className={styles.navItem}>
