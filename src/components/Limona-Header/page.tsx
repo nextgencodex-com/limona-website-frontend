@@ -18,20 +18,20 @@ export default function Header() {
   // ⭐ Mobile state (this fixes your error)
   const [isMobile, setIsMobile] = useState(false);
 
-  const menuRef = useRef<HTMLDivElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const userMenuRef = useRef<HTMLDivElement | null>(null);
-  const userButtonRef = useRef<HTMLButtonElement | null>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const userMenuRef = useRef<HTMLDivElement>(null);
+    const userButtonRef = useRef<HTMLButtonElement>(null);
 
-  const { getTotalItems, toggleCart } = useCart();
-
-  const navItems = [
-    { label: "Home", href: "/" },
+    const navItems = [
+    { label: "Home", href: "/Home" },
     { label: "Products", href: "/Products" },
-    { label: "Customize", href: "/Customize-Your-Own" },
+      { label: "Customize", href: "/Customize-Your-Own" },
     { label: "About", href: "/About" },
     { label: "Contact", href: "/Contact" },
-  ];
+    ];
+
+  const { getTotalItems, toggleCart } = useCart();
 
   // Detect mobile
   useEffect(() => {
@@ -161,7 +161,7 @@ export default function Header() {
           </div>
 
           {/* Center nav (desktop) */}
-          <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          <div className={styles.navCenter}>
             <ul className={styles.navList}>
               {navItems.map((n) => (
                 <li key={n.label} className={styles.navItem}>
