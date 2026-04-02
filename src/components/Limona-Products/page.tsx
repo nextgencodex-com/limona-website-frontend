@@ -32,6 +32,8 @@ interface Product {
   dateAdded?: string;
 }
 
+const initialProducts: Product[] = [];
+
 const LimonaProducts = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
