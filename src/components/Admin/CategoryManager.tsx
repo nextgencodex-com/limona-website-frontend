@@ -57,7 +57,7 @@ export default function CategoryManager() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/v1/categories');
+            const response = await fetch(`${API_BASE}/api/v1/categories`);
             if (!response.ok) throw new Error('Failed to fetch categories');
             const data = await response.json();
             setCategories(data);
