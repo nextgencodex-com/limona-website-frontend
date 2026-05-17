@@ -50,7 +50,7 @@ const LimonaProducts = () => {
   useEffect(() => {
     const fetchDatabaseProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/products', {
+        const response = await fetch(`${API_BASE}/api/v1/products`, {
           cache: 'no-store',
           headers: {
             'Cache-Control': 'no-cache'
@@ -77,9 +77,8 @@ const LimonaProducts = () => {
               dateAdded: p.created_at || new Date().toISOString(),
             }));
           
-          // Append database products to hardcoded products
-          const mergedProducts = [...initialProducts, ...dbProducts];
-          setProducts(mergedProducts);
+          // Set products from database
+          setProducts(dbProducts);
         } else {
           console.error('API response not OK:', response.status);
         }
