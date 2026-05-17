@@ -283,9 +283,9 @@ export default function Header() {
               menuOpen ? styles.mobileMenuOpen : ""
             }`}
           >
-            <ul>
+            <ul className={styles.mobileNavList}>
               {navItems.map((n) => (
-                <li key={n.label}>
+                <li key={n.label} className={styles.mobileNavItem}>
                   <Link href={n.href} onClick={() => setMenuOpen(false)}>
                     {n.label}
                   </Link>
